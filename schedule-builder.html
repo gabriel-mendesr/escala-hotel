@@ -434,10 +434,9 @@ function renderGrid() {
            + (bg ? ' style="background:'+bg+'"' : '')
            + ' onmousedown="cellMouseDown(event,'+r+','+c+')"'
            + ' onmouseenter="cellMouseEnter('+r+','+c+')"'
-           + ' ondragstart="cellDragStart(event,'+r+','+c+')"'
-           + ' ondragover="cellDragOver(event)"'
+           + ' ondragover="event.preventDefault(); this.classList.add(\'drag-over\')"'
+           + ' ondragleave="this.classList.remove(\'drag-over\')"'
            + ' ondrop="cellDrop(event,'+r+','+c+')"'
-           + ' ondragleave="cellDragLeave(event)"'
            + '>';
       if (emp) {
         html += '<div class="cell-inner"><span class="cell-name">'+emp.name+'</span><span class="cell-regime">'+emp.regime+'</span></div>';
@@ -465,39 +464,25 @@ function cellMouseDown(e, r, c) {
 }
 
 function cellMouseEnter(r, c) {
-  if (!isDragging || !selectedEmp || selectedEmp === 'empty' && !grid[r][c]) return;
+  if (!isDragging || !selectedEmp) return;
+  if (selectedEmp === 'empty' && !grid[r][c]) return;
   applyCell(r, c, selectedEmp);
 }
 
 function applyCell(r, c, empKey) {
-  if (empKey === 'empty') {
-    grid[r][c] = null;
-  } else {
-    grid[r][c] = empKey;
-  }
+  grid[r][c] = (empKey === 'empty') ? null : empKey;
   renderGrid();
 }
 
-document.addEventListener('mouseup', function() { 
-  isDragging = false; 
-});
+document.addEventListener('mouseup', function() { isDragging = false; });
 
 // ── DRAG & DROP ───────────────────────────────────────────
 var dragSrcRow = null, dragSrcCol = null;
 
 function cellDragStart(e, r, c) {
-  if (selectedEmp) { e.preventDefault(); return; } 
+  if (selectedEmp) { e.preventDefault(); return; }
   dragSrcRow = r; dragSrcCol = c;
-  e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', r+','+c);
-}
-function cellDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  e.currentTarget.classList.add('drag-over');
-}
-function cellDragLeave(e) {
-  e.currentTarget.classList.remove('drag-over');
+  e.dataTransfer.setData('text/plain', 'internal:' + r + ',' + c);
 }
 
 function ePaletteDrag(e, key) {
@@ -510,20 +495,17 @@ function cellDrop(e, r, c) {
   e.currentTarget.classList.remove('drag-over');
   
   var data = e.dataTransfer.getData('text/plain');
+  if (!data) return;
 
-  if (data && data.indexOf('palette:') === 0) {
-    var paletteKey = data.split(':')[1];
-    if (paletteKey) {
-      pushHistory();
-      applyCell(r, c, paletteKey);
-    }
-  } else if (dragSrcRow !== null) {
-    // Se é um movimento interno na grade
-    pushHistory();
-    var srcEmp = grid[dragSrcRow][dragSrcCol];
-    grid[r][c] = srcEmp;
-    grid[dragSrcRow][dragSrcCol] = null;
-    dragSrcRow = null; dragSrcCol = null;
+  pushHistory();
+  if (data.indexOf('palette:') === 0) {
+    var key = data.split(':')[1];
+    applyCell(r, c, key);
+  } else if (data.indexOf('internal:') === 0) {
+    var coords = data.split(':')[1].split(',');
+    var sr = parseInt(coords[0]), sc = parseInt(coords[1]);
+    grid[r][c] = grid[sr][sc];
+    grid[sr][sc] = null;
     renderGrid();
   }
 }
