@@ -348,14 +348,13 @@ a{color:var(--blue);text-decoration:none}
 // ── CONFIG ─────────────────────────────────────────────────
 var STORE_KEY = 'hotel_escala_config';
 var CFG = {
-  morningStart:7, afternoonStart:15, nightStart:19,
   salaries:{giovanna:1700,anderson:2100,gabriel:1800,folguista:1500,freelancer:250,fdsDay:491,fdsNight:982},
   charges:{inss:20,rat:2,terceiros:5.8,fgts:8,ferias:11.11,decimo:8.33,fgtsProv:1.92,noturno:20}
 };
 try { var r=localStorage.getItem(STORE_KEY); if(r) CFG=JSON.parse(r); } catch(e){}
 
 function SC() {
-  var ms=+CFG.morningStart||7, as=+CFG.afternoonStart||15, ns=+CFG.nightStart||19;
+  var ms=7, as=15, ns=19; // fixed shifts
   var ph=function(h){h=((h%24)+24)%24;return(h<10?'0':'')+h;};
   return {ms:ms,as:as,ns:ns,
     lM:ph(ms)+'h–'+ph(as)+'h', lA:ph(as)+'h–'+ph(ns)+'h', lN:ph(ns)+'h–'+ph(ms)+'h (+1 dia)',

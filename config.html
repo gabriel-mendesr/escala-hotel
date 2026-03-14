@@ -152,48 +152,6 @@ h1,h2{font-family:'Syne',sans-serif}
 
 <div class="page">
 
-  <!-- ── TURNOS ── -->
-  <div class="card">
-    <div class="card-head">
-      <span class="icon">🕐</span>
-      <h2>Horários de Início dos Turnos</h2>
-      <span class="note">Cada turno tem duração fixa: Manhã 8h · Tarde 8h · Noite 12h</span>
-    </div>
-    <div class="card-body">
-      <div class="field-grid">
-        <div class="field">
-          <label>☀️ Início do turno Manhã (h)</label>
-          <input type="number" id="morningStart" min="0" max="12" step="1" value="7" onchange="updateShiftVisual()">
-          <span class="hint">Ex: 7 → turno 07h–15h</span>
-        </div>
-        <div class="field">
-          <label>🌆 Início do turno Tarde (h)</label>
-          <input type="number" id="afternoonStart" min="8" max="20" step="1" value="15" onchange="updateShiftVisual()">
-          <span class="hint">Ex: 15 → turno 15h–23h · Deve ser ≥ manhã+4</span>
-        </div>
-        <div class="field">
-          <label>🌙 Início do turno Noite (h)</label>
-          <input type="number" id="nightStart" min="14" max="23" step="1" value="19" onchange="updateShiftVisual()">
-          <span class="hint">Ex: 19 → turno 19h–07h (+1) · 12h de duração</span>
-        </div>
-      </div>
-
-      <div class="shift-visual">
-        <div class="shift-visual-title">Visualização do dia (24h)</div>
-        <div class="shift-bar" id="shift-bar"></div>
-        <div class="shift-labels" id="shift-labels"></div>
-        <div class="shift-legend">
-          <div class="sl-item"><div class="sl-dot" style="background:var(--gio)"></div>Manhã (Giovanna)</div>
-          <div class="sl-item"><div class="sl-dot" style="background:var(--and)"></div>Tarde (Anderson)</div>
-          <div class="sl-item"><div class="sl-dot" style="background:var(--gab)"></div>Noite (Gabriel)</div>
-          <div class="sl-item"><div class="sl-dot" style="background:rgba(100,100,120,.5);border:1px dashed rgba(150,150,180,.4)"></div>Gap (sem cobertura)</div>
-        </div>
-      </div>
-
-      <div id="shift-clt-status" class="clt-row"></div>
-    </div>
-  </div>
-
   <!-- ── SALÁRIOS ── -->
   <div class="card">
     <div class="card-head">
@@ -358,7 +316,6 @@ const pad = h => { h = ((h%24)+24)%24; return h<10?'0'+h:''+h; };
 
 // ── DEFAULTS ──────────────────────────────────────────────────
 const DEFAULTS = {
-  morningStart: 7, afternoonStart: 15, nightStart: 19,
   salaries: {
     giovanna:1700, anderson:2100, gabriel:1800, folguista:1500,
     freelancer:250, intermitente:220, fdsDay:491, fdsNight:982,
@@ -390,7 +347,6 @@ function saveAll() {
 function resetAll() {
   if (!confirm('Restaurar todos os valores padrão?')) return;
   fillForm(DEFAULTS);
-  updateShiftVisual();
   updateEncTotal();
   updateIntCalcs();
   showToast('↺ Valores padrão restaurados');
@@ -398,9 +354,6 @@ function resetAll() {
 
 function readForm() {
   return {
-    morningStart:   +document.getElementById('morningStart').value || 7,
-    afternoonStart: +document.getElementById('afternoonStart').value || 15,
-    nightStart:     +document.getElementById('nightStart').value || 19,
     salaries: {
       giovanna:    +document.getElementById('sal-giovanna').value || 1700,
       anderson:    +document.getElementById('sal-anderson').value || 2100,
@@ -426,9 +379,6 @@ function readForm() {
 
 function fillForm(cfg) {
   const set = (id, v) => { const el=document.getElementById(id); if(el) el.value=v; };
-  set('morningStart',   cfg.morningStart ?? 7);
-  set('afternoonStart', cfg.afternoonStart ?? 15);
-  set('nightStart',     cfg.nightStart ?? 19);
   const s = cfg.salaries || {};
   set('sal-giovanna',   s.giovanna   ?? 1700);
   set('sal-anderson',   s.anderson   ?? 2100);
@@ -449,88 +399,6 @@ function fillForm(cfg) {
   set('enc-noturno',  c.noturno  ?? 20);
 }
 
-// ── SHIFT VISUAL ──────────────────────────────────────────────
-function updateShiftVisual() {
-  const ms = +document.getElementById('morningStart').value || 7;
-  const as = +document.getElementById('afternoonStart').value || 15;
-  const ns = +document.getElementById('nightStart').value || 19;
-  const me = as;      // morning ends when afternoon begins
-  const ae = ns;      // afternoon ends when night begins
-  const ne = ms + 24; // night ends next day at morning start
-
-  const bar = document.getElementById('shift-bar');
-  const lbls = document.getElementById('shift-labels');
-  if (!bar) return;
-
-  // Segments (all in 0-24 space, night wraps)
-  const toLeft  = h => (h / 24 * 100).toFixed(2) + '%';
-  const toWidth = (s, e) => ((e - s) / 24 * 100).toFixed(2) + '%';
-
-  bar.innerHTML = '';
-
-  // Background (gap)
-  bar.style.background = 'rgba(180,50,50,.15)';
-
-  function addSeg(start, end, color, label) {
-    // handle overnight wrap
-    const segs = end <= 24
-      ? [[start, end]]
-      : [[start, 24], [0, end - 24]];
-    segs.forEach(([s, e]) => {
-      if (e <= 0 || s >= 24) return;
-      const el = document.createElement('div');
-      el.className = 'shift-seg';
-      el.style.left  = toLeft(Math.max(0, s));
-      el.style.width = toWidth(Math.max(0, s), Math.min(24, e));
-      el.style.background = color;
-      const dur = Math.min(24, e) - Math.max(0, s);
-      el.textContent = dur >= 2 ? label : '';
-      bar.appendChild(el);
-    });
-  }
-
-  addSeg(ms, me, 'rgba(224,122,122,.82)', `☀ ${pad(ms)}–${pad(me)}`);
-  addSeg(as, ae, 'rgba(80,144,224,.82)',  `🌆 ${pad(as)}–${pad(ae)}`);
-  addSeg(ns, ne, 'rgba(78,200,148,.82)',  `🌙 ${pad(ns)}–${pad(ms)}+1`);
-
-  // Hour labels
-  lbls.innerHTML = [0,6,12,18,24].map(h => `<span>${pad(h)}h</span>`).join('');
-
-  // CLT status
-  updateShiftCLT(ms, as, ns, me, ae);
-  updateIntCalcs();
-}
-
-function updateShiftCLT(ms, as, ns, me, ae) {
-  const statusEl = document.getElementById('shift-clt-status');
-  if (!statusEl) return;
-  const pills = [];
-  const mDur = me - ms; // morning duration
-  const aDur = ae - as; // afternoon duration
-  const nDur = (ms + 24) - ns; // night duration (overnight)
-  const gap1 = as - me; // gap between morning end and afternoon start
-  const gap2 = ns - ae; // gap between afternoon end and night start
-
-  if (mDur === 8) pills.push({ok:true, txt:`Manhã: ${mDur}h ✅`});
-  else if (mDur < 8) pills.push({ok:true, txt:`Manhã: ${mDur}h (< 8h)`});
-  else pills.push({ok:false, txt:`Manhã: ${mDur}h — excede 8h diárias ⚠`});
-
-  if (aDur === 8) pills.push({ok:true, txt:`Tarde: ${aDur}h ✅`});
-  else if (aDur < 8) pills.push({ok:true, txt:`Tarde: ${aDur}h (< 8h)`});
-  else pills.push({ok:false, txt:`Tarde: ${aDur}h — excede 8h ⚠`});
-
-  if (nDur === 12) pills.push({ok:true, txt:`Noite: ${nDur}h (12×36) ✅`});
-  else if (nDur < 12) pills.push({warn:true, txt:`Noite: ${nDur}h ⚠`});
-  else pills.push({ok:false, txt:`Noite: ${nDur}h — excede 12h ⚠`});
-
-  if (gap1 > 0) pills.push({warn:true, txt:`Gap manhã→tarde: ${gap1}h`});
-  if (gap2 > 0) pills.push({warn:true, txt:`Gap tarde→noite: ${gap2}h`});
-
-  statusEl.innerHTML = pills.map(p =>
-    `<span class="pill ${p.ok?'pill-ok':p.warn?'pill-warn':'pill-bad'}">${p.txt}</span>`
-  ).join('');
-}
-
 // ── ENCARGOS TOTAL ────────────────────────────────────────────
 function updateEncTotal() {
   const get = id => parseFloat(document.getElementById(id)?.value) || 0;
@@ -542,8 +410,8 @@ function updateEncTotal() {
 
 // ── INTERMEDIÁRIO CALCS ───────────────────────────────────────
 function updateIntCalcs() {
-  const ms = +document.getElementById('morningStart').value || 7;
-  const ns = +document.getElementById('nightStart').value || 19;
+  const ms = 7; // default morning start
+  const ns = 19; // default night start
   const nightDur = (ms + 24) - ns; // e.g. 19→7 = 12h
   // FDS Day: Sáb 12h diurno (morningStart → nightStart)
   const dayDur = ns - ms; // e.g. 7→19 = 12h
@@ -639,7 +507,6 @@ document.addEventListener('input', e => {
 document.addEventListener('DOMContentLoaded', () => {
   const cfg = loadConfig();
   fillForm(cfg);
-  updateShiftVisual();
   updateEncTotal();
   updateIntCalcs();
 });
