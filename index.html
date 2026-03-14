@@ -116,6 +116,33 @@ a{color:var(--blue);text-decoration:none}
 .col-l{padding:20px;border-right:1px solid var(--bdr)}
 .col-r{padding:20px;background:var(--bg3)}
 
+/* === GANTT LAYOUT (Cards à esquerda, Tabela no meio) === */
+.gantt-container {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+@media(max-width:1200px) { .gantt-container { flex-direction: column; } }
+
+.legend {
+  display: flex;
+  flex-direction: column; /* Alinhamento Vertical */
+  min-width: 190px;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.leg-card {
+  background: var(--bg2); border: 1px solid var(--bdr); border-radius: 8px;
+  padding: 10px 12px; display: flex; align-items: center; gap: 10px;
+  cursor: pointer; transition: all 0.2s; box-shadow: var(--sh);
+}
+.leg-card:hover { border-color: var(--blue); }
+.leg-card.selected { border-left: 4px solid var(--blue); background: var(--info-bg); }
+.leg-dot { width: 10px; height: 10px; border-radius: 50%; }
+.leg-info { display: flex; flex-direction: column; line-height: 1.2; }
+.leg-info strong { font-size: 0.8rem; color: var(--tx); }
+.leg-info span { font-size: 0.65rem; color: var(--tx3); }
+
 /* ── TABS ───────────────────────────────────────────── */
 .tabs{display:flex;gap:2px;flex-wrap:wrap;padding-top:20px}
 .tab{
@@ -165,7 +192,6 @@ a{color:var(--blue);text-decoration:none}
 .sc-empty-lbl{font-size:.7rem;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.04em}
 
 /* Legend */
-.legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .leg{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--tx3)}
 .leg-box{width:11px;height:11px;border-radius:3px;flex-shrink:0;border:1px solid rgba(0,0,0,.1)}
 
@@ -404,8 +430,10 @@ a{color:var(--blue);text-decoration:none}
       </div>
       <div class="col-r">
         <div class="ib"><h3>📊 Grade de Turnos — Situação Atual</h3></div>
-        <div class="legend" id="leg-atual"></div>
-        <div class="sched-wrap"><table id="gantt-atual"></table></div>
+        <div class="gantt-container">
+          <div class="legend" id="leg-atual"></div>
+          <div class="sched-wrap"><table id="gantt-atual"></table></div>
+        </div>
         <p class="mt8" style="font-size:.72rem;color:var(--tx3)">⤷ Noturno em ciclo 12×36: semana A = Gabriel (Dom/Ter/Qui/Sáb), semana B = Func.X. Com saída de X, semana B fica descoberta.</p>
       </div>
     </div>
@@ -462,8 +490,10 @@ a{color:var(--blue);text-decoration:none}
       </div>
       <div class="col-r">
         <div class="ib"><h3>📊 Grade de Turnos — Proposta A</h3></div>
-        <div class="legend" id="leg-s1"></div>
-        <div class="sched-wrap"><table id="gantt-s1"></table></div>
+        <div class="gantt-container">
+          <div class="legend" id="leg-s1"></div>
+          <div class="sched-wrap"><table id="gantt-s1"></table></div>
+        </div>
       </div>
     </div>
   </div>
@@ -501,8 +531,10 @@ a{color:var(--blue);text-decoration:none}
       </div>
       <div class="col-r">
         <div class="ib"><h3>📊 Grade de Turnos — Proposta B</h3></div>
-        <div class="legend" id="leg-s2"></div>
-        <div class="sched-wrap"><table id="gantt-s2"></table></div>
+        <div class="gantt-container">
+          <div class="legend" id="leg-s2"></div>
+          <div class="sched-wrap"><table id="gantt-s2"></table></div>
+        </div>
       </div>
     </div>
   </div>
@@ -540,8 +572,10 @@ a{color:var(--blue);text-decoration:none}
       </div>
       <div class="col-r">
         <div class="ib"><h3>📊 Grade de Turnos — Proposta C (semana ímpar)</h3></div>
-        <div class="legend" id="leg-s3"></div>
-        <div class="sched-wrap"><table id="gantt-s3"></table></div>
+        <div class="gantt-container">
+          <div class="legend" id="leg-s3"></div>
+          <div class="sched-wrap"><table id="gantt-s3"></table></div>
+        </div>
       </div>
     </div>
   </div>
@@ -576,8 +610,10 @@ a{color:var(--blue);text-decoration:none}
       </div>
       <div class="col-r">
         <div class="ib"><h3>📊 Grade de Turnos — Proposta D ⚠️</h3></div>
-        <div class="legend" id="leg-s4"></div>
-        <div class="sched-wrap"><table id="gantt-s4"></table></div>
+        <div class="gantt-container">
+          <div class="legend" id="leg-s4"></div>
+          <div class="sched-wrap"><table id="gantt-s4"></table></div>
+        </div>
       </div>
     </div>
   </div>
@@ -615,8 +651,10 @@ a{color:var(--blue);text-decoration:none}
       </div>
       <div class="col-r">
         <div class="ib"><h3>📊 Grade de Turnos — Proposta E ⭐</h3></div>
-        <div class="legend" id="leg-s5"></div>
-        <div class="sched-wrap"><table id="gantt-s5"></table></div>
+        <div class="gantt-container">
+          <div class="legend" id="leg-s5"></div>
+          <div class="sched-wrap"><table id="gantt-s5"></table></div>
+        </div>
       </div>
     </div>
   </div>
@@ -656,8 +694,10 @@ a{color:var(--blue);text-decoration:none}
       </div>
       <div class="col-r">
         <div class="ib"><h3>📊 Grade de Turnos — Proposta F ⭐</h3></div>
-        <div class="legend" id="leg-s6"></div>
-        <div class="sched-wrap"><table id="gantt-s6"></table></div>
+        <div class="gantt-container">
+          <div class="legend" id="leg-s6"></div>
+          <div class="sched-wrap"><table id="gantt-s6"></table></div>
+        </div>
       </div>
     </div>
   </div>
@@ -700,8 +740,10 @@ a{color:var(--blue);text-decoration:none}
       </div>
       <div class="col-r">
         <div class="ib"><h3>📊 Grade de Turnos — Proposta G</h3></div>
-        <div class="legend" id="leg-sg"></div>
-        <div class="sched-wrap"><table id="gantt-sg"></table></div>
+        <div class="gantt-container">
+          <div class="legend" id="leg-sg"></div>
+          <div class="sched-wrap"><table id="gantt-sg"></table></div>
+        </div>
         <div class="mt12">
           <h3 class="ib" style="margin-bottom:8px">Folguista vs. Sem Folguista</h3>
           <table class="tbl w100">

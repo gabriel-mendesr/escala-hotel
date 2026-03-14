@@ -92,6 +92,9 @@ a{color:var(--blue);text-decoration:none}
 .sched-grid td.cell{
   border:2px solid var(--bdr);height:72px;padding:0;
   cursor:pointer;transition:all .12s;position:relative;vertical-align:middle;text-align:center;
+  border:1px solid var(--bdr);height:72px;padding:0;
+  cursor:crosshair;transition:all .12s;position:relative;vertical-align:middle;text-align:center;
+  user-select: none;
 }
 .sched-grid td.cell:hover{border-color:var(--blue);z-index:2;box-shadow:inset 0 0 0 2px rgba(44,110,242,.3)}
 .sched-grid td.cell.drag-over{border-color:var(--blue);background:rgba(44,110,242,.08)!important}
@@ -208,45 +211,45 @@ a{color:var(--blue);text-decoration:none}
     <div class="palette-bd">
       <div class="palette-section">
         <div class="palette-section-lbl">Equipe Fixa</div>
-        <div class="emp-chip" data-emp="gio" onclick="selectEmp('gio')">
+        <div class="emp-chip" data-emp="gio" onclick="selectEmp('gio')" draggable="true" ondragstart="ePaletteDrag(event,'gio')">
           <div class="chip-dot" style="background:var(--c-gio)"></div>
           <div class="chip-name">Giovanna</div>
         </div>
-        <div class="emp-chip" data-emp="and" onclick="selectEmp('and')">
+        <div class="emp-chip" data-emp="and" onclick="selectEmp('and')" draggable="true" ondragstart="ePaletteDrag(event,'and')">
           <div class="chip-dot" style="background:var(--c-and)"></div>
           <div class="chip-name">Anderson</div>
         </div>
-        <div class="emp-chip" data-emp="gab" onclick="selectEmp('gab')">
+        <div class="emp-chip" data-emp="gab" onclick="selectEmp('gab')" draggable="true" ondragstart="ePaletteDrag(event,'gab')">
           <div class="chip-dot" style="background:var(--c-gab)"></div>
           <div class="chip-name">Gabriel</div>
         </div>
-        <div class="emp-chip" data-emp="folg" onclick="selectEmp('folg')">
+        <div class="emp-chip" data-emp="folg" onclick="selectEmp('folg')" draggable="true" ondragstart="ePaletteDrag(event,'folg')">
           <div class="chip-dot" style="background:var(--c-folg)"></div>
           <div class="chip-name">Folguista</div>
         </div>
       </div>
       <div class="palette-section">
         <div class="palette-section-lbl">Externos / FDS</div>
-        <div class="emp-chip" data-emp="free" onclick="selectEmp('free')">
+        <div class="emp-chip" data-emp="free" onclick="selectEmp('free')" draggable="true" ondragstart="ePaletteDrag(event,'free')">
           <div class="chip-dot" style="background:var(--c-free)"></div>
           <div class="chip-name">Freelancer</div>
         </div>
-        <div class="emp-chip" data-emp="fds_d" onclick="selectEmp('fds_d')">
+        <div class="emp-chip" data-emp="fds_d" onclick="selectEmp('fds_d')" draggable="true" ondragstart="ePaletteDrag(event,'fds_d')">
           <div class="chip-dot" style="background:var(--c-fds)"></div>
           <div class="chip-name">FDS Diurno</div>
         </div>
-        <div class="emp-chip" data-emp="fds_n" onclick="selectEmp('fds_n')">
+        <div class="emp-chip" data-emp="fds_n" onclick="selectEmp('fds_n')" draggable="true" ondragstart="ePaletteDrag(event,'fds_n')">
           <div class="chip-dot" style="background:var(--c-fds)"></div>
           <div class="chip-name">FDS Noturno</div>
         </div>
-        <div class="emp-chip" data-emp="novo" onclick="selectEmp('novo')">
+        <div class="emp-chip" data-emp="novo" onclick="selectEmp('novo')" draggable="true" ondragstart="ePaletteDrag(event,'novo')">
           <div class="chip-dot" style="background:#0e7490"></div>
           <div class="chip-name">Novo Func.</div>
         </div>
       </div>
       <div class="palette-section">
         <div class="palette-section-lbl">Ferramenta</div>
-        <div class="eraser-chip" id="eraser-chip" onclick="selectEmp('empty')">
+        <div class="eraser-chip" id="eraser-chip" onclick="selectEmp('empty')" draggable="true" ondragstart="ePaletteDrag(event,'empty')">
           <span>⬜</span> Apagar célula
         </div>
       </div>
@@ -432,6 +435,8 @@ function renderGrid() {
            + (bg ? ' style="background:'+bg+'"' : '')
            + ' draggable="true"'
            + ' onmousedown="cellMouseDown('+r+','+c+')"'
+           + ' onmousedown="cellMouseDown(event,'+r+','+c+')"'
+           + ' onclick="cellClick('+r+','+c+')"'
            + ' onmouseenter="cellMouseEnter('+r+','+c+')"'
            + ' ondragstart="cellDragStart(event,'+r+','+c+')"'
            + ' ondragover="cellDragOver(event)"'
@@ -458,8 +463,14 @@ function renderGrid() {
 // ── CELL INTERACTION ──────────────────────────────────────
 function cellMouseDown(r, c) {
   if (!selectedEmp) return;
+function cellClick(r, c) {
+  if (!selectedEmp || isDragging) return;
   pushHistory();
   applyCell(r, c, selectedEmp);
+}
+
+function cellMouseDown(e, r, c) {
+  if (!selectedEmp) return;
   isDragging = true;
 }
 
@@ -478,11 +489,15 @@ function applyCell(r, c, empKey) {
 }
 
 document.addEventListener('mouseup', function() { isDragging = false; });
+document.addEventListener('mouseup', function() { 
+  isDragging = false; 
+});
 
 // ── DRAG & DROP ───────────────────────────────────────────
 var dragSrcRow = null, dragSrcCol = null;
 
 function cellDragStart(e, r, c) {
+  if (selectedEmp) { e.preventDefault(); return; } 
   dragSrcRow = r; dragSrcCol = c;
   e.dataTransfer.effectAllowed = 'move';
   e.dataTransfer.setData('text/plain', r+','+c);
@@ -495,13 +510,24 @@ function cellDragOver(e) {
 function cellDragLeave(e) {
   e.currentTarget.classList.remove('drag-over');
 }
+
+function ePaletteDrag(e, key) {
+  e.dataTransfer.setData('empKey', key);
+  selectEmp(key);
+}
+
 function cellDrop(e, r, c) {
   e.preventDefault();
   e.currentTarget.classList.remove('drag-over');
   if (selectedEmp) {
+  
+  var paletteKey = e.dataTransfer.getData('empKey');
+  
+  if (paletteKey) {
     // If an employee is selected in palette, assign it
     pushHistory();
     applyCell(r, c, selectedEmp);
+    applyCell(r, c, paletteKey);
   } else if (dragSrcRow !== null) {
     // Move from source cell
     pushHistory();
