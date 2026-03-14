@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Construtor de Escala — Hotel 24/7</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f4f6fa;--bg2:#fff;--bg3:#eef1f7;--card:#fff;
+  --bdr:#d8dde8;--bdr2:#c4cbdb;
+  --tx:#1a2035;--tx2:#4a5575;--tx3:#8792aa;
+  --blue:#2c6ef2;--blue2:#1a56d6;--blue3:#eff6ff;
+  --green:#16a34a;--red:#dc2626;--orange:#c2410c;--amber:#d97706;
+  --ok-bg:#f0fdf4;--ok-bdr:#bbf7d0;
+  --warn-bg:#fff7ed;--warn-bdr:#fed7aa;
+  --crit-bg:#fef2f2;--crit-bdr:#fecaca;
+  --info-bg:#eff6ff;--info-bdr:#bfdbfe;
+  --sh:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+  --sh2:0 4px 16px rgba(0,0,0,.12);
+  /* employees */
+  --c-gio:#b84040;--c-and:#1a6fc4;--c-gab:#1e8a4a;
+  --c-free:#9a6e00;--c-folg:#6b35a0;--c-fds:#0e7490;--c-warn:#c0392b;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:14px}
+a{color:var(--blue);text-decoration:none}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* ── HEADER ── */
+.header{background:var(--bg2);border-bottom:1px solid var(--bdr);padding:14px 20px;box-shadow:var(--sh);position:sticky;top:0;z-index:300}
+.header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.header h1{font-size:1.05rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.header-actions{display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:7px;border:1px solid;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
+.btn-blue{background:var(--blue);border-color:var(--blue);color:#fff}.btn-blue:hover{background:var(--blue2)}
+.btn-gray{background:var(--bg3);border-color:var(--bdr2);color:var(--tx2)}.btn-gray:hover{border-color:var(--bdr2);background:#e8ecf4}
+.btn-red{background:#fef2f2;border-color:#fecaca;color:var(--red)}.btn-red:hover{background:#fee2e2}
+.btn-green{background:var(--ok-bg);border-color:var(--ok-bdr);color:var(--green)}.btn-green:hover{background:#dcfce7}
+
+/* ── LAYOUT ── */
+.workspace{max-width:1400px;margin:0 auto;padding:20px;display:grid;grid-template-columns:220px 1fr 300px;gap:16px;align-items:start}
+@media(max-width:1100px){.workspace{grid-template-columns:1fr}}
+
+/* ── PALETTE ── */
+.palette{background:var(--card);border:1px solid var(--bdr);border-radius:10px;box-shadow:var(--sh);overflow:hidden;position:sticky;top:72px}
+.palette-hd{padding:12px 16px;background:var(--bg3);border-bottom:1px solid var(--bdr);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--tx2)}
+.palette-bd{padding:12px}
+.palette-section{margin-bottom:14px}
+.palette-section-lbl{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3);margin-bottom:6px}
+.emp-chip{
+  display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;
+  border:2px solid transparent;cursor:pointer;transition:all .15s;user-select:none;
+  margin-bottom:4px;background:var(--bg3);
+}
+.emp-chip:hover{transform:translateX(2px);box-shadow:var(--sh)}
+.emp-chip.selected{border-color:var(--blue);background:var(--blue3);box-shadow:0 0 0 3px rgba(44,110,242,.15)}
+.emp-chip .chip-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;border:2px solid rgba(0,0,0,.1)}
+.emp-chip .chip-name{font-size:.8rem;font-weight:600;color:var(--tx)}
+.emp-chip .chip-desc{font-size:.66rem;color:var(--tx3);margin-top:1px}
+
+.eraser-chip{
+  display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;
+  border:2px dashed var(--bdr2);cursor:pointer;transition:all .15s;user-select:none;
+  background:#fff;color:var(--tx3);font-size:.8rem;font-weight:500;
+}
+.eraser-chip:hover{border-color:var(--red);color:var(--red);background:#fef2f2}
+.eraser-chip.selected{border-color:var(--red);background:#fef2f2;color:var(--red)}
+
+/* ── GRID ── */
+.grid-area{background:var(--card);border:1px solid var(--bdr);border-radius:10px;box-shadow:var(--sh);overflow:hidden}
+.grid-hd{padding:14px 20px;background:var(--bg3);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.grid-hd h2{font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--tx2)}
+.grid-hint{font-size:.74rem;color:var(--tx3);display:flex;align-items:center;gap:5px}
+
+.grid-wrap{overflow-x:auto;padding:16px}
+.sched-grid{width:100%;border-collapse:collapse;table-layout:fixed;min-width:640px}
+.sched-grid th{
+  padding:10px 6px;text-align:center;font-weight:700;font-size:.76rem;
+  text-transform:uppercase;background:var(--bg3);border:1px solid var(--bdr);
+  color:var(--tx2);letter-spacing:.03em;
+}
+.sched-grid th.sun{color:var(--orange);background:#fff7ed}
+.sched-grid td.row-lbl{
+  background:var(--bg3);border:1px solid var(--bdr);padding:8px 10px;
+  vertical-align:middle;white-space:nowrap;min-width:90px;
+}
+.row-lbl .rl-name{display:block;font-size:.78rem;font-weight:700;color:var(--tx)}
+.row-lbl .rl-hours{display:block;font-size:.65rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;margin-top:1px}
+
+/* Grid cells */
+.sched-grid td.cell{
+  border:2px solid var(--bdr);height:72px;padding:0;
+  cursor:pointer;transition:all .12s;position:relative;vertical-align:middle;text-align:center;
+}
+.sched-grid td.cell:hover{border-color:var(--blue);z-index:2;box-shadow:inset 0 0 0 2px rgba(44,110,242,.3)}
+.sched-grid td.cell.drag-over{border-color:var(--blue);background:rgba(44,110,242,.08)!important}
+.sched-grid td.cell.empty-cell{background:repeating-linear-gradient(45deg,#f8f9fb,#f8f9fb 4px,#f0f2f6 4px,#f0f2f6 10px)}
+.sched-grid td.cell.tall{height:148px} /* rowspan=2 */
+
+.cell-inner{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;padding:5px;gap:2px;
+}
+.cell-name{font-size:.8rem;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:95%}
+.cell-regime{font-size:.64rem;color:rgba(255,255,255,.85);background:rgba(0,0,0,.18);padding:1px 5px;border-radius:3px;white-space:nowrap;max-width:95%;overflow:hidden;text-overflow:ellipsis}
+.cell-empty-label{font-size:.7rem;font-weight:500;color:#aab0c0;text-transform:uppercase;letter-spacing:.04em}
+
+/* ── SIDEBAR ── */
+.sidebar{display:flex;flex-direction:column;gap:14px;position:sticky;top:72px}
+
+/* Status card */
+.status-card{background:var(--card);border:1px solid var(--bdr);border-radius:10px;box-shadow:var(--sh);overflow:hidden}
+.status-hd{padding:12px 16px;background:var(--bg3);border-bottom:1px solid var(--bdr);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--tx2);display:flex;align-items:center;gap:6px}
+.status-bd{padding:14px}
+
+/* CLT status */
+.clt-status{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;margin-bottom:8px;border:1px solid}
+.clt-ok{background:var(--ok-bg);border-color:var(--ok-bdr)}
+.clt-warn{background:var(--warn-bg);border-color:var(--warn-bdr)}
+.clt-bad{background:var(--crit-bg);border-color:var(--crit-bdr)}
+.clt-icon{font-size:1.4rem;flex-shrink:0}
+.clt-label{font-size:.82rem;font-weight:700}
+.clt-sub{font-size:.74rem;color:var(--tx2);margin-top:2px;line-height:1.4}
+
+.issue-list{list-style:none;display:flex;flex-direction:column;gap:5px;margin-top:8px}
+.issue-item{display:flex;gap:6px;font-size:.76rem;line-height:1.5;padding:6px 8px;border-radius:6px;border:1px solid}
+.issue-err{background:var(--crit-bg);border-color:var(--crit-bdr);color:#991b1b}
+.issue-warn{background:var(--warn-bg);border-color:var(--warn-bdr);color:#92400e}
+.issue-ok{background:var(--ok-bg);border-color:var(--ok-bdr);color:#15803d}
+.issue-icon{flex-shrink:0;font-size:.85rem}
+
+/* Coverage */
+.coverage-bars{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.cov-row{display:flex;align-items:center;gap:8px;font-size:.75rem}
+.cov-lbl{width:52px;flex-shrink:0;color:var(--tx2);font-weight:500}
+.cov-bar-track{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;border:1px solid var(--bdr)}
+.cov-bar-fill{height:100%;border-radius:4px;transition:width .3s}
+.cov-pct{width:30px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--tx2)}
+
+/* Summary stats */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.stat-box{background:var(--bg3);border:1px solid var(--bdr);border-radius:7px;padding:9px 11px;text-align:center}
+.stat-val{font-size:1.1rem;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--tx)}
+.stat-lbl{font-size:.66rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+
+/* ── SIMILARITY ── */
+.sim-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.sim-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;background:var(--bg3);border:1px solid var(--bdr);transition:all .2s;cursor:default}
+.sim-row:hover{border-color:var(--bdr2);background:#e8ecf4}
+.sim-row.top-match{background:var(--ok-bg);border-color:var(--ok-bdr)}
+.sim-name{font-size:.78rem;font-weight:600;flex:1;color:var(--tx)}
+.sim-badge{font-size:.7rem;font-weight:700;padding:2px 7px;border-radius:10px;min-width:36px;text-align:center}
+.sim-pct-track{width:60px;height:6px;background:var(--bdr);border-radius:3px;overflow:hidden}
+.sim-pct-fill{height:100%;border-radius:3px;transition:width .3s}
+
+/* ── TOOLTIPS ── */
+.tooltip{position:absolute;bottom:calc(100%+6px);left:50%;transform:translateX(-50%);background:#1a2035;color:#fff;font-size:.7rem;padding:4px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:100}
+.cell:hover .tooltip{opacity:1}
+
+/* ── HISTORY PILL ── */
+.history-bar{display:flex;gap:4px;flex-wrap:wrap;padding:8px 16px;border-top:1px solid var(--bdr);background:var(--bg3)}
+.history-pill{font-size:.68rem;padding:2px 8px;border-radius:10px;border:1px solid var(--bdr);background:var(--bg2);color:var(--tx3);cursor:pointer;transition:all .1s}
+.history-pill:hover{border-color:var(--blue);color:var(--blue)}
+
+/* ── MISC ── */
+.divider{height:1px;background:var(--bdr);margin:10px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.69rem;font-weight:600;border:1px solid}
+.badge-blue{background:var(--info-bg);border-color:var(--info-bdr);color:var(--blue2)}
+.badge-green{background:var(--ok-bg);border-color:var(--ok-bdr);color:var(--green)}
+.badge-red{background:var(--crit-bg);border-color:var(--crit-bdr);color:var(--red)}
+.badge-amber{background:#fffbeb;border-color:#fde68a;color:var(--amber)}
+.footer{padding:14px 20px;text-align:center;color:var(--tx3);font-size:.72rem;border-top:1px solid var(--bdr);background:var(--bg2)}
+
+/* Selected employee indicator */
+.selected-indicator{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:var(--tx);color:#fff;border-radius:20px;padding:8px 18px;
+  font-size:.8rem;font-weight:600;box-shadow:var(--sh2);
+  display:none;align-items:center;gap:8px;z-index:999;
+  pointer-events:none;
+}
+.selected-indicator.show{display:flex}
+.sel-dot{width:10px;height:10px;border-radius:50%;border:2px solid rgba(255,255,255,.5)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <h1>🗓️ Construtor de Escala <span style="font-size:.78rem;font-weight:400;color:var(--tx3);margin-left:4px">Hotel 24/7 · Arraste ou clique para montar</span></h1>
+    <div class="header-actions">
+      <a href="index.html" class="btn btn-gray">← Voltar ao relatório</a>
+      <button class="btn btn-gray" onclick="undoLast()">↩ Desfazer</button>
+      <button class="btn btn-red" onclick="clearGrid()">🗑️ Limpar</button>
+      <button class="btn btn-green" onclick="saveToReport()">💾 Salvar escala</button>
+    </div>
+  </div>
+</div>
+
+<!-- WORKSPACE -->
+<div class="workspace">
+
+  <!-- ── PALETTE ── -->
+  <div class="palette">
+    <div class="palette-hd">👥 Funcionários</div>
+    <div class="palette-bd">
+      <div class="palette-section">
+        <div class="palette-section-lbl">Equipe Fixa</div>
+        <div class="emp-chip" data-emp="gio" onclick="selectEmp('gio')">
+          <div class="chip-dot" style="background:var(--c-gio)"></div>
+          <div class="chip-name">Giovanna</div>
+        </div>
+        <div class="emp-chip" data-emp="and" onclick="selectEmp('and')">
+          <div class="chip-dot" style="background:var(--c-and)"></div>
+          <div class="chip-name">Anderson</div>
+        </div>
+        <div class="emp-chip" data-emp="gab" onclick="selectEmp('gab')">
+          <div class="chip-dot" style="background:var(--c-gab)"></div>
+          <div class="chip-name">Gabriel</div>
+        </div>
+        <div class="emp-chip" data-emp="folg" onclick="selectEmp('folg')">
+          <div class="chip-dot" style="background:var(--c-folg)"></div>
+          <div class="chip-name">Folguista</div>
+        </div>
+      </div>
+      <div class="palette-section">
+        <div class="palette-section-lbl">Externos / FDS</div>
+        <div class="emp-chip" data-emp="free" onclick="selectEmp('free')">
+          <div class="chip-dot" style="background:var(--c-free)"></div>
+          <div class="chip-name">Freelancer</div>
+        </div>
+        <div class="emp-chip" data-emp="fds_d" onclick="selectEmp('fds_d')">
+          <div class="chip-dot" style="background:var(--c-fds)"></div>
+          <div class="chip-name">FDS Diurno</div>
+        </div>
+        <div class="emp-chip" data-emp="fds_n" onclick="selectEmp('fds_n')">
+          <div class="chip-dot" style="background:var(--c-fds)"></div>
+          <div class="chip-name">FDS Noturno</div>
+        </div>
+        <div class="emp-chip" data-emp="novo" onclick="selectEmp('novo')">
+          <div class="chip-dot" style="background:#0e7490"></div>
+          <div class="chip-name">Novo Func.</div>
+        </div>
+      </div>
+      <div class="palette-section">
+        <div class="palette-section-lbl">Ferramenta</div>
+        <div class="eraser-chip" id="eraser-chip" onclick="selectEmp('empty')">
+          <span>⬜</span> Apagar célula
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div style="font-size:.7rem;color:var(--tx3);line-height:1.6">
+        <strong>Como usar:</strong><br>
+        1. Clique em um funcionário<br>
+        2. Clique nas células da grade<br>
+        3. Arraste para preencher vários<br>
+        4. Veja a validação ao vivo →
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GRID ── -->
+  <div class="grid-area">
+    <div class="grid-hd">
+      <h2>📊 Grade de Turnos — Semana Típica</h2>
+      <div class="grid-hint">
+        <span>Selecionado:</span>
+        <span id="selected-label" style="font-weight:700;color:var(--blue)">nenhum</span>
+      </div>
+    </div>
+    <div class="grid-wrap">
+      <table class="sched-grid" id="main-grid"></table>
+    </div>
+    <!-- History -->
+    <div class="history-bar" id="history-bar">
+      <span style="font-size:.68rem;color:var(--tx3);flex-shrink:0">Escalas salvas:</span>
+      <span style="font-size:.68rem;color:var(--tx3);font-style:italic" id="no-history">nenhuma ainda</span>
+    </div>
+  </div>
+
+  <!-- ── SIDEBAR ── -->
+  <div class="sidebar">
+
+    <!-- CLT Status -->
+    <div class="status-card">
+      <div class="status-hd">⚖️ Validação CLT</div>
+      <div class="status-bd">
+        <div id="clt-overall" class="clt-status clt-ok">
+          <div class="clt-icon">✅</div>
+          <div><div class="clt-label">Escala válida</div><div class="clt-sub">Nenhuma violação identificada</div></div>
+        </div>
+        <ul class="issue-list" id="issue-list"></ul>
+      </div>
+    </div>
+
+    <!-- Cobertura -->
+    <div class="status-card">
+      <div class="status-hd">📅 Cobertura Semanal</div>
+      <div class="status-bd">
+        <div class="coverage-bars" id="coverage-bars"></div>
+        <div class="stats-grid" id="stats-grid"></div>
+      </div>
+    </div>
+
+    <!-- Custo estimado -->
+    <div class="status-card">
+      <div class="status-hd">💰 Custo Estimado</div>
+      <div class="status-bd">
+        <div id="cost-breakdown" style="font-size:.8rem;display:flex;flex-direction:column;gap:4px"></div>
+        <div class="divider"></div>
+        <div style="display:flex;justify-content:space-between;font-size:.85rem">
+          <span style="color:var(--tx2)">Total estimado/mês</span>
+          <span class="mono" style="font-weight:700" id="cost-total">—</span>
+        </div>
+        <p style="font-size:.68rem;color:var(--tx3);margin-top:6px">* Base: salários e encargos de ⚙️ Configurações</p>
+      </div>
+    </div>
+
+    <!-- Similaridade -->
+    <div class="status-card">
+      <div class="status-hd">🔍 Semelhança com Propostas</div>
+      <div class="status-bd">
+        <p style="font-size:.74rem;color:var(--tx3);margin-bottom:4px">Comparação com as propostas A–G do relatório:</p>
+        <div class="sim-list" id="sim-list"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Selected indicator (fixed) -->
+<div class="selected-indicator" id="sel-indicator">
+  <div class="sel-dot" id="sel-dot"></div>
+  <span id="sel-text">Nenhum selecionado</span>
+  <span style="font-size:.7rem;opacity:.7">· clique nas células para atribuir</span>
+</div>
+
+<div class="footer">
+  Construtor de Escala · Hotel 24/7 · <a href="index.html">← Voltar ao Relatório</a> · <a href="config.html">⚙️ Configurações</a>
+</div>
+
+<script>
+// ── CONFIG ─────────────────────────────────────────────────
+var STORE_KEY = 'hotel_escala_config';
+var CFG = {
+  morningStart:7, afternoonStart:15, nightStart:19,
+  salaries:{giovanna:1700,anderson:2100,gabriel:1800,folguista:1500,freelancer:250,fdsDay:491,fdsNight:982},
+  charges:{inss:20,rat:2,terceiros:5.8,fgts:8,ferias:11.11,decimo:8.33,fgtsProv:1.92,noturno:20}
+};
+try { var r=localStorage.getItem(STORE_KEY); if(r) CFG=JSON.parse(r); } catch(e){}
+
+function SC() {
+  var ms=+CFG.morningStart||7, as=+CFG.afternoonStart||15, ns=+CFG.nightStart||19;
+  var ph=function(h){h=((h%24)+24)%24;return(h<10?'0':'')+h;};
+  return {ms:ms,as:as,ns:ns,
+    lM:ph(ms)+'h–'+ph(as)+'h', lA:ph(as)+'h–'+ph(ns)+'h', lN:ph(ns)+'h–'+ph(ms)+'h (+1 dia)',
+    nDur:(ms+24)-ns, dayDur:ns-ms};
+}
+function SAL() {
+  var s=CFG.salaries||{};
+  return {gio:+s.giovanna||1700,and:+s.anderson||2100,gab:+s.gabriel||1800,
+          folg:+s.folguista||1500,free:+s.freelancer||250,fds:+s.fdsDay||491,fds2:+s.fdsNight||982};
+}
+function ENC() {
+  var c=CFG.charges||{};
+  var inss=+c.inss||20,rat=+c.rat||2,terc=+c.terceiros||5.8,fgts=+c.fgts||8;
+  var fer=+c.ferias||11.11,e13=+c.decimo||8.33,fp=+c.fgtsProv||1.92,not=+c.noturno||20;
+  return {inss:inss,rat:rat,terc:terc,fgts:fgts,fer:fer,e13:e13,fp:fp,not:not,
+    emp:inss+rat+terc+fgts,prov:fer+e13+fp,total:inss+rat+terc+fgts+fer+e13+fp};
+}
+var fm=function(v){return 'R$\u00a0'+Math.round(+v||0).toLocaleString('pt-BR');};
+
+// ── EMPLOYEE DEFINITIONS ───────────────────────────────────
+var EMPS = {
+  gio:   {name:'Giovanna',    color:'#b84040', regime:'6×1 CLT',        maxDays:6, type:'fixed'},
+  and:   {name:'Anderson',    color:'#1a6fc4', regime:'6×1 CLT',        maxDays:6, type:'fixed'},
+  gab:   {name:'Gabriel',     color:'#1e8a4a', regime:'12×36',          maxDays:4, type:'night_1236'},
+  folg:  {name:'Folguista',   color:'#6b35a0', regime:'6×1 + B.Horas', maxDays:6, type:'fixed'},
+  free:  {name:'Freelancer',  color:'#9a6e00', regime:'PJ/MEI',         maxDays:7, type:'external'},
+  fds_d: {name:'FDS Diurno',  color:'#0e7490', regime:'T.Parcial 12h',  maxDays:1, type:'fds'},
+  fds_n: {name:'FDS Noturno', color:'#0e7490', regime:'T.Parcial 12h',  maxDays:2, type:'fds_night'},
+  novo:  {name:'Novo Func.',  color:'#0e7490', regime:'12×36',          maxDays:4, type:'night_1236'},
+  empty: {name:'',            color:'',        regime:'',               maxDays:0, type:'empty'}
+};
+
+// ── STATE ─────────────────────────────────────────────────
+// grid[row][col] = empKey | null
+// rows: 0=manhã, 1=tarde, 2=noite
+// cols: 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sáb
+var grid = [
+  [null,null,null,null,null,null,null], // manhã
+  [null,null,null,null,null,null,null], // tarde
+  [null,null,null,null,null,null,null]  // noite
+];
+
+var selectedEmp  = null;
+var isDragging   = false;
+var history      = [];
+var savedSlots   = [];
+
+// ── GRID RENDERING ────────────────────────────────────────
+var DAY_NAMES = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+var ROW_NAMES = [
+  {label:'☀️ Manhã', key:'lM'},
+  {label:'🌆 Tarde',  key:'lA'},
+  {label:'🌙 Noite',  key:'lN'}
+];
+
+function renderGrid() {
+  var sc = SC();
+  var tbl = document.getElementById('main-grid');
+  if (!tbl) return;
+
+  var html = '<thead><tr><th style="background:var(--bg3);border:1px solid var(--bdr);min-width:90px"></th>';
+  for (var d=0; d<7; d++) {
+    html += '<th class="'+(d===0?'sun':'')+'">' + DAY_NAMES[d] + '</th>';
+  }
+  html += '</tr></thead><tbody>';
+
+  var rowLabels = [sc.lM, sc.lA, sc.lN];
+
+  for (var r=0; r<3; r++) {
+    html += '<tr><td class="row-lbl"><span class="rl-name">'+ROW_NAMES[r].label+'</span><span class="rl-hours">'+rowLabels[r]+'</span></td>';
+    for (var c=0; c<7; c++) {
+      var empKey = grid[r][c];
+      var emp = empKey ? EMPS[empKey] : null;
+      var bg = emp ? emp.color : '';
+      var cellClass = emp ? 'cell' : 'cell empty-cell';
+      html += '<td class="'+cellClass+'" data-row="'+r+'" data-col="'+c+'"'
+           + (bg ? ' style="background:'+bg+'"' : '')
+           + ' draggable="true"'
+           + ' onmousedown="cellMouseDown('+r+','+c+')"'
+           + ' onmouseenter="cellMouseEnter('+r+','+c+')"'
+           + ' ondragstart="cellDragStart(event,'+r+','+c+')"'
+           + ' ondragover="cellDragOver(event)"'
+           + ' ondrop="cellDrop(event,'+r+','+c+')"'
+           + ' ondragleave="cellDragLeave(event)"'
+           + '>';
+      if (emp) {
+        html += '<div class="cell-inner"><span class="cell-name">'+emp.name+'</span><span class="cell-regime">'+emp.regime+'</span></div>';
+      } else {
+        html += '<div class="cell-inner"><span class="cell-empty-label">Vago</span></div>';
+      }
+      html += '</td>';
+    }
+    html += '</tr>';
+  }
+  html += '</tbody>';
+  tbl.innerHTML = html;
+
+  validate();
+  updateSimilarity();
+  updateCost();
+}
+
+// ── CELL INTERACTION ──────────────────────────────────────
+function cellMouseDown(r, c) {
+  if (!selectedEmp) return;
+  pushHistory();
+  applyCell(r, c, selectedEmp);
+  isDragging = true;
+}
+
+function cellMouseEnter(r, c) {
+  if (!isDragging || !selectedEmp) return;
+  applyCell(r, c, selectedEmp);
+}
+
+function applyCell(r, c, empKey) {
+  if (empKey === 'empty') {
+    grid[r][c] = null;
+  } else {
+    grid[r][c] = empKey;
+  }
+  renderGrid();
+}
+
+document.addEventListener('mouseup', function() { isDragging = false; });
+
+// ── DRAG & DROP ───────────────────────────────────────────
+var dragSrcRow = null, dragSrcCol = null;
+
+function cellDragStart(e, r, c) {
+  dragSrcRow = r; dragSrcCol = c;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', r+','+c);
+}
+function cellDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('drag-over');
+}
+function cellDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+function cellDrop(e, r, c) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (selectedEmp) {
+    // If an employee is selected in palette, assign it
+    pushHistory();
+    applyCell(r, c, selectedEmp);
+  } else if (dragSrcRow !== null) {
+    // Move from source cell
+    pushHistory();
+    var srcEmp = grid[dragSrcRow][dragSrcCol];
+    grid[r][c] = srcEmp;
+    grid[dragSrcRow][dragSrcCol] = null;
+    dragSrcRow = null; dragSrcCol = null;
+    renderGrid();
+  }
+}
+
+// ── EMPLOYEE SELECTION ────────────────────────────────────
+function selectEmp(key) {
+  selectedEmp = key;
+  // Update chip highlights
+  document.querySelectorAll('.emp-chip').forEach(function(el) {
+    el.classList.toggle('selected', el.dataset.emp === key);
+  });
+  var eraser = document.getElementById('eraser-chip');
+  if (eraser) eraser.classList.toggle('selected', key === 'empty');
+
+  var indicator = document.getElementById('sel-indicator');
+  var selText   = document.getElementById('sel-text');
+  var selDot    = document.getElementById('sel-dot');
+  var selLabel  = document.getElementById('selected-label');
+
+  if (key === 'empty') {
+    if (indicator) indicator.classList.add('show');
+    if (selText)   selText.textContent = 'Apagando células';
+    if (selDot)    selDot.style.background = '#ccc';
+    if (selLabel)  selLabel.textContent = '⬜ Apagar';
+    if (selLabel)  selLabel.style.color = 'var(--red)';
+  } else if (key && EMPS[key]) {
+    var emp = EMPS[key];
+    if (indicator) indicator.classList.add('show');
+    if (selText)   selText.textContent = emp.name;
+    if (selDot)    selDot.style.background = emp.color;
+    if (selLabel)  selLabel.textContent = emp.name;
+    if (selLabel)  selLabel.style.color = emp.color;
+  } else {
+    if (indicator) indicator.classList.remove('show');
+    if (selLabel)  { selLabel.textContent = 'nenhum'; selLabel.style.color='var(--blue)'; }
+  }
+}
+
+// ── HISTORY ───────────────────────────────────────────────
+function pushHistory() {
+  history.push(JSON.parse(JSON.stringify(grid)));
+  if (history.length > 30) history.shift();
+}
+function undoLast() {
+  if (!history.length) return;
+  grid = history.pop();
+  renderGrid();
+}
+function clearGrid() {
+  if (!confirm('Limpar toda a grade?')) return;
+  pushHistory();
+  grid = [[null,null,null,null,null,null,null],[null,null,null,null,null,null,null],[null,null,null,null,null,null,null]];
+  renderGrid();
+}
+
+// ── CLT VALIDATION ────────────────────────────────────────
+function validate() {
+  var sc = SC();
+  var issues = [];
+
+  // Count days per employee
+  var counts = {};
+  for (var r=0;r<3;r++) for (var c=0;c<7;c++) {
+    var k = grid[r][c];
+    if (k && k !== 'empty') counts[k] = (counts[k]||0)+1;
+  }
+
+  // 1. Giovanna/Anderson: max 6 days (6×1) or 5 days (5×2)
+  var gioCount = 0, andCount = 0;
+  for (var r2=0;r2<3;r2++) {
+    for (var c2=0;c2<7;c2++) {
+      if (grid[r2][c2]==='gio') gioCount++;
+      if (grid[r2][c2]==='and') andCount++;
+    }
+  }
+  if (gioCount > 6) issues.push({type:'err',msg:'Giovanna: '+gioCount+' turnos/semana — máximo 6 (6×1 CLT).'});
+  else if (gioCount > 5) issues.push({type:'warn',msg:'Giovanna: 6 dias/sem. (6×1). Sábado gera ~4h extras — use banco de horas.'});
+
+  if (andCount > 6) issues.push({type:'err',msg:'Anderson: '+andCount+' turnos/semana — máximo 6 (6×1 CLT).'});
+  else if (andCount > 5) issues.push({type:'warn',msg:'Anderson: 6 dias/sem. (6×1). Banco de horas recomendado.'});
+
+  // 2. Gabriel: 12×36 → max ~3-4 turnos por semana
+  var gabNight = 0;
+  for (var c3=0;c3<7;c3++) if (grid[2][c3]==='gab') gabNight++;
+  if (gabNight > 4) issues.push({type:'err',msg:'Gabriel: '+gabNight+' noites/sem. — 12×36 máx ~3-4 por semana (folga 36h).'});
+  else if (gabNight > 3) issues.push({type:'warn',msg:'Gabriel: 4 noites consecutivas possível no 12×36, mas confirme folgas de 36h.'});
+
+  // 3. Gabriel in day shifts (wrong)
+  for (var r3=0;r3<2;r3++) for (var c4=0;c4<7;c4++) {
+    if (grid[r3][c4]==='gab') issues.push({type:'err',msg:'Gabriel no turno '+(r3===0?'manhã':'tarde')+'! Ele é noturno (12×36). Mova para a linha Noite.'});
+  }
+
+  // 4. Night shift coverage check
+  var nightGaps = 0;
+  for (var c5=0;c5<7;c5++) if (!grid[2][c5]) nightGaps++;
+  if (nightGaps > 0) issues.push({type:'warn',msg:nightGaps+' noite(s) sem cobertura. Hotel 24/7 exige cobertura noturna contínua.'});
+
+  // 5. Sunday coverage
+  var sunCoverage = (grid[0][0]||'')||(grid[1][0]||'');
+  if (!sunCoverage) issues.push({type:'warn',msg:'Domingo sem cobertura diurna. Verifique se o hotel opera normalmente aos domingos.'});
+
+  // 6. FDS Noturno: should only be in night row
+  for (var r4=0;r4<2;r4++) for (var c6=0;c6<7;c6++) {
+    if (grid[r4][c6]==='fds_n') issues.push({type:'warn',msg:'FDS Noturno colocado no turno '+(r4===0?'manhã':'tarde')+'. Esta modalidade cobre apenas a noite.'});
+  }
+
+  // 7. FDS Diurno: should not be in night row
+  for (var c7=0;c7<7;c7++) {
+    if (grid[2][c7]==='fds_d') issues.push({type:'warn',msg:'FDS Diurno colocado no turno Noite no col. '+DAY_NAMES[c7]+'. Deveria ser Manhã ou Tarde.'});
+  }
+
+  // 8. Freelancer: habituality risk
+  var freeCount = 0;
+  for (var r5=0;r5<3;r5++) for (var c8=0;c8<7;c8++) if (grid[r5][c8]==='free') freeCount++;
+  if (freeCount >= 5) issues.push({type:'warn',msg:'Freelancer em '+freeCount+' turnos/sem. Uso habitual pode gerar vínculo empregatício (Art. 3° CLT).'});
+
+  // 9. Same employee in 2 shifts same day (impossible)
+  for (var c9=0;c9<7;c9++) {
+    var dayEmps = [grid[0][c9],grid[1][c9],grid[2][c9]].filter(Boolean);
+    var seen = {};
+    dayEmps.forEach(function(k){ if(seen[k]&&k!=='free'&&k!=='empty') issues.push({type:'err',msg:EMPS[k].name+' em 2 turnos no mesmo dia ('+DAY_NAMES[c9]+') — impossível!'});seen[k]=true;});
+  }
+
+  // ── Render status ──
+  var overall = document.getElementById('clt-overall');
+  var list    = document.getElementById('issue-list');
+  if (!overall||!list) return;
+
+  var hasErr  = issues.some(function(i){return i.type==='err';});
+  var hasWarn = issues.some(function(i){return i.type==='warn';});
+
+  if (hasErr) {
+    overall.className = 'clt-status clt-bad';
+    overall.innerHTML = '<div class="clt-icon">🚨</div><div><div class="clt-label">Violação CLT detectada</div><div class="clt-sub">Corrija os erros abaixo</div></div>';
+  } else if (hasWarn) {
+    overall.className = 'clt-status clt-warn';
+    overall.innerHTML = '<div class="clt-icon">⚠️</div><div><div class="clt-label">Atenção recomendada</div><div class="clt-sub">Veja alertas abaixo</div></div>';
+  } else {
+    // Check if grid is empty
+    var filled = 0;
+    for (var r6=0;r6<3;r6++) for(var c10=0;c10<7;c10++) if(grid[r6][c10]) filled++;
+    if (!filled) {
+      overall.className = 'clt-status clt-ok';
+      overall.innerHTML = '<div class="clt-icon">📝</div><div><div class="clt-label">Grade vazia</div><div class="clt-sub">Selecione funcionários e clique nas células</div></div>';
+    } else {
+      overall.className = 'clt-status clt-ok';
+      overall.innerHTML = '<div class="clt-icon">✅</div><div><div class="clt-label">Escala válida</div><div class="clt-sub">Sem violações CLT identificadas</div></div>';
+    }
+  }
+
+  list.innerHTML = issues.map(function(i) {
+    var cls = i.type==='err' ? 'issue-err' : i.type==='warn' ? 'issue-warn' : 'issue-ok';
+    var icon = i.type==='err' ? '🚨' : i.type==='warn' ? '⚠️' : '✅';
+    return '<li class="issue-item '+cls+'"><span class="issue-icon">'+icon+'</span><span>'+i.msg+'</span></li>';
+  }).join('');
+
+  // Coverage bars
+  updateCoverage();
+}
+
+// ── COVERAGE ──────────────────────────────────────────────
+function updateCoverage() {
+  var barsEl = document.getElementById('coverage-bars');
+  var statsEl = document.getElementById('stats-grid');
+  if (!barsEl) return;
+
+  var covered = [0,0,0]; // per row
+  var totalCovered = 0;
+  for (var r=0;r<3;r++) {
+    for (var c=0;c<7;c++) {
+      if (grid[r][c]) { covered[r]++; totalCovered++; }
+    }
+  }
+
+  var rowNames = ['Manhã','Tarde','Noite'];
+  var rowColors = ['#b84040','#1a6fc4','#1e8a4a'];
+  var html = '';
+  for (var r2=0;r2<3;r2++) {
+    var pct = Math.round(covered[r2]/7*100);
+    var col = pct===100?'#16a34a':pct>=70?'#d97706':'#dc2626';
+    html += '<div class="cov-row"><span class="cov-lbl">'+rowNames[r2]+'</span>'
+      +'<div class="cov-bar-track"><div class="cov-bar-fill" style="width:'+pct+'%;background:'+col+'"></div></div>'
+      +'<span class="cov-pct">'+covered[r2]+'/7</span></div>';
+  }
+  barsEl.innerHTML = html;
+
+  // Count unique employees
+  var empSet = {};
+  for (var r3=0;r3<3;r3++) for (var c2=0;c2<7;c2++) if (grid[r3][c2]) empSet[grid[r3][c2]]=true;
+  var empCount = Object.keys(empSet).length;
+
+  // CLT employees
+  var cltKeys = ['gio','and','gab','folg','novo'];
+  var cltCount = cltKeys.filter(function(k){ return empSet[k]; }).length;
+  var extCount = ['free','fds_d','fds_n'].filter(function(k){ return empSet[k]; }).length;
+
+  statsEl.innerHTML =
+    '<div class="stat-box"><div class="stat-val">'+totalCovered+'/21</div><div class="stat-lbl">Turnos cobertos</div></div>'+
+    '<div class="stat-box"><div class="stat-val">'+Math.round(totalCovered/21*100)+'%</div><div class="stat-lbl">% Cobertura</div></div>'+
+    '<div class="stat-box"><div class="stat-val">'+cltCount+'</div><div class="stat-lbl">Func. CLT</div></div>'+
+    '<div class="stat-box"><div class="stat-val">'+extCount+'</div><div class="stat-lbl">Ext. / FDS</div></div>';
+}
+
+// ── COST ESTIMATE ─────────────────────────────────────────
+function updateCost() {
+  var sal = SAL(), enc = ENC();
+  var OVHD = 1+enc.total/100, NOTT = 1+enc.not/100, HE=11.8;
+
+  // Count appearances per emp per week
+  var counts = {};
+  for (var r=0;r<3;r++) for (var c=0;c<7;c++) {
+    var k=grid[r][c]; if(k) counts[k]=(counts[k]||0)+1;
+  }
+
+  var breakdown = document.getElementById('cost-breakdown');
+  var totalEl   = document.getElementById('cost-total');
+  if (!breakdown) return;
+
+  var total = 0, html = '';
+
+  var empCosts = {
+    gio:  sal.gio  * OVHD * (1+HE/100),
+    and:  sal.and  * OVHD * (1+HE/100),
+    gab:  sal.gab  * OVHD * NOTT,
+    folg: sal.folg * OVHD * (1+HE/100),
+    free: sal.free * 4.33, // per shift × weeks
+    fds_d:sal.fds  * OVHD,
+    fds_n:sal.fds2 * OVHD * NOTT,
+    novo: sal.gab  * OVHD * NOTT
+  };
+
+  // Only show emps actually used
+  var used = Object.keys(counts).filter(function(k){return k&&EMPS[k]&&EMPS[k].type!=='empty'&&empCosts[k];});
+  if (!used.length) { breakdown.innerHTML='<span style="color:var(--tx3);font-size:.76rem">Atribua funcionários para ver o custo</span>'; totalEl.textContent='—'; return; }
+
+  used.forEach(function(k) {
+    var cost = empCosts[k] || 0;
+    total += cost;
+    html += '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bdr)">'
+      +'<span style="color:'+EMPS[k].color+';font-weight:600">'+EMPS[k].name+'</span>'
+      +'<span class="mono">'+fm(cost)+'</span></div>';
+  });
+
+  breakdown.innerHTML = html;
+  totalEl.textContent = fm(total);
+}
+
+// ── SIMILARITY ────────────────────────────────────────────
+// Compare current grid to known proposals
+var PROPOSALS = {
+  'A · 5×2 + Freelancer': {
+    morning:  ['free','gio','gio','gio','gio','gio','free'],
+    afternoon:['free','and','and','and','and','and','free'],
+    night:    ['gab','free','gab','free','gab','free','gab']
+  },
+  'B · 12×36 Universal': {
+    morning:  ['gio','and','gio','and','gio','and','and'],
+    afternoon:['gio','and','gio','and','gio','and','and'],// fullDay
+    night:    ['gab','novo','gab','novo','gab','novo','gab']
+  },
+  'C · Revezamento 6×1': {
+    morning:  [null,'gio','gio','gio','gio','gio','gio'],
+    afternoon:['and','and','and','and','and','and',null],
+    night:    ['gab','free','gab','free','gab','free','gab']
+  },
+  'D · Gab Seg–Sex ⚠': {
+    morning:  ['free','gio','gio','gio','gio','gio','free'],
+    afternoon:['free','and','and','and','and','and','free'],
+    night:    ['free','gab','gab','gab','gab','gab','free']
+  },
+  'E · Misto ⭐': {
+    morning:  ['free','gio','gio','gio','gio','gio','and'],
+    afternoon:['free','and','and','and','and','and','and'],
+    night:    ['gab','free','gab','free','gab','free','gab']
+  },
+  'F · Intermediários 12h': {
+    morning:  [null,'gio','gio','gio','gio','gio','fds_d'],
+    afternoon:[null,'and','and','and','and','and','fds_d'],
+    night:    ['fds_n','free','gab','free','gab','free','fds_n']
+  },
+  'G · Folguista ⭐': {
+    morning:  [null,'gio','gio','gio','gio','gio','folg'],
+    afternoon:['folg','and','and','and','and','and','and'],
+    night:    ['gab','free','gab','free','gab','free','gab']
+  }
+};
+
+function updateSimilarity() {
+  var simEl = document.getElementById('sim-list');
+  if (!simEl) return;
+
+  var results = [];
+  var keys = Object.keys(PROPOSALS);
+
+  keys.forEach(function(name) {
+    var prop = PROPOSALS[name];
+    var matches = 0, total = 21;
+    for (var r=0;r<3;r++) {
+      var rowKey = ['morning','afternoon','night'][r];
+      for (var c=0;c<7;c++) {
+        var g = grid[r][c] || null;
+        var p = prop[rowKey][c] || null;
+        if (g === p) matches++;
+      }
+    }
+    var pct = Math.round(matches/total*100);
+    results.push({name:name, pct:pct, matches:matches});
+  });
+
+  results.sort(function(a,b){return b.pct-a.pct;});
+
+  var html = '';
+  results.forEach(function(res, i) {
+    var isTop = i===0 && res.pct >= 40;
+    var barColor = res.pct>=80?'#16a34a':res.pct>=50?'#d97706':res.pct>=30?'#2c6ef2':'#c4cbdb';
+    var badge = res.pct>=80?'<span class="badge badge-green">Alta</span>':
+                res.pct>=50?'<span class="badge badge-amber">Média</span>':
+                res.pct>=30?'<span class="badge badge-blue">Baixa</span>':'';
+    html += '<div class="sim-row'+(isTop?' top-match':'')+'">'+
+      '<span class="sim-name">'+res.name+'</span>'+
+      badge+
+      '<div class="sim-pct-track"><div class="sim-pct-fill" style="width:'+res.pct+'%;background:'+barColor+'"></div></div>'+
+      '<span class="sim-badge" style="background:'+(res.pct>=50?barColor+'22':'var(--bg3)')+';color:'+(res.pct>=50?barColor:'var(--tx3)')+'">' +res.pct+'%</span>'+
+      '</div>';
+  });
+  simEl.innerHTML = html;
+}
+
+// ── SAVE SLOT ─────────────────────────────────────────────
+function saveToReport() {
+  var name = prompt('Nome para esta escala (ex: "Minha Proposta 1"):', 'Escala '+(savedSlots.length+1));
+  if (!name) return;
+  var snap = {name:name, grid:JSON.parse(JSON.stringify(grid)), ts:new Date().toLocaleString('pt-BR')};
+  savedSlots.push(snap);
+  // Save to localStorage
+  try { localStorage.setItem('hotel_saved_schedules', JSON.stringify(savedSlots)); } catch(e){}
+  renderHistoryBar();
+  alert('✅ Escala "'+name+'" salva com sucesso!');
+}
+
+function loadSlot(idx) {
+  if (!savedSlots[idx]) return;
+  pushHistory();
+  grid = JSON.parse(JSON.stringify(savedSlots[idx].grid));
+  renderGrid();
+}
+
+function renderHistoryBar() {
+  var bar = document.getElementById('history-bar');
+  var noHist = document.getElementById('no-history');
+  if (!bar) return;
+  if (noHist) noHist.style.display = savedSlots.length ? 'none' : '';
+  var pills = bar.querySelectorAll('.history-pill');
+  pills.forEach(function(p){p.remove();});
+  savedSlots.forEach(function(s, i) {
+    var pill = document.createElement('span');
+    pill.className = 'history-pill';
+    pill.textContent = s.name;
+    pill.title = 'Salvo em '+s.ts+' — clique para carregar';
+    pill.onclick = function(){loadSlot(i);};
+    bar.appendChild(pill);
+  });
+}
+
+// ── INIT ──────────────────────────────────────────────────
+(function init() {
+  // Load saved slots
+  try {
+    var ss = localStorage.getItem('hotel_saved_schedules');
+    if (ss) savedSlots = JSON.parse(ss);
+  } catch(e){}
+
+  renderGrid();
+  renderHistoryBar();
+  validate();
+  updateCoverage();
+  updateCost();
+  updateSimilarity();
+})();
+</script>
+</body>
+</html>
