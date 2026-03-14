@@ -400,7 +400,7 @@ var grid = [
 
 var selectedEmp  = null;
 var isDragging   = false;
-var history      = [];
+var undoHistory = [];
 var savedSlots   = [];
 
 // ── GRID RENDERING ────────────────────────────────────────
@@ -431,8 +431,9 @@ function renderGrid() {
       var emp = empKey ? EMPS[empKey] : null;
       var bg = emp ? emp.color : '';
       var cellClass = emp ? 'cell' : 'cell empty-cell';
-      html += '<td class="'+cellClass+'" data-row="'+r+'" data-col="'+c+'"'
+      html += '<td class="'+cellClass+'" data-row="'+r+'" data-col="'+c+'" draggable="true"'
            + (bg ? ' style="background:'+bg+'"' : '')
+           + ' onclick="cellClick('+r+','+c+')"'
            + ' onmousedown="cellMouseDown(event,'+r+','+c+')"'
            + ' onmouseenter="cellMouseEnter('+r+','+c+')"'
            + ' ondragstart="cellDragStart(event,'+r+','+c+')"'
@@ -458,9 +459,8 @@ function renderGrid() {
 }
 
 // ── CELL INTERACTION ──────────────────────────────────────
-function cellMouseDown(r, c) {
-  if (!selectedEmp) return;
 function cellClick(r, c) {
+  console.log('cellClick called for', r, c, 'selectedEmp:', selectedEmp);
   if (!selectedEmp || isDragging) return;
   pushHistory();
   applyCell(r, c, selectedEmp);
@@ -513,19 +513,19 @@ function ePaletteDrag(e, key) {
 }
 
 function cellDrop(e, r, c) {
+  console.log('cellDrop called for', r, c);
   e.preventDefault();
   e.currentTarget.classList.remove('drag-over');
-  if (selectedEmp) {
   
   var paletteKey = e.dataTransfer.getData('empKey');
+  console.log('paletteKey:', paletteKey);
   
   if (paletteKey) {
-    // If an employee is selected in palette, assign it
+    // Drag from palette
     pushHistory();
-    applyCell(r, c, selectedEmp);
     applyCell(r, c, paletteKey);
   } else if (dragSrcRow !== null) {
-    // Move from source cell
+    // Move from another cell
     pushHistory();
     var srcEmp = grid[dragSrcRow][dragSrcCol];
     grid[r][c] = srcEmp;
@@ -537,6 +537,7 @@ function cellDrop(e, r, c) {
 
 // ── EMPLOYEE SELECTION ────────────────────────────────────
 function selectEmp(key) {
+  console.log('selectEmp called with', key);
   selectedEmp = key;
   // Update chip highlights
   document.querySelectorAll('.emp-chip').forEach(function(el) {
@@ -571,12 +572,12 @@ function selectEmp(key) {
 
 // ── HISTORY ───────────────────────────────────────────────
 function pushHistory() {
-  history.push(JSON.parse(JSON.stringify(grid)));
-  if (history.length > 30) history.shift();
+  undoHistory.push(JSON.parse(JSON.stringify(grid)));
+  if (undoHistory.length > 30) undoHistory.shift();
 }
 function undoLast() {
-  if (!history.length) return;
-  grid = history.pop();
+  if (!undoHistory.length) return;
+  grid = undoHistory.pop();
   renderGrid();
 }
 function clearGrid() {
