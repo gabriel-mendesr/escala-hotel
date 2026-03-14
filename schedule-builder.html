@@ -433,10 +433,7 @@ function renderGrid() {
       var cellClass = emp ? 'cell' : 'cell empty-cell';
       html += '<td class="'+cellClass+'" data-row="'+r+'" data-col="'+c+'"'
            + (bg ? ' style="background:'+bg+'"' : '')
-           + ' draggable="true"'
-           + ' onmousedown="cellMouseDown('+r+','+c+')"'
            + ' onmousedown="cellMouseDown(event,'+r+','+c+')"'
-           + ' onclick="cellClick('+r+','+c+')"'
            + ' onmouseenter="cellMouseEnter('+r+','+c+')"'
            + ' ondragstart="cellDragStart(event,'+r+','+c+')"'
            + ' ondragover="cellDragOver(event)"'
@@ -488,7 +485,6 @@ function applyCell(r, c, empKey) {
   renderGrid();
 }
 
-document.addEventListener('mouseup', function() { isDragging = false; });
 document.addEventListener('mouseup', function() { 
   isDragging = false; 
 });
@@ -519,14 +515,12 @@ function ePaletteDrag(e, key) {
 function cellDrop(e, r, c) {
   e.preventDefault();
   e.currentTarget.classList.remove('drag-over');
-  if (selectedEmp) {
   
   var paletteKey = e.dataTransfer.getData('empKey');
   
   if (paletteKey) {
     // If an employee is selected in palette, assign it
     pushHistory();
-    applyCell(r, c, selectedEmp);
     applyCell(r, c, paletteKey);
   } else if (dragSrcRow !== null) {
     // Move from source cell
