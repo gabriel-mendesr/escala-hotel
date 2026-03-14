@@ -289,33 +289,6 @@ h3{font-size:.9rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:rgba(79,143,224,.25);border-radius:3px}
 @media print{.config-bar{display:none}.panel{display:block!important}}
-
-/* ── CONFIG BAR v2 ── */
-.cfg-status-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.cfg-badge{
-  display:inline-block;padding:3px 9px;border-radius:12px;
-  font-size:.74rem;font-weight:600;font-family:'DM Mono',monospace;
-  background:rgba(79,143,224,.1);border:1px solid rgba(79,143,224,.2);color:var(--blue2);
-}
-.cfg-badge.gio{background:rgba(224,122,122,.1);border-color:rgba(224,122,122,.25);color:var(--gio)}
-.cfg-badge.and{background:rgba(80,144,224,.1);border-color:rgba(80,144,224,.25);color:var(--and)}
-.cfg-badge.gab{background:rgba(78,200,148,.1);border-color:rgba(78,200,148,.25);color:var(--gab)}
-.cfg-badge.night{background:rgba(78,200,148,.08);border-color:rgba(78,200,148,.2);color:var(--gab)}
-.cfg-btn-settings{
-  padding:6px 14px;border-radius:7px;border:1px solid var(--border2);
-  background:rgba(212,168,75,.1);color:var(--gold2);font-size:.8rem;
-  font-weight:600;cursor:pointer;transition:all .18s;text-decoration:none;
-  font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:5px;
-}
-.cfg-btn-settings:hover{background:rgba(212,168,75,.2);border-color:var(--gold2)}
-/* Enc readonly grid */
-.enc-ro-card{
-  background:var(--bg3);border:1px solid var(--border);border-radius:7px;
-  padding:8px 12px;display:flex;flex-direction:column;gap:2px;
-}
-.enc-ro-label{font-size:.68rem;color:var(--muted2);text-transform:uppercase;letter-spacing:.04em}
-.enc-ro-val{font-family:'DM Mono',monospace;font-size:.9rem;color:var(--text);font-weight:500}
-
 </style>
 </head>
 <body>
@@ -339,55 +312,21 @@ h3{font-size:.9rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase
 <!-- CONFIG BAR -->
 <div class="config-bar">
   <div class="config-inner">
-
-    <div class="cfg-status-group">
-      <span class="cfg-lbl">🕐 Turnos:</span>
-      <span class="cfg-badge" id="badge-morning">—</span>
-      <span class="cfg-badge" id="badge-afternoon">—</span>
-      <span class="cfg-badge night" id="badge-night">—</span>
-    </div>
-
+    <span class="cfg-lbl">🕐 Turnos ativos:</span>
+    <span class="cfg-btn active" style="cursor:default" id="active-shift-label">07h / 19h</span>
+    <a href="config.html" class="cfg-btn" style="text-decoration:none">⚙️ Alterar turnos</a>
     <div class="cfg-sep"></div>
-
-    <div class="cfg-status-group">
-      <span class="cfg-lbl">👥 Equipe:</span>
-      <span class="cfg-badge gio" id="badge-gio">Giovanna —</span>
-      <span class="cfg-badge and" id="badge-and">Anderson —</span>
-      <span class="cfg-badge gab" id="badge-gab">Gabriel —</span>
-    </div>
-
+    <span class="cfg-lbl">💰 Salários:</span>
+    <div class="sal-group"><div class="dot" style="background:var(--gio)"></div><label>Giovanna</label><input type="number" id="s-gio" value="1700" step="50" onchange="recalcAll()"></div>
+    <div class="sal-group"><div class="dot" style="background:var(--and)"></div><label>Anderson</label><input type="number" id="s-and" value="2100" step="50" onchange="recalcAll()"></div>
+    <div class="sal-group"><div class="dot" style="background:var(--gab)"></div><label>Gabriel</label><input type="number" id="s-gab" value="1800" step="50" onchange="recalcAll()"></div>
+    <div class="sal-group"><div class="dot" style="background:var(--free)"></div><label>Diária free.</label><input type="number" id="s-free" value="250" step="10" onchange="recalcAll()"></div>
+    <div class="sal-group"><div class="dot" style="background:var(--new)"></div><label>Intermit./diária</label><input type="number" id="s-int" value="220" step="10" onchange="recalcAll()"></div>
     <div class="cfg-sep"></div>
-
-    <div class="cfg-status-group">
-      <span class="cfg-lbl">📋 Encargos:</span>
-      <span class="cfg-badge" id="badge-enc">— %</span>
-    </div>
-
-    <div style="margin-left:auto">
-      <a href="config.html" class="cfg-btn cfg-btn-settings">⚙️ Configurações</a>
-    </div>
-
+    <span class="cfg-lbl">🗓️ Intermediários:</span>
+    <div class="sal-group"><div class="dot" style="background:var(--new)"></div><label>T. Parcial FDS/mês</label><input type="number" id="s-fds" value="655" step="25" onchange="recalcAll()" title="Salário mensal do funcionário tempo parcial FDS (16h/sem). Valor padrão proporcional a R$1.800."></div>
+    <div class="sal-group"><div class="dot" style="background:var(--new)"></div><label>12×36 FDS/mês</label><input type="number" id="s-fds2" value="982" step="25" onchange="recalcAll()" title="Salário mensal do funcionário 12×36 FDS (24h/sem). Valor padrão proporcional a R$1.800."></div>
   </div>
-</div>
-
-<!-- Inputs ocultos — alimentados pelo JS via localStorage -->
-<div style="display:none">
-  <input id="s-gio"  type="number" value="1700">
-  <input id="s-and"  type="number" value="2100">
-  <input id="s-gab"  type="number" value="1800">
-  <input id="s-free" type="number" value="250">
-  <input id="s-int"  type="number" value="220">
-  <input id="s-fds"  type="number" value="491">
-  <input id="s-fds2" type="number" value="982">
-  <input id="s-folg" type="number" value="1500">
-  <input id="enc-inss" type="number" value="20">
-  <input id="enc-rat"  type="number" value="2">
-  <input id="enc-terc" type="number" value="5.8">
-  <input id="enc-fgts" type="number" value="8">
-  <input id="enc-fer"  type="number" value="11.11">
-  <input id="enc-13"   type="number" value="8.33">
-  <input id="enc-fp"   type="number" value="1.92">
-  <input id="enc-not"  type="number" value="20">
 </div>
 
 <div class="page">
@@ -832,16 +771,17 @@ h3{font-size:.9rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase
   </div>
   <div class="sal-body">
     <div class="encargos-wrap">
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-    <h3 style="margin:0">📊 Encargos Patronais</h3>
-    <a href="config.html" class="cfg-btn cfg-btn-settings" style="font-size:.78rem">⚙️ Editar em Configurações</a>
-  </div>
-  <div id="enc-readonly-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px"></div>
-  <div class="enc-total-row" style="margin-top:10px">
-    <span class="text-muted">Total encargos sobre salário bruto:</span>
-    <span class="mono text-gold bold" id="enc-total-pct">—%</span>
-  </div>
-</div>
+      <h3>⚙️ Encargos Patronais</h3>
+      <div class="encargos-grid">
+        <div class="enc-field"><label>INSS Patronal (%)</label><input type="number" id="enc-inss" value="20" step=".1" onchange="recalcAll()"></div>
+        <div class="enc-field"><label>RAT (%)</label><input type="number" id="enc-rat" value="2" step=".1" onchange="recalcAll()"></div>
+        <div class="enc-field"><label>Terceiros (%)</label><input type="number" id="enc-terc" value="5.8" step=".1" onchange="recalcAll()"></div>
+        <div class="enc-field"><label>FGTS (%)</label><input type="number" id="enc-fgts" value="8" step=".1" onchange="recalcAll()"></div>
+        <div class="enc-field"><label>Provisão Férias+1/3 (%)</label><input type="number" id="enc-fer" value="11.11" step=".1" onchange="recalcAll()"></div>
+        <div class="enc-field"><label>Provisão 13° (%)</label><input type="number" id="enc-13" value="8.33" step=".1" onchange="recalcAll()"></div>
+        <div class="enc-field"><label>FGTS s/ provisões (%)</label><input type="number" id="enc-fp" value="1.92" step=".1" onchange="recalcAll()"></div>
+        <div class="enc-field"><label>Adicional noturno (%)</label><input type="number" id="enc-not" value="20" step=".1" onchange="recalcAll()"></div>
+      </div>
       <div class="enc-total-row">
         <span class="text-muted">Total encargos sobre salário bruto:</span>
         <span class="mono text-gold bold" id="enc-total-pct">—%</span>
@@ -1145,52 +1085,6 @@ h3{font-size:.9rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase
   Valores são estimativas. Consulte contador/advogado trabalhista para cálculos precisos e convenções coletivas da categoria.
 </div>
 
-<script src="escala.js">
-// injected by patch.py — sincroniza badges e encargos read-only
-function updateConfigBadges() {
-  const cfg = _cfg || {};
-  const s = cfg.salaries || {};
-  const c = cfg.charges  || {};
-  const ms  = cfg.morningStart   ?? 7;
-  const as_ = cfg.afternoonStart ?? 15;
-  const ns  = cfg.nightStart     ?? 19;
-  const pad = h => { h=((h%24)+24)%24; return h<10?'0'+h:''+h; };
-  const fmt = v => 'R$\u00a0'+Math.round(v).toLocaleString('pt-BR');
-  const setEl = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
-
-  setEl('badge-morning',   pad(ms)+'h–'+pad(as_)+'h Manhã');
-  setEl('badge-afternoon', pad(as_)+'h–'+pad(ns)+'h Tarde');
-  setEl('badge-night',     pad(ns)+'h–'+pad(ms)+'h(+1) Noite');
-  setEl('badge-gio',  'Giovanna '  + fmt(s.giovanna  || 1700));
-  setEl('badge-and',  'Anderson '  + fmt(s.anderson  || 2100));
-  setEl('badge-gab',  'Gabriel '   + fmt(s.gabriel   || 1800));
-
-  const enc = c;
-  const total = (enc.inss||20)+(enc.rat||2)+(enc.terceiros||5.8)+(enc.fgts||8)
-              + (enc.ferias||11.11)+(enc.decimo||8.33)+(enc.fgtsProv||1.92);
-  setEl('badge-enc', total.toFixed(1)+'% encargos');
-
-  // Readonly encargos grid
-  const grid = document.getElementById('enc-readonly-grid');
-  if (!grid) return;
-  const fields = [
-    ['INSS Patronal', enc.inss||20,'%'],
-    ['RAT', enc.rat||2,'%'],
-    ['Terceiros', enc.terceiros||5.8,'%'],
-    ['FGTS', enc.fgts||8,'%'],
-    ['Prov. Férias+1/3', enc.ferias||11.11,'%'],
-    ['Prov. 13°', enc.decimo||8.33,'%'],
-    ['FGTS s/ prov.', enc.fgtsProv||1.92,'%'],
-    ['Adic. Noturno', enc.noturno||20,'%'],
-  ];
-  grid.innerHTML = fields.map(([lbl,val,unit]) =>
-    `<div class="enc-ro-card">
-      <span class="enc-ro-label">${lbl}</span>
-      <span class="enc-ro-val">${(+val).toFixed(2)}${unit}</span>
-    </div>`
-  ).join('');
-}
-
-</script>
+<script src="escala.js"></script>
 </body>
 </html>
