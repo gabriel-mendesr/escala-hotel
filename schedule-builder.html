@@ -627,16 +627,9 @@ function validate() {
       issues.push({type:'warn', msg: name + ': 6 turnos/semana. Verificar se é 6×1 ou 5×2 com banco de horas.'});
     }
 
-    // 2. Shift compatibility
-    if (emp.type === 'night_1236') {
-      if (data.morning > 0 || data.afternoon > 0) {
-        issues.push({type:'err', msg: name + ': Trabalha em turnos diurnos! Deve ser noturno (12×36).'});
-      }
-    }
-
-    // 3. Night shift analysis (infer regime)
+    // 2. Night shift info (generic, without regime assumptions)
     if (data.night > 0) {
-      // Check consecutive nights
+      // Show consecutive nights info (useful to detect patterns)
       var nightDays = [];
       for (var c=0; c<7; c++) if (grid[2][c] === k) nightDays.push(c);
       var consec = 0, maxConsec = 0;
@@ -646,12 +639,7 @@ function validate() {
         maxConsec = Math.max(maxConsec, consec);
       }
       if (maxConsec > 3) {
-        issues.push({type:'warn', msg: name + ': ' + maxConsec + ' noites consecutivas. Não compatível com 12×36 (máx 3-4). Considere regime 6×1 ou 5×2 noturno.'});
-      }
-
-      // Total nights
-      if (data.night > 4) {
-        issues.push({type:'warn', msg: name + ': ' + data.night + ' noites/semana. Para 12×36, máx ~3-4. Considere regime diurno ou outro.'});
+        issues.push({type:'warn', msg: name + ': ' + maxConsec + ' noites consecutivas. Verifique folga de 36h entre ciclos.'});
       }
     }
 

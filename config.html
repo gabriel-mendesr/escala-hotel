@@ -8,34 +8,39 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#05080f;--bg2:#0a1020;--bg3:#101828;--card:#131f30;
-  --border:rgba(99,160,255,.12);--border2:rgba(99,160,255,.22);
-  --blue:#4f8fe0;--blue2:#7ab0f0;--blue3:#b0d0ff;
-  --gold:#d4a84b;--gold2:#f0c96a;
-  --text:#dce8ff;--muted:#4a6080;--muted2:#7a96b8;
-  --gio:#e07a7a;--and:#5090e0;--gab:#4ec894;--free:#d4a84b;--new:#9060d0;--folg:#c9943a;
-  --green:#4ec894;--red:#e07070;--orange:#e09050;
-  --warn-bg:rgba(224,144,80,.08);--warn-border:rgba(224,144,80,.3);
-  --info-bg:rgba(79,143,224,.08);--info-border:rgba(79,143,224,.3);
+  --bg:#f4f6fa;--bg2:#fff;--bg3:#eef1f7;--card:#fff;
+  --bdr:#d8dde8;--bdr2:#c4cbdb;
+  --tx:#1a2035;--tx2:#4a5575;--tx3:#8792aa;
+  --blue:#2c6ef2;--blue2:#1a56d6;--blue3:#eff6ff;
+  --green:#16a34a;--red:#dc2626;--orange:#c2410c;--amber:#d97706;
+  --ok-bg:#f0fdf4;--ok-bdr:#bbf7d0;
+  --warn-bg:#fff7ed;--warn-bdr:#fed7aa;
+  --crit-bg:#fef2f2;--crit-bdr:#fecaca;
+  --info-bg:#eff6ff;--info-bdr:#bfdbfe;
+  --sh:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+  --sh2:0 4px 16px rgba(0,0,0,.12);
+  /* employees */
+  --c-gio:#b84040;--c-and:#1a6fc4;--c-gab:#1e8a4a;
+  --c-free:#9a6e00;--c-folg:#6b35a0;--c-fds:#0e7490;--c-warn:#c0392b;
 }
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
 h1,h2{font-family:'Syne',sans-serif}
 .mono{font-family:'DM Mono',monospace}
 
 /* ── HEADER ── */
 .header{
-  background:var(--bg2);border-bottom:1px solid var(--border2);
+  background:var(--bg2);border-bottom:1px solid var(--bdr2);
   padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
   position:sticky;top:0;z-index:100;backdrop-filter:blur(8px);
 }
 .header h1{font-size:1.3rem;font-weight:700;display:flex;align-items:center;gap:10px}
-.header h1 span{font-size:.85rem;font-weight:400;color:var(--muted2);font-family:'DM Sans',sans-serif}
+.header h1 span{font-size:.85rem;font-weight:400;color:var(--tx2);font-family:'DM Sans',sans-serif}
 .header-btns{display:flex;gap:8px}
 .btn{
-  padding:7px 16px;border-radius:7px;border:1px solid var(--border2);
+  padding:7px 16px;border-radius:7px;border:1px solid var(--bdr2);
   font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .18s;
 }
-.btn-back{background:transparent;color:var(--muted2)}
+.btn-back{background:transparent;color:var(--tx2)}
 .btn-back:hover{border-color:var(--blue2);color:var(--blue2)}
 .btn-save{background:var(--gold);border-color:var(--gold);color:#07111d}
 .btn-save:hover{background:var(--gold2);border-color:var(--gold2)}
@@ -55,46 +60,46 @@ h1,h2{font-family:'Syne',sans-serif}
 .page{max-width:900px;margin:0 auto;padding:28px 20px 80px;display:flex;flex-direction:column;gap:22px}
 
 /* ── SECTION CARD ── */
-.card{background:var(--card);border:1px solid var(--border2);border-radius:12px;overflow:hidden}
+.card{background:var(--card);border:1px solid var(--bdr2);border-radius:12px;overflow:hidden}
 .card-head{
   background:linear-gradient(135deg,var(--bg3),var(--bg2));
-  padding:14px 20px;border-bottom:1px solid var(--border);
+  padding:14px 20px;border-bottom:1px solid var(--bdr);
   display:flex;align-items:center;gap:10px;
 }
 .card-head .icon{font-size:1.1rem}
 .card-head h2{font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--blue2)}
-.card-head .note{font-size:.75rem;color:var(--muted2);margin-left:auto}
+.card-head .note{font-size:.75rem;color:var(--tx2);margin-left:auto}
 .card-body{padding:20px}
 
 /* ── FIELD GRID ── */
 .field-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
 .field{display:flex;flex-direction:column;gap:5px}
-.field label{font-size:.76rem;color:var(--muted2);font-weight:500;display:flex;align-items:center;gap:6px}
+.field label{font-size:.76rem;color:var(--tx2);font-weight:500;display:flex;align-items:center;gap:6px}
 .field label .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .field input[type=number], .field input[type=text], .field select{
   padding:8px 11px;border-radius:7px;
-  background:var(--bg3);border:1px solid var(--border);
-  color:var(--text);font-family:'DM Mono',monospace;font-size:.88rem;
+  background:var(--bg3);border:1px solid var(--bdr);
+  color:var(--tx);font-family:'DM Mono',monospace;font-size:.88rem;
   transition:border-color .15s;width:100%;
 }
 .field input:focus, .field select:focus{outline:none;border-color:var(--blue);background:var(--bg2)}
-.field .hint{font-size:.69rem;color:var(--muted);line-height:1.4;margin-top:1px}
+.field .hint{font-size:.69rem;color:var(--tx3);line-height:1.4;margin-top:1px}
 
 /* ── SHIFT TIME VISUAL ── */
 .shift-visual{
-  background:var(--bg3);border:1px solid var(--border);border-radius:8px;
+  background:var(--bg3);border:1px solid var(--bdr);border-radius:8px;
   padding:12px 14px;margin-top:14px;
 }
-.shift-visual-title{font-size:.72rem;color:var(--muted2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;font-weight:600}
-.shift-bar{position:relative;height:36px;border-radius:6px;overflow:hidden;border:1px solid var(--border)}
+.shift-visual-title{font-size:.72rem;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;font-weight:600}
+.shift-bar{position:relative;height:36px;border-radius:6px;overflow:hidden;border:1px solid var(--bdr)}
 .shift-seg{
   position:absolute;top:0;height:100%;display:flex;align-items:center;justify-content:center;
   font-size:.7rem;font-weight:700;color:rgba(255,255,255,.92);font-family:'DM Mono',monospace;
   text-shadow:0 1px 3px rgba(0,0,0,.5);letter-spacing:.02em;overflow:hidden;white-space:nowrap;
 }
-.shift-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:.62rem;font-family:'DM Mono',monospace;color:var(--muted2)}
+.shift-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:.62rem;font-family:'DM Mono',monospace;color:var(--tx2)}
 .shift-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
-.sl-item{display:flex;align-items:center;gap:5px;font-size:.73rem;color:var(--muted2)}
+.sl-item{display:flex;align-items:center;gap:5px;font-size:.73rem;color:var(--tx2)}
 .sl-dot{width:10px;height:10px;border-radius:3px}
 
 /* ── CLT STATUS PILL ── */
@@ -114,24 +119,24 @@ h1,h2{font-family:'Syne',sans-serif}
 .int-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
 @media(max-width:600px){.int-grid{grid-template-columns:1fr}}
 .int-card{
-  background:var(--bg3);border:1px solid var(--border);border-radius:9px;overflow:hidden;
+  background:var(--bg3);border:1px solid var(--bdr);border-radius:9px;overflow:hidden;
 }
 .int-card.valid{border-color:rgba(78,200,148,.3)}
 .int-card .ic-head{
-  padding:11px 14px;border-bottom:1px solid var(--border);
+  padding:11px 14px;border-bottom:1px solid var(--bdr);
   display:flex;align-items:center;gap:8px;
 }
 .int-card .ic-body{padding:12px 14px}
 .ic-row{display:grid;grid-template-columns:120px 1fr;gap:6px;font-size:.78rem;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03)}
 .ic-row:last-child{border:none}
-.ic-row .lbl{color:var(--muted2);font-size:.73rem}
-.ic-row .val{color:var(--text)}
+.ic-row .lbl{color:var(--tx2);font-size:.73rem}
+.ic-row .val{color:var(--tx)}
 
 /* ── DIVIDER ── */
-.divider{height:1px;background:var(--border);margin:16px 0}
+.divider{height:1px;background:var(--bdr);margin:16px 0}
 
 /* ── FOOTER NOTE ── */
-.footer-note{text-align:center;color:var(--muted);font-size:.74rem;padding:16px;font-style:italic}
+.footer-note{text-align:center;color:var(--tx3);font-size:.74rem;padding:16px;font-style:italic}
 </style>
 </head>
 <body>
@@ -290,7 +295,7 @@ h1,h2{font-family:'Syne',sans-serif}
         </div>
       </div>
       <div style="margin-top:14px;padding:10px 14px;background:rgba(212,168,75,.06);border-radius:7px;border:1px solid rgba(212,168,75,.2);display:flex;justify-content:space-between;font-size:.83rem">
-        <span style="color:var(--muted2)">Total encargos sobre salário bruto (empregador):</span>
+        <span style="color:var(--tx2)">Total encargos sobre salário bruto (empregador):</span>
         <span class="mono" style="color:var(--gold2);font-weight:600" id="enc-total">—%</span>
       </div>
     </div>
@@ -314,29 +319,29 @@ h1,h2{font-family:'Syne',sans-serif}
       <div class="divider"></div>
       <div style="font-size:.8rem;font-weight:600;color:var(--gold2);margin-bottom:10px">⚖️ Base Legal Completa para Intermediários 12h FDS</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;font-size:.79rem">
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:12px">
+        <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:7px;padding:12px">
           <div style="color:var(--blue2);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:5px">Art. 59-A CLT</div>
-          <div style="color:var(--muted2);line-height:1.6">Jornada 12×36 permitida por acordo individual escrito. Inclui compensação de DSR e feriados. <strong style="color:var(--text)">Obrigatório para jornada de 12h.</strong></div>
+          <div style="color:var(--tx2);line-height:1.6">Jornada 12×36 permitida por acordo individual escrito. Inclui compensação de DSR e feriados. <strong style="color:var(--tx)">Obrigatório para jornada de 12h.</strong></div>
         </div>
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:12px">
+        <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:7px;padding:12px">
           <div style="color:var(--blue2);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:5px">Art. 58-A CLT</div>
-          <div style="color:var(--muted2);line-height:1.6">Tempo parcial ≤ 30h/semana, sem horas extras. FDS Diurno = 12h/sem ✅. FDS Noturno = 24h/sem ✅. Ambos dentro do limite.</div>
+          <div style="color:var(--tx2);line-height:1.6">Tempo parcial ≤ 30h/semana, sem horas extras. FDS Diurno = 12h/sem ✅. FDS Noturno = 24h/sem ✅. Ambos dentro do limite.</div>
         </div>
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:12px">
+        <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:7px;padding:12px">
           <div style="color:var(--blue2);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:5px">Art. 66 CLT</div>
-          <div style="color:var(--muted2);line-height:1.6">Mínimo 11h entre jornadas. FDS Noturno: fim Sáb noite → início Dom noite = <span id="interjornada-val" style="color:var(--text);font-weight:600">—</span>h ≥ 11h.</div>
+          <div style="color:var(--tx2);line-height:1.6">Mínimo 11h entre jornadas. FDS Noturno: fim Sáb noite → início Dom noite = <span id="interjornada-val" style="color:var(--tx);font-weight:600">—</span>h ≥ 11h.</div>
         </div>
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:12px">
+        <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:7px;padding:12px">
           <div style="color:var(--blue2);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:5px">Art. 73 CLT</div>
-          <div style="color:var(--muted2);line-height:1.6">Adicional noturno de 20% para horas 22h–5h. FDS Noturno tem <span id="night-hours-val" style="color:var(--orange);font-weight:600">—</span>h noturnas por turno = adicional obrigatório.</div>
+          <div style="color:var(--tx2);line-height:1.6">Adicional noturno de 20% para horas 22h–5h. FDS Noturno tem <span id="night-hours-val" style="color:var(--orange);font-weight:600">—</span>h noturnas por turno = adicional obrigatório.</div>
         </div>
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:12px">
+        <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:7px;padding:12px">
           <div style="color:var(--blue2);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:5px">Art. 67 CLT (DSR)</div>
-          <div style="color:var(--muted2);line-height:1.6">DSR mínimo 24h consecutivas/semana. Trabalhadores FDS têm >100h de descanso entre o fim do turno Dom noite (7h Seg) e o próximo Sáb (19h) — amplamente cumprido.</div>
+          <div style="color:var(--tx2);line-height:1.6">DSR mínimo 24h consecutivas/semana. Trabalhadores FDS têm >100h de descanso entre o fim do turno Dom noite (7h Seg) e o próximo Sáb (19h) — amplamente cumprido.</div>
         </div>
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:12px">
+        <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:7px;padding:12px">
           <div style="color:var(--blue2);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:5px">Requisito Formal</div>
-          <div style="color:var(--muted2);line-height:1.6"><strong style="color:var(--text)">Contrato escrito</strong> especificando: regime 12×36, dias (Sáb/Dom), horários, salário proporcional, adicional noturno, FGTS, férias, 13° proporcionais.</div>
+          <div style="color:var(--tx2);line-height:1.6"><strong style="color:var(--tx)">Contrato escrito</strong> especificando: regime 12×36, dias (Sáb/Dom), horários, salário proporcional, adicional noturno, FGTS, férias, 13° proporcionais.</div>
         </div>
       </div>
     </div>
@@ -579,7 +584,7 @@ function updateIntCalcs() {
       <span style="font-size:1rem">☀️</span>
       <div>
         <div style="font-weight:700;font-size:.88rem">FDS Diurno — Sábado 12h</div>
-        <div style="font-size:.72rem;color:var(--muted2)">${pad(ms)}h–${pad(ns)}h · ${dayDur}h de duração</div>
+        <div style="font-size:.72rem;color:var(--tx2)">${pad(ms)}h–${pad(ns)}h · ${dayDur}h de duração</div>
       </div>
       <span class="pill ${dayDur<=30?'pill-ok':'pill-bad'}" style="margin-left:auto">${dayDur<=30?'✅ LEGAL':'❌ INVÁLIDO'}</span>
     </div>
@@ -600,7 +605,7 @@ function updateIntCalcs() {
       <span style="font-size:1rem">🌙</span>
       <div>
         <div style="font-weight:700;font-size:.88rem">FDS Noturno — Sáb+Dom 12h/noite</div>
-        <div style="font-size:.72rem;color:var(--muted2)">${pad(ns)}h–${pad(ms)}h(+1) · ${nightDur*2}h/semana</div>
+        <div style="font-size:.72rem;color:var(--tx2)">${pad(ns)}h–${pad(ms)}h(+1) · ${nightDur*2}h/semana</div>
       </div>
       <span class="pill ${ok&&okNightDur?'pill-ok':'pill-warn'}" style="margin-left:auto">${ok&&okNightDur?'✅ LEGAL':'⚠ ATENÇÃO'}</span>
     </div>
