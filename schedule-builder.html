@@ -442,7 +442,7 @@ function renderGrid() {
            + ' ondragleave="cellDragLeave(event)"'
            + '>';
       if (emp) {
-        html += '<div class="cell-inner"><span class="cell-name">'+emp.name+'</span><span class="cell-regime">'+emp.regime+'</span></div>';
+        html += '<div class="cell-inner"><span class="cell-name">'+emp.name+'</span></div>';
       } else {
         html += '<div class="cell-inner"><span class="cell-empty-label">Vago</span></div>';
       }
@@ -592,103 +592,158 @@ function validate() {
   var sc = SC();
   var issues = [];
 
-  // Count days per employee
-  var counts = {};
-  for (var r=0;r<3;r++) for (var c=0;c<7;c++) {
-    var k = grid[r][c];
-    if (k && k !== 'empty') counts[k] = (counts[k]||0)+1;
-  }
+  // Collect data per employee
+  var empData = {};
+  var empKeys = Object.keys(EMPS).filter(k => k !== 'empty');
+  empKeys.forEach(k => {
+    empData[k] = { shifts: [], days: 0, morning: 0, afternoon: 0, night: 0 };
+  });
 
-  // 1. Giovanna/Anderson: max 6 days (6×1) or 5 days (5×2)
-  var gioCount = 0, andCount = 0;
-  for (var r2=0;r2<3;r2++) {
-    for (var c2=0;c2<7;c2++) {
-      if (grid[r2][c2]==='gio') gioCount++;
-      if (grid[r2][c2]==='and') andCount++;
+  for (var r=0; r<3; r++) {
+    for (var c=0; c<7; c++) {
+      var k = grid[r][c];
+      if (k && k !== 'empty' && empData[k]) {
+        empData[k].shifts.push({row: r, col: c, day: c});
+        empData[k].days++;
+        if (r === 0) empData[k].morning++;
+        else if (r === 1) empData[k].afternoon++;
+        else empData[k].night++;
+      }
     }
   }
-  if (gioCount > 6) issues.push({type:'err',msg:'Giovanna: '+gioCount+' turnos/semana — máximo 6 (6×1 CLT).'});
-  else if (gioCount > 5) issues.push({type:'warn',msg:'Giovanna: 6 dias/sem. (6×1). Sábado gera ~4h extras — use banco de horas.'});
 
-  if (andCount > 6) issues.push({type:'err',msg:'Anderson: '+andCount+' turnos/semana — máximo 6 (6×1 CLT).'});
-  else if (andCount > 5) issues.push({type:'warn',msg:'Anderson: 6 dias/sem. (6×1). Banco de horas recomendado.'});
+  // Analyze each employee
+  empKeys.forEach(k => {
+    var data = empData[k];
+    var emp = EMPS[k];
+    var name = emp.name;
 
-  // 2. Gabriel: 12×36 → max ~3-4 turnos por semana
-  var gabNight = 0;
-  for (var c3=0;c3<7;c3++) if (grid[2][c3]==='gab') gabNight++;
-  if (gabNight > 4) issues.push({type:'err',msg:'Gabriel: '+gabNight+' noites/sem. — 12×36 máx ~3-4 por semana (folga 36h).'});
-  else if (gabNight > 3) issues.push({type:'warn',msg:'Gabriel: 4 noites consecutivas possível no 12×36, mas confirme folgas de 36h.'});
+    if (data.days === 0) return; // not used
 
-  // 3. Gabriel in day shifts (wrong)
-  for (var r3=0;r3<2;r3++) for (var c4=0;c4<7;c4++) {
-    if (grid[r3][c4]==='gab') issues.push({type:'err',msg:'Gabriel no turno '+(r3===0?'manhã':'tarde')+'! Ele é noturno (12×36). Mova para a linha Noite.'});
-  }
+    // 1. Total days per week
+    if (data.days > 6) {
+      issues.push({type:'err', msg: name + ': ' + data.days + ' turnos/semana — máximo 6 (CLT).'});
+    } else if (data.days === 6) {
+      issues.push({type:'warn', msg: name + ': 6 turnos/semana. Verificar se é 6×1 ou 5×2 com banco de horas.'});
+    }
 
-  // 4. Night shift coverage check
+    // 2. Shift compatibility
+    if (emp.type === 'night_1236') {
+      if (data.morning > 0 || data.afternoon > 0) {
+        issues.push({type:'err', msg: name + ': Trabalha em turnos diurnos! Deve ser noturno (12×36).'});
+      }
+    }
+
+    // 3. Night shift analysis (for potential 12×36)
+    if (data.night > 0) {
+      // Check consecutive nights
+      var nightDays = [];
+      for (var c=0; c<7; c++) if (grid[2][c] === k) nightDays.push(c);
+      var consec = 0, maxConsec = 0;
+      for (var i=0; i<nightDays.length; i++) {
+        if (i > 0 && nightDays[i] === nightDays[i-1] + 1) consec++;
+        else consec = 1;
+        maxConsec = Math.max(maxConsec, consec);
+      }
+      if (maxConsec > 4) {
+        issues.push({type:'err', msg: name + ': ' + maxConsec + ' noites consecutivas — viola 12×36 (máx 3-4).'});
+      } else if (maxConsec > 3) {
+        issues.push({type:'warn', msg: name + ': ' + maxConsec + ' noites consecutivas. Possível em 12×36, mas verificar folgas de 36h.'});
+      }
+
+      // Total nights
+      if (data.night > 4) {
+        issues.push({type:'err', msg: name + ': ' + data.night + ' noites/semana — 12×36 máx ~3-4.'});
+      }
+    }
+
+    // 4. Weekly hours estimation
+    var hours = 0;
+    if (data.morning > 0) hours += data.morning * 8; // assume 8h morning
+    if (data.afternoon > 0) hours += data.afternoon * 8; // 8h afternoon
+    if (data.night > 0) hours += data.night * 12; // 12h night
+    if (hours > 44) { // 44h is limit for 6 days
+      issues.push({type:'warn', msg: name + ': ~' + hours + 'h/semana. Acima de 44h, verificar extras.'});
+    }
+
+    // 5. Interjornada (min 11h between shifts)
+    var sortedShifts = data.shifts.sort((a,b) => a.col - b.col || a.row - b.row);
+    for (var i=1; i<sortedShifts.length; i++) {
+      var prev = sortedShifts[i-1], curr = sortedShifts[i];
+      var prevEnd = prev.row === 0 ? sc.as : prev.row === 1 ? sc.ns : sc.ms + 24;
+      var currStart = curr.row === 0 ? sc.ms : curr.row === 1 ? sc.as : sc.ns;
+      var gap = currStart - prevEnd;
+      if (prev.col === curr.col) { // same day
+        if (gap < 11) {
+          issues.push({type:'err', msg: name + ': Interjornada de ' + gap + 'h no ' + DAY_NAMES[curr.col] + ' — mínimo 11h (Art. 66).'});
+        }
+      } else if (curr.col === prev.col + 1) { // next day
+        // overnight gap
+        var overnightGap = (24 - prevEnd) + currStart;
+        if (overnightGap < 11) {
+          issues.push({type:'err', msg: name + ': Interjornada overnight de ' + overnightGap + 'h — mínimo 11h.'});
+        }
+      }
+    }
+  });
+
+  // General checks
+  // Night coverage
   var nightGaps = 0;
-  for (var c5=0;c5<7;c5++) if (!grid[2][c5]) nightGaps++;
-  if (nightGaps > 0) issues.push({type:'warn',msg:nightGaps+' noite(s) sem cobertura. Hotel 24/7 exige cobertura noturna contínua.'});
+  for (var c=0; c<7; c++) if (!grid[2][c]) nightGaps++;
+  if (nightGaps > 0) issues.push({type:'warn', msg: nightGaps + ' noite(s) sem cobertura. Hotel 24/7 exige cobertura noturna.'});
 
-  // 5. Sunday coverage
-  var sunCoverage = (grid[0][0]||'')||(grid[1][0]||'');
-  if (!sunCoverage) issues.push({type:'warn',msg:'Domingo sem cobertura diurna. Verifique se o hotel opera normalmente aos domingos.'});
+  // Sunday coverage
+  var sunCoverage = grid[0][0] || grid[1][0];
+  if (!sunCoverage) issues.push({type:'warn', msg: 'Domingo sem cobertura diurna.'});
 
-  // 6. FDS Noturno: should only be in night row
-  for (var r4=0;r4<2;r4++) for (var c6=0;c6<7;c6++) {
-    if (grid[r4][c6]==='fds_n') issues.push({type:'warn',msg:'FDS Noturno colocado no turno '+(r4===0?'manhã':'tarde')+'. Esta modalidade cobre apenas a noite.'});
-  }
-
-  // 7. FDS Diurno: should not be in night row
-  for (var c7=0;c7<7;c7++) {
-    if (grid[2][c7]==='fds_d') issues.push({type:'warn',msg:'FDS Diurno colocado no turno Noite no col. '+DAY_NAMES[c7]+'. Deveria ser Manhã ou Tarde.'});
-  }
-
-  // 8. Freelancer: habituality risk
+  // Freelancer habituality
   var freeCount = 0;
-  for (var r5=0;r5<3;r5++) for (var c8=0;c8<7;c8++) if (grid[r5][c8]==='free') freeCount++;
-  if (freeCount >= 5) issues.push({type:'warn',msg:'Freelancer em '+freeCount+' turnos/sem. Uso habitual pode gerar vínculo empregatício (Art. 3° CLT).'});
+  for (var r=0; r<3; r++) for (var c=0; c<7; c++) if (grid[r][c] === 'free') freeCount++;
+  if (freeCount >= 5) issues.push({type:'warn', msg: 'Freelancer em ' + freeCount + ' turnos/sem. Risco de vínculo (Art. 3° CLT).'});
 
-  // 9. Same employee in 2 shifts same day (impossible)
-  for (var c9=0;c9<7;c9++) {
-    var dayEmps = [grid[0][c9],grid[1][c9],grid[2][c9]].filter(Boolean);
+  // Same employee in 2 shifts same day
+  for (var c=0; c<7; c++) {
+    var dayEmps = [grid[0][c], grid[1][c], grid[2][c]].filter(Boolean);
     var seen = {};
-    dayEmps.forEach(function(k){ if(seen[k]&&k!=='free'&&k!=='empty') issues.push({type:'err',msg:EMPS[k].name+' em 2 turnos no mesmo dia ('+DAY_NAMES[c9]+') — impossível!'});seen[k]=true;});
+    dayEmps.forEach(function(k) {
+      if (seen[k] && k !== 'free') issues.push({type:'err', msg: EMPS[k].name + ' em 2 turnos no ' + DAY_NAMES[c] + ' — impossível!'});
+      seen[k] = true;
+    });
   }
 
   // ── Render status ──
   var overall = document.getElementById('clt-overall');
-  var list    = document.getElementById('issue-list');
-  if (!overall||!list) return;
+  var list = document.getElementById('issue-list');
+  if (!overall || !list) return;
 
-  var hasErr  = issues.some(function(i){return i.type==='err';});
-  var hasWarn = issues.some(function(i){return i.type==='warn';});
+  var hasErr = issues.some(i => i.type === 'err');
+  var hasWarn = issues.some(i => i.type === 'warn');
 
   if (hasErr) {
     overall.className = 'clt-status clt-bad';
-    overall.innerHTML = '<div class="clt-icon">🚨</div><div><div class="clt-label">Violação CLT detectada</div><div class="clt-sub">Corrija os erros abaixo</div></div>';
+    overall.innerHTML = '<div class="clt-icon">🚨</div><div><div class="clt-label">Violação CLT</div><div class="clt-sub">Corrija os erros</div></div>';
   } else if (hasWarn) {
     overall.className = 'clt-status clt-warn';
-    overall.innerHTML = '<div class="clt-icon">⚠️</div><div><div class="clt-label">Atenção recomendada</div><div class="clt-sub">Veja alertas abaixo</div></div>';
+    overall.innerHTML = '<div class="clt-icon">⚠️</div><div><div class="clt-label">Atenção</div><div class="clt-sub">Veja alertas</div></div>';
   } else {
-    // Check if grid is empty
     var filled = 0;
-    for (var r6=0;r6<3;r6++) for(var c10=0;c10<7;c10++) if(grid[r6][c10]) filled++;
+    for (var r=0; r<3; r++) for (var c=0; c<7; c++) if (grid[r][c]) filled++;
     if (!filled) {
       overall.className = 'clt-status clt-ok';
-      overall.innerHTML = '<div class="clt-icon">📝</div><div><div class="clt-label">Grade vazia</div><div class="clt-sub">Selecione funcionários e clique nas células</div></div>';
+      overall.innerHTML = '<div class="clt-icon">📝</div><div><div class="clt-label">Grade vazia</div><div class="clt-sub">Adicione funcionários</div></div>';
     } else {
       overall.className = 'clt-status clt-ok';
-      overall.innerHTML = '<div class="clt-icon">✅</div><div><div class="clt-label">Escala válida</div><div class="clt-sub">Sem violações CLT identificadas</div></div>';
+      overall.innerHTML = '<div class="clt-icon">✅</div><div><div class="clt-label">Escala válida</div><div class="clt-sub">Sem violações</div></div>';
     }
   }
 
-  list.innerHTML = issues.map(function(i) {
-    var cls = i.type==='err' ? 'issue-err' : i.type==='warn' ? 'issue-warn' : 'issue-ok';
-    var icon = i.type==='err' ? '🚨' : i.type==='warn' ? '⚠️' : '✅';
-    return '<li class="issue-item '+cls+'"><span class="issue-icon">'+icon+'</span><span>'+i.msg+'</span></li>';
+  list.innerHTML = issues.map(i => {
+    var cls = i.type === 'err' ? 'issue-err' : i.type === 'warn' ? 'issue-warn' : 'issue-ok';
+    var icon = i.type === 'err' ? '🚨' : i.type === 'warn' ? '⚠️' : '✅';
+    return '<li class="issue-item ' + cls + '"><span class="issue-icon">' + icon + '</span><span>' + i.msg + '</span></li>';
   }).join('');
 
-  // Coverage bars
   updateCoverage();
 }
 
