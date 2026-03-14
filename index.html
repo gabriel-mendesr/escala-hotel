@@ -446,22 +446,23 @@ a{color:var(--blue);text-decoration:none}
   </div>
 
   <div class="tabs">
-    <button class="tab active" id="t-s1" onclick="showTab('s1')">A · 5×2 + Freelancer</button>
+    <button class="tab active" id="t-s6" onclick="showTab('s6')">F · Intermediários 12h <span class="pip ok"></span></button>
+    <button class="tab best" id="t-s10" onclick="showTab('s10')">K · 12×36 Revezamento</button>
+    <button class="tab best" id="t-s12" onclick="showTab('s12')">M · Interm. Noites</button>
+    <button class="tab best" id="t-sg" onclick="showTab('sg')">G · Folguista Coringa <span class="pip ok"></span></button>
+    <button class="tab best" id="t-s5" onclick="showTab('s5')">⭐ E · Misto Recomendado <span class="pip ok"></span></button>
     <button class="tab" id="t-s2" onclick="showTab('s2')">B · 12×36 Universal</button>
     <button class="tab" id="t-s3" onclick="showTab('s3')">C · Revezamento 6×1</button>
-    <button class="tab" id="t-s4" onclick="showTab('s4')">D · Gab Seg–Sex Noite <span class="pip warn"></span></button>
-    <button class="tab best" id="t-s5" onclick="showTab('s5')">⭐ E · Misto Recomendado <span class="pip ok"></span></button>
-    <button class="tab best" id="t-s6" onclick="showTab('s6')">F · Intermediários 12h <span class="pip ok"></span></button>
+    <button class="tab" id="t-s9" onclick="showTab('s9')">J · 6×1 Manhã + Free</button>
     <button class="tab" id="t-s7" onclick="showTab('s7')">H · 5×2 + Folguista</button>
     <button class="tab" id="t-s8" onclick="showTab('s8')">I · Misto Folguista</button>
-    <button class="tab" id="t-s9" onclick="showTab('s9')">J · 6×1 Manhã + Free</button>
-    <button class="tab best" id="t-s10" onclick="showTab('s10')">K · 12×36 Revezamento</button>
+    <button class="tab" id="t-s1" onclick="showTab('s1')">A · 5×2 + Freelancer</button>
     <button class="tab" id="t-s11" onclick="showTab('s11')">L · 5×2 + Free FDS</button>
-    <button class="tab best" id="t-s12" onclick="showTab('s12')">M · Interm. Noites</button>
+    <button class="tab" id="t-s4" onclick="showTab('s4')">D · Gab Seg–Sex Noite <span class="pip warn"></span></button>
   </div>
 
   <!-- ─ PANEL S1 ─ -->
-  <div class="panel active" id="panel-s1">
+  <div class="panel" id="panel-s1">
     <div class="two-col">
       <div class="col-l">
         <div class="ib"><h3>Proposta A — 5×2 + Freelancer</h3>
@@ -664,7 +665,7 @@ a{color:var(--blue);text-decoration:none}
   </div>
 
   <!-- ─ PANEL S6 ─ -->
-  <div class="panel" id="panel-s6">
+  <div class="panel active" id="panel-s6">
     <div class="two-col">
       <div class="col-l">
         <div class="ib"><h3>⭐ Proposta F — Intermediários 12h FDS</h3>
@@ -954,14 +955,14 @@ a{color:var(--blue);text-decoration:none}
   </div>
 
   <div class="tabs">
-    <button class="tab active" id="t-s13" onclick="showTab('s13')">N · Manhã 6h + Free</button>
-    <button class="tab" id="t-s14" onclick="showTab('s14')">O · Gabriel Manhã 6h</button>
-    <button class="tab" id="t-s15" onclick="showTab('s15')">P · Tarde 14h + Free</button>
+    <button class="tab active" id="t-s14" onclick="showTab('s14')">O · Gabriel Manhã 6h</button>
     <button class="tab" id="t-s16" onclick="showTab('s16')">Q · Gabriel Tarde 14h</button>
+    <button class="tab" id="t-s13" onclick="showTab('s13')">N · Manhã 6h + Free</button>
+    <button class="tab" id="t-s15" onclick="showTab('s15')">P · Tarde 14h + Free</button>
   </div>
 
   <!-- ─ PANEL S13 ─ -->
-  <div class="panel active" id="panel-s13">
+  <div class="panel" id="panel-s13">
     <div class="two-col">
       <div class="col-l">
         <div class="ib"><h3>Proposta N — Manhã às 6h + Freelancer</h3>
@@ -1002,7 +1003,7 @@ a{color:var(--blue);text-decoration:none}
   </div>
 
   <!-- ─ PANEL S14 ─ -->
-  <div class="panel" id="panel-s14">
+  <div class="panel active" id="panel-s14">
     <div class="two-col">
       <div class="col-l">
         <div class="ib"><h3>Proposta O — Gabriel na Manhã às 6h</h3>
@@ -1012,9 +1013,9 @@ a{color:var(--blue);text-decoration:none}
           <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/sem.</th><th>CLT</th></tr></thead>
           <tbody>
             <tr><td class="c-gio">Giovanna</td><td>6×1</td><td class="mono">06h–14h / 14h–22h</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>6×1</td><td class="mono">06h–14h / 22h–06h</td><td>~42h</td><td class="c-ok">✅</td></tr>
+            <tr><td class="c-gab">Gabriel</td><td>6×1</td><td class="mono">06h–14h</td><td>~42h</td><td class="c-ok">✅</td></tr>
             <tr><td class="c-and">Anderson</td><td>5×2</td><td class="mono">14h–22h</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-free">Freelancer</td><td>PJ/MEI</td><td>FDS</td><td>—</td><td class="c-warn">⚠ PJ</td></tr>
+            <tr><td class="c-folg">Folguista</td><td>Intermitente</td><td>FDS / noite</td><td>—</td><td class="c-ok">✅</td></tr>
           </tbody>
         </table>
         <div class="alert alert-info"><span class="ai">💡</span><div>Gabriel ganha experiência em turnos matinais, reduzindo dependência de freelancers</div></div>
@@ -1023,13 +1024,13 @@ a{color:var(--blue);text-decoration:none}
             <div class="cost-card"><div class="cv" id="c14-gio">—</div><div class="cl">Giovanna</div></div>
             <div class="cost-card"><div class="cv" id="c14-gab">—</div><div class="cl">Gabriel</div></div>
             <div class="cost-card"><div class="cv" id="c14-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c14-free">—</div><div class="cl">Freelancer</div></div>
+            <div class="cost-card"><div class="cv" id="c14-free">—</div><div class="cl">Folguista</div></div>
           </div>
           <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c14-tot">—</span></div>
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">Gabriel manhã</span><span class="tag tag-g">Revezamento</span>
-          <span class="tag tag-o">FDS freelancer</span>
+          <span class="tag tag-o">FDS folguista</span>
         </div>
       </div>
       <div class="col-r">
@@ -1094,9 +1095,9 @@ a{color:var(--blue);text-decoration:none}
           <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/sem.</th><th>CLT</th></tr></thead>
           <tbody>
             <tr><td class="c-gio">Giovanna</td><td>5×2</td><td class="mono">06h–14h</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>6×1</td><td class="mono">14h–22h / 22h–06h</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-and">Anderson</td><td>6×1</td><td class="mono">14h–22h / 06h–14h</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-free">Freelancer</td><td>PJ/MEI</td><td>FDS</td><td>—</td><td class="c-warn">⚠ PJ</td></tr>
+            <tr><td class="c-gab">Gabriel</td><td>6×1</td><td class="mono">14h–22h</td><td>~42h</td><td class="c-ok">✅</td></tr>
+            <tr><td class="c-and">Anderson</td><td>6×1</td><td class="mono">06h–14h</td><td>~42h</td><td class="c-ok">✅</td></tr>
+            <tr><td class="c-folg">Folguista</td><td>Intermitente</td><td>22h–06h</td><td>—</td><td class="c-ok">✅</td></tr>
           </tbody>
         </table>
         <div class="alert alert-info"><span class="ai">💡</span><div>Gabriel ganha experiência em turnos diurnos, reduzindo dependência de freelancers noturnos</div></div>
@@ -1105,13 +1106,13 @@ a{color:var(--blue);text-decoration:none}
             <div class="cost-card"><div class="cv" id="c16-gio">—</div><div class="cl">Giovanna</div></div>
             <div class="cost-card"><div class="cv" id="c16-gab">—</div><div class="cl">Gabriel</div></div>
             <div class="cost-card"><div class="cv" id="c16-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c16-free">—</div><div class="cl">Freelancer</div></div>
+            <div class="cost-card"><div class="cv" id="c16-free">—</div><div class="cl">Folguista</div></div>
           </div>
           <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c16-tot">—</span></div>
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">Gabriel tarde</span><span class="tag tag-g">Revezamento</span>
-          <span class="tag tag-o">FDS freelancer</span>
+          <span class="tag tag-o">FDS folguista</span>
         </div>
       </div>
       <div class="col-r">

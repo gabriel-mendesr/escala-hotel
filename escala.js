@@ -45,6 +45,18 @@ function SC() {
   };
 }
 
+function SC_shift(shift) {
+  var ms = shift.ms, as = shift.as, ns = shift.ns;
+  return {
+    ms: ms, as: as, ns: ns,
+    lM: ph(ms) + 'h–' + ph(as) + 'h',
+    lA: ph(as) + 'h–' + ph(ns) + 'h',
+    lN: ph(ns) + 'h–' + ph(ms) + 'h (+1 dia)',
+    lD: ph(ms) + 'h–' + ph(ns) + 'h (' + (ns - ms) + 'h)',
+    nDur: (ms + 24) - ns
+  };
+}
+
 // ── SALARIES & CHARGES ────────────────────────────────────────
 function SAL() {
   var s = CFG.salaries || {};
@@ -137,6 +149,7 @@ function FREE(regime) { return mk('Freelancer',       C.free, regime); }
 function FOLG(regime) { return mk('Folguista',        C.folg, regime); }
 function FDS_D(reg)   { return mk('Func. FDS Diurno', C.fds,  reg); }
 function FDS_N(reg)   { return mk('Func. FDS Noturno',C.fds,  reg); }
+function FOL(reg)     { return mk('Folguista', C.folg, reg); }
 function NOVO(reg)    { return mk('Novo Funcionário',  C.fds,  reg); }
 function XEMP()       { return mk('Func. X (saindo)', C.x, 'Saindo em breve', false, true); }
 var N = null; // célula vazia / vago
@@ -256,24 +269,28 @@ function buildScenarios() {
       })
     },
     s13: {
+      shift: {ms:6, as:14, ns:22},
       morning:   [FREE('Fim de semana'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), FREE('Fim de semana')],
       afternoon: [FREE('Fim de semana'), AND('5×2'), AND('5×2'), AND('5×2'), AND('5×2'), AND('5×2'), FREE('Fim de semana')],
       night:     GAB_A.map(function(g) { return g ? GAB('12×36') : FREE('Cobertura noturna'); })
     },
     s14: {
+      shift: {ms:6, as:14, ns:22},
       morning:   [N, GIO('6×1'), GAB('6×1 Manhã'), GIO('6×1'), GAB('6×1 Manhã'), GIO('6×1'), GAB('6×1 Manhã')],
       afternoon: [AND('Revezamento'), AND('6×1'), AND('6×1'), AND('6×1'), AND('6×1'), AND('6×1'), N],
-      night:     GAB_A.map(function(g) { return g ? GAB('12×36') : FREE('Cobertura noturna'); })
+      night:     GAB_A.map(function(g) { return g ? FOL('6×1 Noite') : FREE('Cobertura noturna'); })
     },
     s15: {
+      shift: {ms:6, as:14, ns:22},
       morning:   [FREE('Manhã freelancer'), FREE('Manhã freelancer'), FREE('Manhã freelancer'), FREE('Manhã freelancer'), FREE('Manhã freelancer'), FREE('Manhã freelancer'), FREE('Manhã freelancer')],
       afternoon: [FREE('Fim de semana'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), FREE('Fim de semana')],
       night:     GAB_A.map(function(g) { return g ? GAB('12×36') : FREE('Cobertura noturna'); })
     },
     s16: {
+      shift: {ms:6, as:14, ns:22},
       morning:   [AND('6×1 Manhã'), AND('6×1 Manhã'), AND('6×1 Manhã'), AND('6×1 Manhã'), AND('6×1 Manhã'), AND('6×1 Manhã'), N],
       afternoon: [GAB('6×1 Tarde'), GAB('6×1 Tarde'), GAB('6×1 Tarde'), GAB('6×1 Tarde'), GAB('6×1 Tarde'), GAB('6×1 Tarde'), N],
-      night:     GAB_A.map(function(g) { return g ? GAB('12×36') : FREE('Cobertura noturna'); })
+      night:     GAB_A.map(function(g) { return g ? FOL('6×1 Noite') : FREE('Cobertura noturna'); })
     }
   };
 }
@@ -294,9 +311,9 @@ var LEGS = {
   s11:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Anderson (5×2)',            c:C.and}, {n:'Gabriel (12×36)',          c:C.gab}, {n:'Freelancer FDS',             c:C.free}],
   s12:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Anderson (5×2)',            c:C.and}, {n:'Gabriel (12×36)',            c:C.gab}, {n:'Func. FDS (Tempo Parcial)',     c:C.fds}, {n:'Freelancer (lacunas)',        c:C.free}],
   s13:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Anderson (5×2)',            c:C.and}, {n:'Gabriel (12×36)',            c:C.gab}, {n:'Freelancer / PJ',             c:C.free}],
-  s14:   [{n:'Giovanna (6×1)',            c:C.gio}, {n:'Gabriel (6×1 Manhã)',       c:C.gab}, {n:'Anderson (6×1)',            c:C.and}, {n:'Freelancer noturno',           c:C.free}],
+  s14:   [{n:'Giovanna (6×1)',            c:C.gio}, {n:'Gabriel (6×1 Manhã)',       c:C.gab}, {n:'Anderson (6×1)',            c:C.and}, {n:'Folguista (noturno)',        c:C.folg}],
   s15:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Anderson (5×2)',            c:C.and}, {n:'Gabriel (12×36)',            c:C.gab}, {n:'Freelancer manhã + FDS',      c:C.free}],
-  s16:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Gabriel (6×1 Tarde)',       c:C.gab}, {n:'Anderson (6×1 Manhã)',       c:C.and}, {n:'Freelancer noturno',           c:C.free}]
+  s16:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Gabriel (6×1 Tarde)',       c:C.gab}, {n:'Anderson (6×1 Manhã)',       c:C.and}, {n:'Folguista (noturno)',        c:C.folg}]
 };
 
 // ── TABLE BUILDER (innerHTML puro — mais robusto) ─────────────
@@ -337,7 +354,7 @@ function buildTable(tableId, legendId, sched, legKey) {
     return;
   }
 
-  var sc = SC();
+  var sc = sched && sched.shift ? SC_shift(sched.shift) : SC();
 
   // ── Legenda ──
   if (legEl) {
@@ -555,23 +572,23 @@ function buildEncGrid() {
 function buildCmpTable(c) {
   var rows = [
     { n:'0 · Situação Atual',           fx:4, ex:'—',                dom:'❌', he:'Gio + And (hora extra)', c:c.c0, clt:'⚠ HE',       risk:'Médio'},
-    { n:'A · 5×2 + Freelancer',          fx:3, ex:'~32 diárias/mês', dom:'✅', he:'Nenhuma',               c:c.s1, clt:'✅ (PJ⚠)',   risk:'Baixo'},
+    { n:'F · Intermediários 12h FDS ⭐',  fx:5, ex:'2 intermediários',dom:'✅', he:'Nenhuma',               c:c.s6, clt:'✅ Perfeito', risk:'Mínimo',rec:true},
+    { n:'K · 12×36 Revezamento ⭐',        fx:3, ex:'—',                dom:'✅', he:'Nenhuma',               c:c.s10,clt:'✅ Perfeito', risk:'Mínimo',rec:true},
+    { n:'M · Interm. Noites ⭐',            fx:4, ex:'2 intermediários',dom:'✅', he:'Nenhuma',               c:c.s12,clt:'✅ Perfeito', risk:'Mínimo',rec:true},
+    { n:'G · Folguista Coringa ⭐',       fx:4, ex:'~12 noites/mês',  dom:'✅', he:'Folguista (B.Horas)',  c:c.sg, clt:'✅ (B.H)',    risk:'Mínimo',rec:true},
+    { n:'E · Misto Recomendado ⭐',       fx:3, ex:'~21 diárias/mês', dom:'✅', he:'Anderson (B.Horas)',   c:c.s5, clt:'✅ (B.H⚠)',  risk:'Baixo', rec:true},
     { n:'B · 12×36 Universal',           fx:4, ex:'—',                dom:'✅', he:'Nenhuma',               c:c.s2, clt:'✅ Perfeito', risk:'Mínimo'},
     { n:'C · Revezamento 6×1',           fx:3, ex:'~15 noites/mês',  dom:'✅', he:'Banco de horas',        c:c.s3, clt:'⚠ B.Horas', risk:'Baixo'},
-    { n:'D · Gabriel Seg–Sex Noite ⚠',   fx:3, ex:'~24 diárias/mês', dom:'✅', he:'ILEGAL (60h/sem.)',     c:c.s4, clt:'🚨 ILEGAL',  risk:'ALTO',  bad:true},
-    { n:'E · Misto Recomendado ⭐',       fx:3, ex:'~21 diárias/mês', dom:'✅', he:'Anderson (B.Horas)',   c:c.s5, clt:'✅ (B.H⚠)',  risk:'Baixo', rec:true},
-    { n:'F · Intermediários 12h FDS ⭐',  fx:5, ex:'2 intermediários',dom:'✅', he:'Nenhuma',               c:c.s6, clt:'✅ Perfeito', risk:'Mínimo',rec:true},
-    { n:'G · Folguista Coringa ⭐',       fx:4, ex:'~12 noites/mês',  dom:'✅', he:'Folguista (B.Horas)',  c:c.sg, clt:'✅ (B.H)',    risk:'Mínimo',rec:true},
+    { n:'O · Gabriel Manhã 6h',             fx:3, ex:'~15 noites/mês',  dom:'✅', he:'Revezamento',           c:c.s14,clt:'⚠ B.Horas',  risk:'Baixo'},
+    { n:'Q · Gabriel Tarde 14h',            fx:3, ex:'~15 noites/mês',  dom:'✅', he:'Revezamento',           c:c.s16,clt:'⚠ B.Horas',  risk:'Baixo'},
+    { n:'J · 6×1 Manhã + Free',            fx:3, ex:'~15 noites/mês',  dom:'✅', he:'Giovanna (B.Horas)',   c:c.s9, clt:'⚠ B.Horas',  risk:'Baixo'},
     { n:'H · 5×2 + Folguista',            fx:4, ex:'—',                dom:'✅', he:'Folguista (B.Horas)',  c:c.s7, clt:'✅ (B.H)',    risk:'Baixo'},
     { n:'I · Misto Folguista',             fx:4, ex:'—',                dom:'✅', he:'Folguista (B.Horas)',  c:c.s8, clt:'✅ (B.H)',    risk:'Baixo'},
-    { n:'J · 6×1 Manhã + Free',            fx:3, ex:'~15 noites/mês',  dom:'✅', he:'Giovanna (B.Horas)',   c:c.s9, clt:'⚠ B.Horas',  risk:'Baixo'},
-    { n:'K · 12×36 Revezamento ⭐',        fx:3, ex:'—',                dom:'✅', he:'Nenhuma',               c:c.s10,clt:'✅ Perfeito', risk:'Mínimo',rec:true},
-    { n:'L · 5×2 + Free FDS',              fx:3, ex:'~32 diárias/mês', dom:'✅', he:'Nenhuma',               c:c.s11,clt:'✅ (PJ⚠)',   risk:'Baixo'},
-    { n:'M · Interm. Noites ⭐',            fx:4, ex:'2 intermediários',dom:'✅', he:'Nenhuma',               c:c.s12,clt:'✅ Perfeito', risk:'Mínimo',rec:true},
     { n:'N · Manhã 6h + Free',              fx:3, ex:'~32 diárias/mês', dom:'✅', he:'Nenhuma',               c:c.s13,clt:'✅ (PJ⚠)',   risk:'Baixo'},
-    { n:'O · Gabriel Manhã 6h',             fx:3, ex:'~15 noites/mês',  dom:'✅', he:'Revezamento',           c:c.s14,clt:'⚠ B.Horas',  risk:'Baixo'},
     { n:'P · Tarde 14h + Free',             fx:3, ex:'~30 diárias/mês', dom:'❌', he:'Nenhuma',               c:c.s15,clt:'✅ (PJ⚠)',   risk:'Médio'},
-    { n:'Q · Gabriel Tarde 14h',            fx:3, ex:'~15 noites/mês',  dom:'✅', he:'Revezamento',           c:c.s16,clt:'⚠ B.Horas',  risk:'Baixo'}
+    { n:'A · 5×2 + Freelancer',          fx:3, ex:'~32 diárias/mês', dom:'✅', he:'Nenhuma',               c:c.s1, clt:'✅ (PJ⚠)',   risk:'Baixo'},
+    { n:'L · 5×2 + Free FDS',              fx:3, ex:'~32 diárias/mês', dom:'✅', he:'Nenhuma',               c:c.s11,clt:'✅ (PJ⚠)',   risk:'Baixo'},
+    { n:'D · Gabriel Seg–Sex Noite ⚠',   fx:3, ex:'~24 diárias/mês', dom:'✅', he:'ILEGAL (60h/sem.)',     c:c.s4, clt:'🚨 ILEGAL',  risk:'ALTO',  bad:true}
   ];
 
   var totals = rows.map(function(r) { return (r.c.fix || 0) + (r.c.free || 0); });
@@ -614,6 +631,7 @@ function calcAll() {
 
   var gio6  = sal.gio  * OVHD * (1 + HE / 100);
   var and6  = sal.and  * OVHD * (1 + HE / 100);
+  var gab6  = sal.gab  * OVHD * (1 + HE / 100);
   var gio5  = sal.gio  * OVHD;
   var and5  = sal.and  * OVHD;
   var gab   = sal.gab  * OVHD * NOTT;
@@ -626,6 +644,7 @@ function calcAll() {
 
   var s1free = 4.33 * 4 * fD + 15 * fN;
   var s3free = 15 * fN;
+  var s3folg = 15 * folg;
   var gabHE  = sal.gab * OVHD * NOTT * 1.36;
   var s4free = 4.33 * 4 * fD + 8  * fN;
   var s5free = 4.33 * 2 * fD + 12 * fN;
@@ -679,14 +698,14 @@ function calcAll() {
   sf('c13-gio', gio5);  sf('c13-and', and5);  sf('c13-gab', gab);  sf('c13-free', s1free);
   sf('c13-tot', gio5 + and5 + gab + s1free);
 
-  sf('c14-gio', gio6);  sf('c14-gab', gab);  sf('c14-and', and6);  sf('c14-free', s3free);
-  sf('c14-tot', gio6 + gab + and6 + s3free);
+  sf('c14-gio', gio6);  sf('c14-gab', gab6);  sf('c14-and', and6);  sf('c14-free', s3folg);
+  sf('c14-tot', gio6 + gab6 + and6 + s3folg);
 
   sf('c15-free', 4.33 * 7 * fD);  sf('c15-gio', gio5);  sf('c15-and', and5);  sf('c15-gab', gab);
   sf('c15-tot', 4.33 * 7 * fD + gio5 + and5 + gab);
 
-  sf('c16-gio', gio5);  sf('c16-gab', gab);  sf('c16-and', and6);  sf('c16-free', s3free);
-  sf('c16-tot', gio5 + gab + and6 + s3free);
+  sf('c16-gio', gio5);  sf('c16-gab', gab6);  sf('c16-and', and6);  sf('c16-free', 15 * folg);
+  sf('c16-tot', gio5 + gab6 + and6 + 15 * folg);
 
   // Análise CLT S6
   var interj   = sc.ns - sc.ms;
