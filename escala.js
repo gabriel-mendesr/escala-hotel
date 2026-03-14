@@ -232,6 +232,31 @@ var LEGS = {
 
 // ── TABLE BUILDER (innerHTML puro — mais robusto) ─────────────
 var DAY_NAMES = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+var selectedEmp = null;
+var SCENARIOS_DATA = null;
+
+// Seleciona um card na esquerda
+function selectCard(el, name, color) {
+  selectedEmp = { nome: name, cor: color, regime: 'Manual' };
+  document.querySelectorAll('.leg-card').forEach(function(c) { c.classList.remove('selected'); });
+  el.classList.add('selected');
+}
+
+// Aplica o funcionário selecionado à célula clicada
+function cellClick(scenarioKey, rowKey, dayIndex) {
+  if (!selectedEmp || !SCENARIOS_DATA) return;
+  
+  // Atualiza o dado no objeto global para persistir a edição
+  SCENARIOS_DATA[scenarioKey][rowKey][dayIndex] = {
+    nome: selectedEmp.nome,
+    cor: selectedEmp.cor,
+    regime: selectedEmp.regime
+  };
+  
+  // Re-renderiza para mostrar a mudança imediatamente
+  renderAll();
+  if (typeof calcAll === 'function') calcAll();
+}
 
 function buildTable(tableId, legendId, sched, legKey) {
   var tableTarget = gi(tableId);
@@ -253,7 +278,10 @@ function buildTable(tableId, legendId, sched, legKey) {
       var parts = l.n.split(' ');
       var name = parts.shift();
       var details = parts.join(' ');
-      return '<div class="leg-card">' +
+      
+      var isSelected = selectedEmp && selectedEmp.nome === name ? ' selected' : '';
+      // Ativado: Clique para selecionar e Draggable para arrastar
+      return '<div class="leg-card' + isSelected + '" onclick="selectCard(this, \''+name+'\', \''+l.c+'\')" draggable="true" ondragstart="event.dataTransfer.setData(\'text/plain\', JSON.stringify({n:\''+name+'\',c:\''+l.c+'\'}))">' +
              '<div class="leg-dot" style="background:' + l.c + '"></div>' +
              '<div class="leg-info"><strong>' + name + '</strong><span>' + (details || 'Fixo') + '</span></div>' +
              '</div>';
@@ -296,15 +324,20 @@ function buildTable(tableId, legendId, sched, legKey) {
       if (ri === 1 && colSpanned[ci]) continue;
 
       var cell = rowData[ci] != null ? rowData[ci] : null;
+      
+      // Handlers de clique e drop para cada célula
+      var cellAttr = ' onclick="cellClick(\''+legKey+'\', \''+rowKeys[ri]+'\', '+ci+')" ' +
+                     ' ondragover="event.preventDefault()" ' +
+                     ' ondrop="var d=JSON.parse(event.dataTransfer.getData(\'text/plain\')); selectedEmp={nome:d.n, cor:d.c, regime:\'Manual\'}; cellClick(\''+legKey+'\', \''+rowKeys[ri]+'\', '+ci+')"';
 
       if (!cell) {
         // Vago / sem cobertura
-        html += '<td class="sc sc-empty"><div class="sc-inner"><span class="sc-empty-lbl">Vago</span></div></td>';
+        html += '<td class="sc sc-empty"' + cellAttr + '><div class="sc-inner"><span class="sc-empty-lbl">Vago</span></div></td>';
 
       } else if (cell.fullDay && ri === 0) {
         // Turno de 12h diurno: ocupa manhã + tarde
         var opacity = cell.faded ? ' style="opacity:.5"' : '';
-        html += '<td class="sc sc-tall' + (cell.warn ? ' sc-warn' : '') + '" rowspan="2" style="background:' + cell.cor + ';' + (cell.faded ? 'opacity:.5' : '') + '">';
+        html += '<td class="sc sc-tall' + (cell.warn ? ' sc-warn' : '') + '" rowspan="2" style="background:' + cell.cor + ';' + (cell.faded ? 'opacity:.5' : '') + '"' + cellAttr + '>';
         html += '<div class="sc-inner">';
         html += '<span class="sc-name">' + (cell.warn ? '⚠ ' : '') + cell.nome + '</span>';
         html += '<span class="sc-sub">' + sc.lD + '</span>';
@@ -314,7 +347,7 @@ function buildTable(tableId, legendId, sched, legKey) {
 
       } else {
         // Célula normal
-        html += '<td class="sc' + (cell.warn ? ' sc-warn' : '') + '" style="background:' + cell.cor + ';' + (cell.faded ? 'opacity:.5' : '') + '">';
+        html += '<td class="sc' + (cell.warn ? ' sc-warn' : '') + '" style="background:' + cell.cor + ';' + (cell.faded ? 'opacity:.5' : '') + '"' + cellAttr + '>';
         html += '<div class="sc-inner">';
         html += '<span class="sc-name">' + (cell.warn ? '⚠ ' : '') + cell.nome + '</span>';
         if (cell.regime) html += '<span class="sc-badge' + (cell.warn ? ' warn' : '') + '">' + cell.regime + '</span>';
@@ -333,15 +366,15 @@ function buildTable(tableId, legendId, sched, legKey) {
 
 // ── RENDER ALL TABLES ─────────────────────────────────────────
 function renderAll() {
-  var sc = buildScenarios();
-  buildTable('gantt-atual', 'leg-atual', sc.atual, 'atual');
-  buildTable('gantt-s1',    'leg-s1',   sc.s1,    'base');
-  buildTable('gantt-s2',    'leg-s2',   sc.s2,    's2');
-  buildTable('gantt-s3',    'leg-s3',   sc.s3,    's3');
-  buildTable('gantt-s4',    'leg-s4',   sc.s4,    's4');
-  buildTable('gantt-s5',    'leg-s5',   sc.s5,    'base');
-  buildTable('gantt-s6',    'leg-s6',   sc.s6,    's6');
-  buildTable('gantt-sg',    'leg-sg',   sc.sg,    'sg');
+  if (!SCENARIOS_DATA) SCENARIOS_DATA = buildScenarios();
+  buildTable('gantt-atual', 'leg-atual', SCENARIOS_DATA.atual, 'atual');
+  buildTable('gantt-s1',    'leg-s1',   SCENARIOS_DATA.s1,    'base');
+  buildTable('gantt-s2',    'leg-s2',   SCENARIOS_DATA.s2,    's2');
+  buildTable('gantt-s3',    'leg-s3',   SCENARIOS_DATA.s3,    's3');
+  buildTable('gantt-s4',    'leg-s4',   SCENARIOS_DATA.s4,    's4');
+  buildTable('gantt-s5',    'leg-s5',   SCENARIOS_DATA.s5,    'base');
+  buildTable('gantt-s6',    'leg-s6',   SCENARIOS_DATA.s6,    's6');
+  buildTable('gantt-sg',    'leg-sg',   SCENARIOS_DATA.sg,    'sg');
 }
 
 // ── LABEL UPDATES ─────────────────────────────────────────────
@@ -592,5 +625,8 @@ function init() {
 // Necessário porque os onclick do HTML chamam diretamente
 window.showTab = showTab;
 window.init    = init;
+window.selectCard = selectCard;
+window.cellClick = cellClick;
+window.recalcAll = calcAll;
 
 document.addEventListener('DOMContentLoaded', init);
