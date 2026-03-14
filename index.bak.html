@@ -117,9 +117,33 @@ h3{font-size:.9rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase
 .col-l{padding:24px;border-right:1px solid var(--border)}
 .col-r{padding:24px;background:rgba(0,0,0,.12)}
 
+/* === GANTT LAYOUT (Tabela no meio, Cards à esquerda) === */
+.gantt-container {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+@media(max-width:1200px) { .gantt-container { flex-direction: column; } }
+
+/* === LEGEND AS CARDS === */
+.gantt-legend {
+  display: flex;
+  flex-direction: column; /* Alinhamento Vertical */
+  min-width: 200px;
+  flex-shrink: 0;
+}
+.leg-card {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; display: flex; align-items: center; gap: 10px;
+  margin-bottom: 8px; width: 100%; border-left: 3px solid transparent;
+}
+.leg-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.leg-info { display: flex; flex-direction: column; line-height: 1.2; }
+.leg-info strong { font-size: 0.8rem; color: var(--text); }
+.leg-info span { font-size: 0.65rem; color: var(--muted2); }
+
 /* === GRADE DE TURNOS (Y=turno, X=dias dom→sáb) === */
 .gantt-title{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--blue2);margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.gantt-legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .leg{display:flex;align-items:center;gap:5px;font-size:.73rem;color:var(--muted2)}
 .leg-box{width:11px;height:11px;border-radius:3px;flex-shrink:0}
 .sched-wrap{border-radius:8px;overflow:hidden;border:1px solid var(--border)}
@@ -378,8 +402,10 @@ h3{font-size:.9rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase
         <div class="gantt-title">📊 COBERTURA 24H POR DIA — SITUAÇÃO ATUAL
           <span style="font-size:.65rem;color:var(--muted);font-weight:400;text-transform:none">cada barra = turno ativo</span>
         </div>
-        <div class="gantt-legend" id="leg-atual"></div>
-        <div class="sched-wrap"><table id="gantt-atual"></table></div>
+        <div class="gantt-container">
+          <div class="gantt-legend" id="leg-atual"></div>
+          <div class="sched-wrap"><table id="gantt-atual"></table></div>
+        </div>
         <div class="mt12" style="font-size:.75rem;color:var(--muted2)">
           ⤷ 12×36 exibido em ciclo: <span style="color:var(--gab)">semana A (Gabriel)</span> / <span style="color:var(--muted)">semana B (X — saindo)</span>. Sem X, linha B fica vermelha (vago).
         </div>

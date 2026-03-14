@@ -234,11 +234,12 @@ var LEGS = {
 var DAY_NAMES = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
 
 function buildTable(tableId, legendId, sched, legKey) {
-  var wrapper = gi(tableId) ? gi(tableId).parentNode : null;
+  var tableTarget = gi(tableId);
   var legEl   = gi(legendId);
 
-  if (!wrapper) {
-    console.error('buildTable: parent wrapper not found for', tableId);
+  if (!tableTarget) {
+    // Se o ID sumiu (devido ao bug de innerHTML), tentamos encontrar pelo seletor de classe no container
+    // mas o ideal é garantir que o ID permaneça no re-render.
     return;
   }
 
@@ -248,12 +249,20 @@ function buildTable(tableId, legendId, sched, legKey) {
   if (legEl) {
     var legItems = (LEGS[legKey] || []);
     legEl.innerHTML = legItems.map(function(l) {
-      return '<div class="leg"><div class="leg-box" style="background:' + l.c + '"></div>' + l.n + '</div>';
+      // Transformando legenda em mini-cards informativos
+      var parts = l.n.split(' ');
+      var name = parts.shift();
+      var details = parts.join(' ');
+      return '<div class="leg-card">' +
+             '<div class="leg-dot" style="background:' + l.c + '"></div>' +
+             '<div class="leg-info"><strong>' + name + '</strong><span>' + (details || 'Fixo') + '</span></div>' +
+             '</div>';
     }).join('');
   }
 
   // ── Monta HTML da tabela como string ──
-  var html = '<table class="sched">';
+  // Importante: Manter o tableId aqui para que gi(tableId) funcione em renders futuros
+  var html = '<table id="' + tableId + '" class="sched">';
 
   // Cabeçalho: linha com nomes dos dias
   html += '<thead><tr>';
@@ -318,8 +327,8 @@ function buildTable(tableId, legendId, sched, legKey) {
 
   html += '</tbody></table>';
 
-  // Substitui o conteúdo do wrapper (sched-wrap)
-  wrapper.innerHTML = html;
+  // Usamos outerHTML para substituir o placeholder/tabela antiga preservando a estrutura
+  tableTarget.outerHTML = html;
 }
 
 // ── RENDER ALL TABLES ─────────────────────────────────────────
