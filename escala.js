@@ -1,485 +1,520 @@
-/* =============================================================
-   escala.js — Hotel 24/7 · v3
-   Lê configurações do localStorage (salvas em config.html)
-   ============================================================= */
+/* ============================================================
+   escala.js — Hotel 24/7 · v4 · 2026
+   Self-contained. Reads from localStorage (set by config.html).
+   ============================================================ */
 'use strict';
 
-const STORAGE_KEY = 'hotel_escala_config';
-
-// ── DEFAULTS ──────────────────────────────────────────────────
-const CFG_DEFAULTS = {
-  morningStart:7, afternoonStart:15, nightStart:19,
+// ── CONFIG ────────────────────────────────────────────────────
+const STORE_KEY = 'hotel_escala_config';
+let CFG = { morningStart:7, afternoonStart:15, nightStart:19,
   salaries:{ giovanna:1700, anderson:2100, gabriel:1800, folguista:1500,
     freelancer:250, intermitente:220, fdsDay:491, fdsNight:982 },
   charges:{ inss:20, rat:2, terceiros:5.8, fgts:8,
-    ferias:11.11, decimo:8.33, fgtsProv:1.92, noturno:20 }
-};
+    ferias:11.11, decimo:8.33, fgtsProv:1.92, noturno:20 } };
 
-let _cfg = JSON.parse(JSON.stringify(CFG_DEFAULTS));
-
-function loadStoredConfig() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) _cfg = JSON.parse(raw);
-  } catch(e) { /* keep defaults */ }
+function loadCFG() {
+  try { const r = localStorage.getItem(STORE_KEY); if (r) CFG = JSON.parse(r); }
+  catch(e) { /* use defaults */ }
 }
 
 // ── UTILS ─────────────────────────────────────────────────────
-const $ = id => document.getElementById(id);
-const pad = h => { h=((h%24)+24)%24; return h<10?'0'+h:''+h; };
-const fmt = v => 'R$\u00a0'+Math.round(v).toLocaleString('pt-BR');
-const setEl  = (id,v) => { const e=$(id); if(e) e.textContent=v; };
-const setFmt = (id,v) => setEl(id,fmt(v));
-const setVal = (id,v) => { const e=$(id); if(e) e.value=v; };
+const $  = id => document.getElementById(id);
+const p  = h  => { h=((h%24)+24)%24; return (h<10?'0':'')+h; };
+const fm = v  => 'R$\u00a0'+Math.round(+v||0).toLocaleString('pt-BR');
+const se = (id,v) => { const e=$(id); if(e) e.textContent=v; };
+const sf = (id,v) => se(id, fm(v));
+const sv = (id,v) => { const e=$(id); if(e) e.value=v; };
 
-// ── CONFIG ────────────────────────────────────────────────────
-function getCfg() {
-  const ms = _cfg.morningStart   ?? 7;
-  const as_ = _cfg.afternoonStart ?? 15;
-  const ns = _cfg.nightStart     ?? 19;
+// ── SHIFT CONFIG ──────────────────────────────────────────────
+function shiftCfg() {
+  const ms = +CFG.morningStart   || 7;
+  const as = +CFG.afternoonStart || 15;
+  const ns = +CFG.nightStart     || 19;
+  return { ms, as, ns,
+    lM: `${p(ms)}h–${p(as)}h`,
+    lA: `${p(as)}h–${p(ns)}h`,
+    lN: `${p(ns)}h–${p(ms)}h(+1)`,
+    lD: `${p(ms)}h–${p(ns)}h (${ns-ms}h)`,
+    mDur: as-ms, aDur: ns-as, nDur: (ms+24)-ns };
+}
+
+// ── SALARIES & CHARGES ────────────────────────────────────────
+function SAL() {
+  const s = CFG.salaries || {};
+  // also read live inputs if they exist (for future inline editing)
+  const lv = (id, def) => { const e=$(id); return e && +e.value ? +e.value : (s[def] || 0); };
   return {
-    ms, as:as_, ns,
-    morningEnd: as_, afternoonEnd: ns,
-    mDur: as_-ms, aDur: ns-as_, nDur: (ms+24)-ns,
-    lMorn:  `${pad(ms)}h–${pad(as_)}h`,
-    lAft:   `${pad(as_)}h–${pad(ns)}h`,
-    lNight: `${pad(ns)}h–${pad(ms)}h(+1)`,
-    lDay:   `${pad(ms)}h–${pad(ns)}h (${ns-ms}h)`,
+    gio:  lv('s-gio',  'giovanna')    || 1700,
+    and:  lv('s-and',  'anderson')    || 2100,
+    gab:  lv('s-gab',  'gabriel')     || 1800,
+    free: lv('s-free', 'freelancer')  || 250,
+    int:  lv('s-int',  'intermitente')|| 220,
+    fds:  lv('s-fds',  'fdsDay')      || 491,
+    fds2: lv('s-fds2', 'fdsNight')    || 982,
+    folg: lv('s-folg', 'folguista')   || 1500,
   };
 }
 
-function getSal() {
-  const s = _cfg.salaries || {};
-  const lv = id => { const e=$(id); return e ? +e.value||0 : 0; };
-  return {
-    gio:  lv('s-gio')  || s.giovanna     || 1700,
-    and:  lv('s-and')  || s.anderson     || 2100,
-    gab:  lv('s-gab')  || s.gabriel      || 1800,
-    free: lv('s-free') || s.freelancer   || 250,
-    int:  lv('s-int')  || s.intermitente || 220,
-    fds:  lv('s-fds')  || s.fdsDay       || 491,
-    fds2: lv('s-fds2') || s.fdsNight     || 982,
-    folg: lv('s-folg') || s.folguista    || 1500,
-  };
+function ENC() {
+  const c = CFG.charges || {};
+  const g = (k,d) => +c[k] || d;
+  const inss=g('inss',20), rat=g('rat',2), terc=g('terceiros',5.8), fgts=g('fgts',8);
+  const fer=g('ferias',11.11), e13=g('decimo',8.33), fp=g('fgtsProv',1.92), not=g('noturno',20);
+  return { inss,rat,terc,fgts,fer,e13,fp,not,
+    emp: inss+rat+terc+fgts,
+    prov: fer+e13+fp,
+    total: inss+rat+terc+fgts+fer+e13+fp };
 }
 
-function getEnc() {
-  const c = _cfg.charges || {};
-  const lv = id => { const e=$(id); return e ? parseFloat(e.value)||0 : 0; };
-  const inss=lv('enc-inss')||c.inss||20, rat=lv('enc-rat')||c.rat||2,
-        terc=lv('enc-terc')||c.terceiros||5.8, fgts=lv('enc-fgts')||c.fgts||8,
-        fer=lv('enc-fer')||c.ferias||11.11, e13=lv('enc-13')||c.decimo||8.33,
-        fp=lv('enc-fp')||c.fgtsProv||1.92, not=lv('enc-not')||c.noturno||20;
-  return {inss,rat,terc,fgts,fer,e13,fp,not,
-    emp:inss+rat+terc+fgts, prov:fer+e13+fp, total:inss+rat+terc+fgts+fer+e13+fp};
+// ── SYNC HIDDEN INPUTS ────────────────────────────────────────
+function syncInputs() {
+  const sal = SAL(), enc = ENC(), s = shiftCfg();
+  // Salary inputs
+  sv('s-gio',sal.gio); sv('s-and',sal.and); sv('s-gab',sal.gab);
+  sv('s-free',sal.free); sv('s-int',sal.int);
+  sv('s-fds',sal.fds); sv('s-fds2',sal.fds2); sv('s-folg',sal.folg);
+  // Charge inputs
+  sv('enc-inss',enc.inss); sv('enc-rat',enc.rat); sv('enc-terc',enc.terc);
+  sv('enc-fgts',enc.fgts); sv('enc-fer',enc.fer); sv('enc-13',enc.e13);
+  sv('enc-fp',enc.fp); sv('enc-not',enc.not);
+  // Config bar chips
+  se('b-morn',  `${p(s.ms)}h–${p(s.as)}h Manhã`);
+  se('b-aft',   `${p(s.as)}h–${p(s.ns)}h Tarde`);
+  se('b-night', `${p(s.ns)}h–${p(s.ms)}h Noite`);
+  se('b-gio',   `Giovanna ${fm(sal.gio)}`);
+  se('b-and',   `Anderson ${fm(sal.and)}`);
+  se('b-gab',   `Gabriel ${fm(sal.gab)}`);
+  se('b-enc',   `${enc.total.toFixed(1)}% encargos`);
 }
 
-function syncConfigBar() {
-  const s=_cfg.salaries||{}, c=_cfg.charges||{};
-  setVal('s-gio',  s.giovanna||1700);   setVal('s-and',  s.anderson||2100);
-  setVal('s-gab',  s.gabriel||1800);    setVal('s-free', s.freelancer||250);
-  setVal('s-int',  s.intermitente||220);setVal('s-fds',  s.fdsDay||491);
-  setVal('s-fds2', s.fdsNight||982);    setVal('s-folg', s.folguista||1500);
-  setVal('enc-inss',c.inss||20);        setVal('enc-rat', c.rat||2);
-  setVal('enc-terc',c.terceiros||5.8);  setVal('enc-fgts',c.fgts||8);
-  setVal('enc-fer', c.ferias||11.11);   setVal('enc-13',  c.decimo||8.33);
-  setVal('enc-fp',  c.fgtsProv||1.92);  setVal('enc-not', c.noturno||20);
-  const cfg=getCfg();
-  setEl('active-shift-label', `${pad(cfg.ms)}h / ${pad(cfg.ns)}h`);
-}
-
-// ── EMP COST ──────────────────────────────────────────────────
-function empCost(sal, opts={}) {
-  const enc=getEnc(), {hePct=0,noturno=false}=opts;
-  const adicHE=sal*(hePct/100), adicNot=noturno?sal*(enc.not/100):0;
-  const gross=sal+adicHE+adicNot, encV=gross*(enc.emp/100), provV=gross*(enc.prov/100);
-  return {base:sal,adicHE,adicNot,gross,encV,provV,total:gross+encV+provV};
-}
-
-// ── GANTT BUILDER ─────────────────────────────────────────────
-const DAY_HDR = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-
-function buildGantt(tableId, legendId, sched, opts={}) {
-  const table=$(tableId), legEl=$(legendId);
-  if (!table||!sched) return;
-  const cfg=getCfg();
-  if (legEl) legEl.innerHTML=(opts.legend||[]).map(l=>
-    `<div class="leg"><div class="leg-box" style="background:${l.color}"></div>${l.name}</div>`).join('');
-  table.innerHTML=''; table.className='sched';
-  const SHIFTS=[
-    {key:'morning',  label:'☀️ Manhã', hours:cfg.lMorn },
-    {key:'afternoon',label:'🌆 Tarde', hours:cfg.lAft  },
-    {key:'night',    label:'🌙 Noite', hours:cfg.lNight},
-  ];
-  const thead=document.createElement('thead'), hrow=document.createElement('tr');
-  const th0=document.createElement('th');
-  th0.className='shift-lbl'; th0.style.cssText='border:1px solid var(--border)';
-  hrow.appendChild(th0);
-  DAY_HDR.forEach((d,i)=>{
-    const th=document.createElement('th');
-    th.className='day-h'+(i===0?' sun':''); th.textContent=d; hrow.appendChild(th);
-  });
-  thead.appendChild(hrow); table.appendChild(thead);
-  const afternoonSkip=new Array(7).fill(false), tbody=document.createElement('tbody');
-  SHIFTS.forEach((shift,si)=>{
-    const tr=document.createElement('tr'), lbl=document.createElement('td');
-    lbl.className='shift-lbl';
-    lbl.innerHTML=`<span class="sl-name">${shift.label}</span><span class="sl-hours">${shift.hours}</span>`;
-    tr.appendChild(lbl);
-    for(let col=0;col<7;col++){
-      if(si===1&&afternoonSkip[col]) continue;
-      const cell=(sched[shift.key]||[])[col]??null, td=document.createElement('td');
-      if(!cell){
-        td.className='sc sc-empty';
-        td.innerHTML='<div class="sc-inner"><span class="sc-empty-lbl">Vago</span></div>';
-      } else if(cell.fullDay&&si===0){
-        td.className='sc sc-tall'+(cell.warn?' sc-warn':'');
-        td.setAttribute('rowspan','2'); td.style.background=cell.color;
-        if(cell.faded) td.style.opacity='0.45';
-        td.innerHTML=`<div class="sc-inner">
-          <span class="sc-name">${cell.name}</span>
-          <span class="sc-sub">${cfg.lDay}</span>
-          ${cell.badge?`<span class="sc-badge${cell.warn?' warn':''}">${cell.badge}</span>`:''}
-        </div>`;
-        afternoonSkip[col]=true;
-      } else {
-        td.className='sc'+(cell.warn?' sc-warn':'');
-        td.style.background=cell.color;
-        if(cell.faded) td.style.opacity='0.45';
-        td.innerHTML=`<div class="sc-inner">
-          <span class="sc-name">${cell.warn?'⚠ ':''}${cell.name}</span>
-          ${cell.badge?`<span class="sc-badge${cell.warn?' warn':''}">${cell.badge}</span>`:''}
-        </div>`;
-      }
-      tr.appendChild(td);
-    }
-    tbody.appendChild(tr);
-  });
-  table.appendChild(tbody);
+// ── EMPLOYEE COST ─────────────────────────────────────────────
+function empCost(sal, hePct, noturno) {
+  const enc = ENC();
+  const adicHE  = sal * (hePct/100);
+  const adicNot = noturno ? sal*(enc.not/100) : 0;
+  const gross   = sal + adicHE + adicNot;
+  return { base:sal, adicHE, adicNot, gross,
+    encV:  gross*(enc.emp/100),
+    provV: gross*(enc.prov/100),
+    total: gross*(1+(enc.emp+enc.prov)/100) };
 }
 
 // ── CELL FACTORIES ────────────────────────────────────────────
-const C_GIO='rgba(224,122,122,.82)',C_AND='rgba(80,144,224,.82)',C_GAB='rgba(78,200,148,.82)';
-const C_FREE='rgba(212,168,75,.75)',C_NEW='rgba(144,96,208,.82)',C_FOLG='rgba(212,168,75,.92)';
-const C_WARN='rgba(224,80,80,.85)', C_X='rgba(110,110,140,.65)';
-const mk=(name,color,badge,warn,faded,fullDay)=>({name,color,badge:badge||null,warn:!!warn,faded:!!faded,fullDay:!!fullDay});
-const GIO=(b,w)=>mk('Giovanna',  C_GIO,  b,w);
-const AND=(b,w)=>mk('Anderson',  C_AND,  b,w);
-const GAB=(b,w)=>mk('Gabriel',   w?C_WARN:C_GAB,b,w);
-const FREE=b   =>mk('Freelancer',C_FREE, b);
-const NEW=b    =>mk('T.Parcial', C_NEW,  b);
-const FOLG=b   =>mk('Folguista', C_FOLG, b);
-const GGIO=b   =>mk('Giovanna',  C_GIO,  b,false,false,true);
-const GAND=b   =>mk('Anderson',  C_AND,  b,false,false,true);
-const GNEW=b   =>mk('Novo 12×36',C_NEW,  b,false,false,true);
-const GFDS_D=b =>mk('FDS Diurno',C_NEW,  b,false,false,true);
-const FDS_N=b  =>mk('FDS Noturno',C_NEW, b);
-const X_EMP=() =>mk('Func.X',   C_X,'saindo',false,true);
-const NULL_C=null;
-const GAB_A=[true,false,true,false,true,false,true]; // Dom,Ter,Qui,Sáb
+// Light-theme colors with good contrast on white-ish backgrounds
+const C = {
+  gio:  'rgba(192,57,43,.85)',  // deep red
+  and:  'rgba(26,111,196,.85)', // blue
+  gab:  'rgba(26,153,80,.85)',  // green
+  free: 'rgba(184,134,11,.85)', // amber
+  folg: 'rgba(123,63,160,.85)', // purple
+  new_: 'rgba(14,116,144,.85)', // teal
+  warn: 'rgba(220,38,38,.90)',  // red for illegal
+  x:    'rgba(120,120,140,.6)', // grey for func X
+};
 
-// ── SCENARIOS ─────────────────────────────────────────────────
-function getScenarios() {
-  const atual={
-    morning:  [NULL_C,GIO(),GIO(),GIO(),GIO(),GIO(),GIO()],
-    afternoon:[NULL_C,AND(),AND(),AND(),AND(),AND(),AND()],
-    night:    GAB_A.map(g=>g?GAB('12×36'):X_EMP()),
-  };
-  const s1={
-    morning:  [FREE('FDS'),GIO(),GIO(),GIO(),GIO(),GIO(),FREE('FDS')],
-    afternoon:[FREE('FDS'),AND(),AND(),AND(),AND(),AND(),FREE('FDS')],
-    night:    GAB_A.map(g=>g?GAB('12×36'):FREE('gap')),
-  };
-  const s2={
-    morning:  [GGIO('12×36'),GAND('12×36'),GGIO('12×36'),GAND('12×36'),GGIO('12×36'),GAND('12×36'),GAND('12×36')],
-    afternoon:[NULL_C,NULL_C,NULL_C,NULL_C,NULL_C,NULL_C,NULL_C],
-    night:    GAB_A.map(g=>g?GAB('12×36'):GNEW('12×36')),
-  };
-  const s3={
-    morning:  [NULL_C,GIO(),GIO(),GIO(),GIO(),GIO(),GIO()],
-    afternoon:[AND('rev'),AND(),AND(),AND(),AND(),AND(),NULL_C],
-    night:    GAB_A.map(g=>g?GAB('12×36'):FREE('gap')),
-  };
-  const s4={
-    morning:  [FREE('FDS'),GIO(),GIO(),GIO(),GIO(),GIO(),FREE('FDS')],
-    afternoon:[FREE('FDS'),AND(),AND(),AND(),AND(),AND(),FREE('FDS')],
-    night:[FREE('FDS'),GAB('⚠60h',true),GAB('⚠ilegal',true),GAB('⚠ilegal',true),GAB('⚠ilegal',true),GAB('⚠ilegal',true),FREE('FDS')],
-  };
-  const s5={
-    morning:  [FREE('Dom'),GIO(),GIO(),GIO(),GIO(),GIO(),AND('banco h.')],
-    afternoon:[FREE('Dom'),AND(),AND(),AND(),AND(),AND(),AND()],
-    night:    GAB_A.map(g=>g?GAB('12×36'):FREE('gap')),
-  };
-  // F: FDS Diurno (Sáb 12h fullDay) + FDS Noturno (Sáb+Dom noite 12h each)
-  const s6={
-    morning:  [NULL_C,      GIO(),GIO(),GIO(),GIO(),GIO(), GFDS_D('Sáb·12h')],
-    afternoon:[NULL_C,      AND(),AND(),AND(),AND(),AND(), NULL_C],// Sáb spanned by GFDS_D
-    night:    GAB_A.map((g,i)=>{
-      if(i===0) return FDS_N('Dom·12h'); // Dom noite
-      if(i===6) return FDS_N('Sáb·12h'); // Sáb noite
-      return g?GAB('12×36'):FREE('gap');
-    }),
-  };
-  const sg={
-    morning:  [NULL_C,    GIO(),GIO(),GIO(),GIO(),GIO(),FOLG('FDS')],
-    afternoon:[FOLG('FDS'),AND(),AND(),AND(),AND(),AND(),AND()],
-    night:    GAB_A.map(g=>g?GAB('12×36'):FREE('gap')),
-  };
+const mk = (name,color,badge,warn,faded,full) =>
+  ({name,color,badge:badge||null,warn:!!warn,faded:!!faded,fullDay:!!full});
 
-  const LEG_BASE=[
-    {name:'Giovanna',color:C_GIO},{name:'Anderson',color:C_AND},
-    {name:'Gabriel 12×36 (sem.A)',color:C_GAB},{name:'Freelancer',color:C_FREE},
-  ];
+const GIO  = (b,w) => mk('Giovanna',    C.gio,  b,w);
+const AND  = (b,w) => mk('Anderson',    C.and,  b,w);
+const GAB  = (b,w) => mk('Gabriel',     w?C.warn:C.gab, b,w);
+const FREE = b     => mk('Freelancer',  C.free, b);
+const NEW  = b     => mk('T.Parcial',   C.new_, b);
+const FOLG = b     => mk('Folguista',   C.folg, b);
+const GGIO = b     => mk('Giovanna',    C.gio,  b,false,false,true);
+const GAND = b     => mk('Anderson',    C.and,  b,false,false,true);
+const GNEW = b     => mk('Novo 12×36',  C.new_, b,false,false,true);
+const GFDS = b     => mk('FDS Diurno',  C.new_, b,false,false,true);
+const FDN  = b     => mk('FDS Noturno', C.new_, b);
+const XEMP = ()    => mk('Func.X',      C.x,'saindo',false,true);
+const N    = null;
+
+// Gabriel 12×36 Semana A: Dom(0) Ter(2) Qui(4) Sáb(6)
+const GABA = [true,false,true,false,true,false,true];
+
+// ── SCHEDULE DATA ─────────────────────────────────────────────
+// Display column order: 0=Dom 1=Seg 2=Ter 3=Qua 4=Qui 5=Sex 6=Sáb
+function buildScenarios() {
   return {
-    atual,s1,s2,s3,s4,s5,s6,sg, LEG_BASE,
-    LEG_ATUAL:[...LEG_BASE,{name:'Func.X (saindo)',color:C_X}],
-    LEG_S2:[{name:'Giovanna 12×36',color:C_GIO},{name:'Anderson 12×36',color:C_AND},{name:'Gabriel 12×36',color:C_GAB},{name:'Novo Noturno',color:C_NEW}],
-    LEG_S4:[{name:'Giovanna',color:C_GIO},{name:'Anderson',color:C_AND},{name:'Gabriel ⚠ ILEGAL',color:C_WARN},{name:'Freelancer',color:C_FREE}],
-    LEG_S6:[{name:'Giovanna 5×2',color:C_GIO},{name:'Anderson 5×2',color:C_AND},{name:'Gabriel 12×36',color:C_GAB},{name:'FDS Diurno (Sáb 12h)',color:C_NEW},{name:'FDS Noturno (Sáb+Dom 12h)',color:C_NEW},{name:'Freelancer gap',color:C_FREE}],
-    LEG_SG:[{name:'Giovanna 5×2',color:C_GIO},{name:'Anderson 5×2',color:C_AND},{name:'Gabriel 12×36',color:C_GAB},{name:'Folguista',color:C_FOLG},{name:'Freelancer noite',color:C_FREE}],
+    atual: {
+      morning:   [N,GIO(),GIO(),GIO(),GIO(),GIO(),GIO()],
+      afternoon: [N,AND(),AND(),AND(),AND(),AND(),AND()],
+      night:     GABA.map(g => g ? GAB('12×36') : XEMP()),
+    },
+    s1: {
+      morning:   [FREE('FDS'),GIO(),GIO(),GIO(),GIO(),GIO(),FREE('FDS')],
+      afternoon: [FREE('FDS'),AND(),AND(),AND(),AND(),AND(),FREE('FDS')],
+      night:     GABA.map(g => g ? GAB('12×36') : FREE('gap')),
+    },
+    s2: {
+      morning:   [GGIO('12×36'),GAND('12×36'),GGIO('12×36'),GAND('12×36'),GGIO('12×36'),GAND('12×36'),GAND('12×36')],
+      afternoon: [N,N,N,N,N,N,N],
+      night:     GABA.map(g => g ? GAB('12×36') : GNEW('12×36')),
+    },
+    s3: {
+      morning:   [N,GIO(),GIO(),GIO(),GIO(),GIO(),GIO()],
+      afternoon: [AND('rev.'),AND(),AND(),AND(),AND(),AND(),N],
+      night:     GABA.map(g => g ? GAB('12×36') : FREE('gap')),
+    },
+    s4: {
+      morning:   [FREE('FDS'),GIO(),GIO(),GIO(),GIO(),GIO(),FREE('FDS')],
+      afternoon: [FREE('FDS'),AND(),AND(),AND(),AND(),AND(),FREE('FDS')],
+      night: [FREE('FDS'),GAB('⚠60h',true),GAB('⚠ilegal',true),
+              GAB('⚠ilegal',true),GAB('⚠ilegal',true),GAB('⚠ilegal',true),FREE('FDS')],
+    },
+    s5: {
+      morning:   [FREE('Dom'),GIO(),GIO(),GIO(),GIO(),GIO(),AND('banco h.')],
+      afternoon: [FREE('Dom'),AND(),AND(),AND(),AND(),AND(),AND()],
+      night:     GABA.map(g => g ? GAB('12×36') : FREE('gap')),
+    },
+    s6: {
+      morning:   [N,          GIO(),GIO(),GIO(),GIO(),GIO(),GFDS('Sáb·12h')],
+      afternoon: [N,          AND(),AND(),AND(),AND(),AND(),N],
+      night: GABA.map((g,i) => {
+        if (i===6) return FDN('Sáb·12h');
+        if (i===0) return FDN('Dom·12h');
+        return g ? GAB('12×36') : FREE('gap');
+      }),
+    },
+    sg: {
+      morning:   [N,          GIO(),GIO(),GIO(),GIO(),GIO(),FOLG('FDS')],
+      afternoon: [FOLG('FDS'),AND(),AND(),AND(),AND(),AND(),AND()],
+      night:     GABA.map(g => g ? GAB('12×36') : FREE('gap')),
+    },
   };
 }
 
-function renderGantts() {
-  const sc=getScenarios();
-  buildGantt('gantt-atual','leg-atual',sc.atual,{legend:sc.LEG_ATUAL});
-  buildGantt('gantt-s1',  'leg-s1',   sc.s1,   {legend:sc.LEG_BASE});
-  buildGantt('gantt-s2',  'leg-s2',   sc.s2,   {legend:sc.LEG_S2});
-  buildGantt('gantt-s3',  'leg-s3',   sc.s3,   {legend:sc.LEG_BASE});
-  buildGantt('gantt-s4',  'leg-s4',   sc.s4,   {legend:sc.LEG_S4});
-  buildGantt('gantt-s5',  'leg-s5',   sc.s5,   {legend:sc.LEG_BASE});
-  buildGantt('gantt-s6',  'leg-s6',   sc.s6,   {legend:sc.LEG_S6});
-  buildGantt('gantt-sg',  'leg-sg',   sc.sg,   {legend:sc.LEG_SG});
+// ── LEGEND DATA ───────────────────────────────────────────────
+const LEGS = {
+  base: [{name:'Giovanna',c:C.gio},{name:'Anderson',c:C.and},{name:'Gabriel 12×36 (sem.A)',c:C.gab},{name:'Freelancer',c:C.free}],
+  atual:[{name:'Giovanna',c:C.gio},{name:'Anderson',c:C.and},{name:'Gabriel 12×36',c:C.gab},{name:'Func.X (saindo)',c:C.x}],
+  s2:  [{name:'Giovanna 12×36',c:C.gio},{name:'Anderson 12×36',c:C.and},{name:'Gabriel 12×36',c:C.gab},{name:'Novo Noturno',c:C.new_}],
+  s4:  [{name:'Giovanna',c:C.gio},{name:'Anderson',c:C.and},{name:'Gabriel ⚠ILEGAL',c:C.warn},{name:'Freelancer',c:C.free}],
+  s6:  [{name:'Giovanna',c:C.gio},{name:'Anderson',c:C.and},{name:'Gabriel 12×36',c:C.gab},{name:'FDS Diurno/Noturno',c:C.new_},{name:'Freelancer gap',c:C.free}],
+  sg:  [{name:'Giovanna',c:C.gio},{name:'Anderson',c:C.and},{name:'Gabriel 12×36',c:C.gab},{name:'Folguista',c:C.folg},{name:'Freelancer noite',c:C.free}],
+};
+
+// ── SCHEDULE TABLE BUILDER ────────────────────────────────────
+const DAY_LABELS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+function buildTable(tableId, legendId, sched, legKey) {
+  const tbl = $(tableId);
+  const leg = $(legendId);
+  if (!tbl) { console.warn('buildTable: element not found:', tableId); return; }
+
+  const sc = shiftCfg();
+
+  // Legend
+  if (leg) {
+    leg.innerHTML = (LEGS[legKey]||[]).map(l =>
+      `<div class="leg"><div class="leg-box" style="background:${l.c}"></div>${l.name}</div>`
+    ).join('');
+  }
+
+  // Build table
+  tbl.innerHTML = '';
+  tbl.className = 'sched';
+
+  // ── Header ──
+  const thead = tbl.createTHead();
+  const hr = thead.insertRow();
+  const th0 = document.createElement('th');
+  th0.style.cssText='background:var(--bg3);border:1px solid var(--bdr);width:88px';
+  hr.appendChild(th0);
+  DAY_LABELS.forEach((d,i) => {
+    const th = document.createElement('th');
+    th.className = i===0 ? 'sun' : '';
+    th.textContent = d;
+    hr.appendChild(th);
+  });
+
+  // ── Body ──
+  const rows = ['morning','afternoon','night'];
+  const labels = [
+    {name:'☀️ Manhã', hours: sc.lM},
+    {name:'🌆 Tarde',  hours: sc.lA},
+    {name:'🌙 Noite',  hours: sc.lN},
+  ];
+  const afSkip = new Array(7).fill(false);
+  const tbody  = tbl.createTBody();
+
+  rows.forEach((rowKey, ri) => {
+    const tr = tbody.insertRow();
+
+    // Row label
+    const lbl = document.createElement('td');
+    lbl.className = 'shift-lbl';
+    lbl.innerHTML = `<span class="sl-name">${labels[ri].name}</span><span class="sl-hours">${labels[ri].hours}</span>`;
+    tr.appendChild(lbl);
+
+    for (let col = 0; col < 7; col++) {
+      if (ri === 1 && afSkip[col]) continue; // consumed by rowspan
+
+      const cell = (sched[rowKey] || [])[col] ?? null;
+      const td   = document.createElement('td');
+
+      if (!cell) {
+        td.className = 'sc sc-empty';
+        td.innerHTML = '<div class="sc-inner"><span class="sc-empty-lbl">Vago</span></div>';
+
+      } else if (cell.fullDay && ri === 0) {
+        td.className = 'sc sc-tall' + (cell.warn ? ' sc-warn' : '');
+        td.setAttribute('rowspan', '2');
+        td.style.background = cell.color;
+        if (cell.faded) td.style.opacity = '0.5';
+        td.innerHTML = `<div class="sc-inner">
+          <span class="sc-name">${cell.name}</span>
+          <span class="sc-sub">${sc.lD}</span>
+          ${cell.badge ? `<span class="sc-badge${cell.warn?' warn':''}">${cell.badge}</span>` : ''}
+        </div>`;
+        afSkip[col] = true;
+
+      } else {
+        td.className = 'sc' + (cell.warn ? ' sc-warn' : '');
+        td.style.background = cell.color;
+        if (cell.faded) td.style.opacity = '0.5';
+        td.innerHTML = `<div class="sc-inner">
+          <span class="sc-name">${cell.warn ? '⚠ ' : ''}${cell.name}</span>
+          ${cell.badge ? `<span class="sc-badge${cell.warn?' warn':''}">${cell.badge}</span>` : ''}
+        </div>`;
+      }
+
+      tr.appendChild(td);
+    }
+  });
 }
 
+// ── RENDER ALL TABLES ─────────────────────────────────────────
+function renderAll() {
+  const sc = buildScenarios();
+  buildTable('gantt-atual','leg-atual', sc.atual, 'atual');
+  buildTable('gantt-s1',   'leg-s1',   sc.s1,    'base');
+  buildTable('gantt-s2',   'leg-s2',   sc.s2,    's2');
+  buildTable('gantt-s3',   'leg-s3',   sc.s3,    'base');
+  buildTable('gantt-s4',   'leg-s4',   sc.s4,    's4');
+  buildTable('gantt-s5',   'leg-s5',   sc.s5,    'base');
+  buildTable('gantt-s6',   'leg-s6',   sc.s6,    's6');
+  buildTable('gantt-sg',   'leg-sg',   sc.sg,    'sg');
+}
+
+// ── LABEL UPDATES ─────────────────────────────────────────────
 function updateLabels() {
-  const c=getCfg();
-  setEl('lbl-gio-a',c.lMorn); setEl('lbl-and-a',c.lAft); setEl('lbl-gab-a',c.lNight);
-  [['la-gio-s1',c.lMorn],['la-and-s1',c.lAft],['la-gab-s1',c.lNight],
-   ['la-gio-s2',c.lDay], ['la-and-s2',c.lDay], ['la-gab-s2',c.lNight],['la-new-s2',c.lNight],
-   ['la-gio-s3',c.lMorn],['la-and-s3',c.lAft], ['la-gab-s3',c.lNight],
-   ['la-gio-s5',c.lMorn],['la-and-s5',c.lAft], ['la-gab-s5',c.lNight],
-   ['la-gio-s6',c.lMorn],['la-and-s6',c.lAft], ['la-gab-s6',c.lNight],
-   ['la-gio-sg',c.lMorn],['la-and-sg',c.lAft], ['la-gab-sg',c.lNight],
-  ].forEach(([id,v])=>setEl(id,v));
+  const s = shiftCfg();
+  se('lbl-gio-a',s.lM); se('lbl-and-a',s.lA); se('lbl-gab-a',s.lN);
+  const pairs = [
+    ['la-gio-s1',s.lM],['la-and-s1',s.lA],['la-gab-s1',s.lN],
+    ['la-gio-s2',s.lD],['la-and-s2',s.lD],['la-gab-s2',s.lN],['la-new-s2',s.lN],
+    ['la-gio-s3',s.lM],['la-and-s3',s.lA],['la-gab-s3',s.lN],
+    ['la-gio-s5',s.lM],['la-and-s5',s.lA],['la-gab-s5',s.lN],
+    ['la-gio-s6',s.lM],['la-and-s6',s.lA],['la-gab-s6',s.lN],
+    ['la-gio-sg',s.lM],['la-and-sg',s.lA],['la-gab-sg',s.lN],
+  ];
+  pairs.forEach(([id,v]) => se(id,v));
 }
 
+// ── TAB SWITCHING ─────────────────────────────────────────────
 function showTab(id) {
-  document.querySelectorAll('.panel[id^="panel-s"]').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn[id^="t-"]').forEach(b=>b.classList.remove('active'));
-  $('panel-'+id)?.classList.add('active');
-  $('t-'+id)?.classList.add('active');
+  document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  const panel = $('panel-'+id);
+  const tab   = $('t-'+id);
+  if (panel) panel.classList.add('active');
+  if (tab)   tab.classList.add('active');
 }
+// Expõe no escopo global para os onclick do HTML
+window.showTab = showTab;
 
 // ── SALARY CARDS ──────────────────────────────────────────────
-function buildSalaryCards(sal,enc) {
-  const emps=[
+function buildSalCards() {
+  const sal = SAL(), enc = ENC();
+  const emps = [
     {name:'Giovanna',color:'var(--gio)',sal:sal.gio,regime:'6×1 CLT',      hePct:11.8,noturno:false},
     {name:'Anderson',color:'var(--and)',sal:sal.and,regime:'6×1 CLT',      hePct:11.8,noturno:false},
-    {name:'Gabriel', color:'var(--gab)',sal:sal.gab,regime:'12×36 Noturno',hePct:0,   noturno:true },
+    {name:'Gabriel', color:'var(--gab)',sal:sal.gab,regime:'12×36 Noturno',hePct:0,   noturno:true},
   ];
-  let cards='',rows='';
-  emps.forEach(emp=>{
-    const c=empCost(emp.sal,{hePct:emp.hePct,noturno:emp.noturno});
-    cards+=`<div class="emp-card">
-      <div class="emp-card-head"><div class="dot" style="background:${emp.color}"></div>
-        <div><div style="font-weight:600;font-size:.88rem">${emp.name}</div>
-        <div style="font-size:.72rem;color:var(--muted2)">${emp.regime}</div></div>
+  let cards='', rows='';
+  emps.forEach(e => {
+    const c = empCost(e.sal, e.hePct, e.noturno);
+    cards += `<div class="emp-card">
+      <div class="emp-card-hd"><div class="dot" style="background:${e.color}"></div>
+        <div><div style="font-weight:600;font-size:.86rem">${e.name}</div>
+        <div style="font-size:.7rem;color:var(--tx3)">${e.regime}</div></div>
       </div>
-      <div class="emp-card-body">
-        <div class="calc-row"><span class="lbl">Salário base</span><span class="val">${fmt(c.base)}</span></div>
-        ${c.adicHE>0?`<div class="calc-row"><span class="lbl">H. extras (~${emp.hePct}%)</span><span class="val">${fmt(c.adicHE)}</span></div>`:''}
-        ${c.adicNot>0?`<div class="calc-row"><span class="lbl">Adic. noturno (${enc.not}%)</span><span class="val" style="color:var(--orange)">${fmt(c.adicNot)}</span></div>`:''}
-        <div class="calc-row total"><span class="lbl">Salário bruto</span><span class="val">${fmt(c.gross)}</span></div>
-        <div class="calc-row emp-cost"><span class="lbl">+ Encargos (${enc.emp.toFixed(1)}%)</span><span class="val">${fmt(c.encV)}</span></div>
-        <div class="calc-row emp-cost"><span class="lbl">+ Provisões (${enc.prov.toFixed(2)}%)</span><span class="val">${fmt(c.provV)}</span></div>
-        <div class="calc-row total"><span class="lbl">CUSTO TOTAL EMPREGADOR</span><span class="val">${fmt(c.total)}</span></div>
+      <div class="emp-card-bd">
+        <div class="calc-row"><span class="lbl">Salário base</span><span class="val">${fm(c.base)}</span></div>
+        ${c.adicHE>0?`<div class="calc-row"><span class="lbl">H. extras (~${e.hePct}%)</span><span class="val">${fm(c.adicHE)}</span></div>`:''}
+        ${c.adicNot>0?`<div class="calc-row"><span class="lbl">Adic. noturno (${enc.not}%)</span><span class="val" style="color:var(--orange)">${fm(c.adicNot)}</span></div>`:''}
+        <div class="calc-row total"><span class="lbl">Salário bruto</span><span class="val">${fm(c.gross)}</span></div>
+        <div class="calc-row enc"><span class="lbl">+ Encargos (${enc.emp.toFixed(1)}%)</span><span class="val">${fm(c.encV)}</span></div>
+        <div class="calc-row enc"><span class="lbl">+ Provisões (${enc.prov.toFixed(2)}%)</span><span class="val">${fm(c.provV)}</span></div>
+        <div class="calc-row total"><span class="lbl">CUSTO TOTAL/MÊS</span><span class="val">${fm(c.total)}</span></div>
       </div></div>`;
-    rows+=`<tr><td style="color:${emp.color};font-weight:600">${emp.name}</td><td>${emp.regime}</td>
-      <td class="mono">${fmt(c.base)}</td><td class="mono" style="color:var(--orange)">${fmt(c.adicHE+c.adicNot)}</td>
-      <td class="mono">${fmt(c.encV)}</td><td class="mono">${fmt(c.provV)}</td>
-      <td class="mono" style="color:var(--gold2);font-weight:600">${fmt(c.total)}</td></tr>`;
+    rows += `<tr><td style="color:${e.color};font-weight:600">${e.name}</td><td>${e.regime}</td>
+      <td class="mono">${fm(c.base)}</td>
+      <td class="mono" style="color:var(--orange)">${fm(c.adicHE+c.adicNot)}</td>
+      <td class="mono">${fm(c.encV)}</td><td class="mono">${fm(c.provV)}</td>
+      <td class="mono" style="font-weight:700">${fm(c.total)}</td></tr>`;
   });
-  const ce=$('emp-cards'), se=$('sal-summary');
-  if(ce) ce.innerHTML=cards; if(se) se.innerHTML=rows;
+  const ce=$('emp-cards'), se2=$('sal-summary');
+  if(ce) ce.innerHTML=cards; if(se2) se2.innerHTML=rows;
+}
+
+// ── ENCARGOS READ-ONLY GRID ───────────────────────────────────
+function buildEncGrid() {
+  const enc = ENC();
+  const grid = $('enc-ro-grid');
+  if (!grid) return;
+  const fields = [
+    ['INSS Patronal', enc.inss], ['RAT', enc.rat],
+    ['Terceiros', enc.terc],     ['FGTS', enc.fgts],
+    ['Prov. Férias+1/3', enc.fer],['Prov. 13°', enc.e13],
+    ['FGTS s/ prov.', enc.fp],   ['Adic. Noturno', enc.not],
+  ];
+  grid.innerHTML = fields.map(([lbl,val]) =>
+    `<div class="enc-card">
+      <span class="el">${lbl}</span>
+      <span class="ev">${(+val).toFixed(2)}%</span>
+    </div>`
+  ).join('');
+  se('enc-total-pct', enc.total.toFixed(1)+'%');
+}
+
+// ── MAIN COST CALC ────────────────────────────────────────────
+function calcAll() {
+  const sal = SAL(), enc = ENC(), sc = shiftCfg();
+  const OVHD = 1+enc.total/100;
+  const NOTT = 1+enc.not/100;
+  const HE   = 11.8;
+
+  const gio6  = sal.gio * OVHD * (1+HE/100);
+  const and6  = sal.and * OVHD * (1+HE/100);
+  const gio5  = sal.gio * OVHD;
+  const and5  = sal.and * OVHD;
+  const gab   = sal.gab * OVHD * NOTT;
+  const nw    = sal.gab * OVHD * NOTT;
+  const fD    = sal.free;
+  const fN    = sal.free * 1.4;
+  const folg  = sal.folg * OVHD * (1+HE/100);
+  const fdsD  = sal.fds  * OVHD;
+  const fdsN  = sal.fds2 * OVHD * NOTT;
+
+  const s1free = 4.33*4*fD + 15*fN;
+  const s3free = 15*fN;
+  const gabHE  = sal.gab * OVHD * NOTT * 1.36;
+  const s4free = 4.33*4*fD + 8*fN;
+  const s5free = 4.33*2*fD + 12*fN;
+  const s6gap  = 8*fN;
+  const sgfree = 12*fN;
+
+  // ── Set DOM ──
+  sf('c0-gio',gio6); sf('c0-and',and6); sf('c0-gab',gab); sf('c0-x',gab);
+  sf('c0-tot',gio6+and6+gab*2);
+
+  sf('c1-gio',gio5); sf('c1-and',and5); sf('c1-gab',gab); sf('c1-free',s1free);
+  sf('c1-tot',gio5+and5+gab+s1free);
+
+  sf('c2-gio',gio5); sf('c2-and',and5); sf('c2-gab',gab); sf('c2-new',nw);
+  sf('c2-tot',gio5+and5+gab+nw);
+
+  sf('c3-gio',gio6); sf('c3-and',and6); sf('c3-gab',gab); sf('c3-free',s3free);
+  sf('c3-tot',gio6+and6+gab+s3free);
+
+  sf('c4-gio',gio5); sf('c4-and',and5); sf('c4-gab',gabHE); sf('c4-free',s4free);
+  sf('c4-tot',gio5+and5+gabHE+s4free);
+
+  sf('c5-gio',gio5); sf('c5-and',and6); sf('c5-gab',gab); sf('c5-free',s5free);
+  sf('c5-tot',gio5+and6+gab+s5free);
+
+  sf('c6-gio',gio5); sf('c6-and',and5); sf('c6-gab',gab);
+  sf('c6-fds',fdsD+fdsN); sf('c6-free',s6gap);
+  sf('c6-tot',gio5+and5+gab+fdsD+fdsN+s6gap);
+
+  sf('cg-gio',gio5); sf('cg-and',and5); sf('cg-gab',gab);
+  sf('cg-folg',folg); sf('cg-free',sgfree);
+  sf('cg-tot',gio5+and5+gab+folg+sgfree);
+
+  // ── Comparison table ──
+  buildCmpTable({
+    c0:{fix:gio6+and6+gab*2,       free:0},
+    s1:{fix:gio5+and5+gab,         free:s1free},
+    s2:{fix:gio5+and5+gab+nw,      free:0},
+    s3:{fix:gio6+and6+gab,         free:s3free},
+    s4:{fix:gio5+and5+gabHE,       free:s4free},
+    s5:{fix:gio5+and6+gab,         free:s5free},
+    s6:{fix:gio5+and5+gab+fdsD+fdsN, free:s6gap},
+    sg:{fix:gio5+and5+gab+folg,    free:sgfree},
+  });
+
+  // ── S6 CLT analysis ──
+  const interj   = sc.ns - sc.ms;
+  const nightH   = Math.max(0, Math.min(sc.ms+24,29) - Math.max(sc.ns,22));
+  const okI      = interj >= 11;
+  const el6 = $('s6-clt-analysis');
+  if (el6) el6.innerHTML = `<div class="alert alert-${okI?'ok':'warn'}">
+    <span class="ai">${okI?'✅':'⚠️'}</span>
+    <div><strong>Verificação CLT (turnos ${p(sc.ms)}h/${p(sc.ns)}h):</strong><br>
+    FDS Diurno: ${sc.ns-sc.ms}h/sem. ≤ 30h → <strong>${okI?'✅ LEGAL':'⚠ Revisar'}</strong> (Art.58-A+59-A)<br>
+    FDS Noturno: ${sc.nDur*2}h/sem. ≤ 30h → <strong>✅ LEGAL</strong> (Art.58-A+59-A)<br>
+    Interjornada Sáb→Dom noite: ${interj}h ${okI?'≥ 11h ✅':'&lt; 11h ⚠ ILEGAL — ajuste em ⚙️'} (Art.66)<br>
+    Adicional noturno: ~${nightH}h/turno × ${enc.not}% obrigatório (Art.73)</div></div>`;
+
+  // ── Contracts ──
+  sf('ct-fds-d', fdsD);
+  sf('ct-fds-n', fdsN);
+  sf('ct-int',   4.33*2*sal.int);
+  sf('ct-tmp',   4.33*2*sal.free*1.15);
+  se('ct-night-hours', `Art. 58-A + 59-A · ${sc.nDur*2}h/sem.`);
+  se('ct-night-hw',    `${sc.nDur*2}h ≤ 30h → ✅`);
+  se('ct-interj', `${interj}h entre turnos ${okI?'≥ 11h ✅':'⚠ ajustar'} (Art.66)`);
+  se('ct-noct',   `~${nightH}h/turno × ${enc.not}% (Art.73)`);
+  se('ct-night-status', okI ? '✅ LEGAL' : '⚠ ATENÇÃO');
+
+  buildSalCards();
+  buildEncGrid();
+  updateLabels();
 }
 
 // ── COMPARISON TABLE ──────────────────────────────────────────
-function buildCmpTable(costs) {
-  const rows=[
-    {n:'0 · Atual',               fix:4,extra:'—',          dom:'❌',he:'Gio+And HE', c:costs.atual,clt:'⚠ HE',      risk:'Médio'},
-    {n:'A · 5×2 + Freelancer',    fix:3,extra:'~32 diárias',dom:'✅',he:'Nenhuma',    c:costs.s1,   clt:'✅ (PJ⚠)', risk:'Baixo'},
-    {n:'B · 12×36 Universal',     fix:4,extra:'—',          dom:'✅',he:'Nenhuma',    c:costs.s2,   clt:'✅ Perfeito',risk:'Mínimo'},
-    {n:'C · Revezamento 6×1',     fix:3,extra:'~15 noites', dom:'✅',he:'BH Gio+And', c:costs.s3,   clt:'⚠ BH',    risk:'Baixo'},
-    {n:'D · Gabriel Seg–Sex ⚠',   fix:3,extra:'~24 diárias',dom:'✅',he:'ILEGAL',     c:costs.s4,   clt:'🚨 ILEGAL',risk:'ALTO',worst:true},
-    {n:'E · Misto ⭐',             fix:3,extra:'~21 diárias',dom:'✅',he:'And (BH)',   c:costs.s5,   clt:'✅ (BH⚠)',risk:'Baixo',rec:true},
-    {n:'F · Intermediários 12h ⭐',fix:5,extra:'2 intermediários',dom:'✅',he:'Nenhuma',c:costs.s6,  clt:'✅ Perfeito',risk:'Mínimo',rec:true},
-    {n:'G · Folguista ⭐',         fix:4,extra:'~12 noites', dom:'✅',he:'Folg. (BH)', c:costs.sg,   clt:'✅ (BH)',  risk:'Mínimo',rec:true},
+function buildCmpTable(c) {
+  const rows = [
+    {n:'0 · Atual',               fx:4,ex:'—',         dom:'❌',he:'Gio+And HE',   c:c.c0, clt:'⚠',       risk:'Médio'},
+    {n:'A · 5×2+Freelancer',      fx:3,ex:'~32 diárias',dom:'✅',he:'Nenhuma',     c:c.s1, clt:'✅(PJ⚠)', risk:'Baixo'},
+    {n:'B · 12×36 Universal',     fx:4,ex:'—',         dom:'✅',he:'Nenhuma',     c:c.s2, clt:'✅',       risk:'Mínimo'},
+    {n:'C · Revezamento 6×1',     fx:3,ex:'~15 noites',dom:'✅',he:'BH Gio+And',  c:c.s3, clt:'⚠ BH',    risk:'Baixo'},
+    {n:'D · Gab Seg–Sex ⚠',       fx:3,ex:'~24 diárias',dom:'✅',he:'ILEGAL',     c:c.s4, clt:'🚨',       risk:'ALTO', bad:true},
+    {n:'E · Misto ⭐',             fx:3,ex:'~21 diárias',dom:'✅',he:'And (BH)',   c:c.s5, clt:'✅(BH⚠)', risk:'Baixo', rec:true},
+    {n:'F · Intermediários 12h ⭐',fx:5,ex:'2 interm.',  dom:'✅',he:'Nenhuma',   c:c.s6, clt:'✅',       risk:'Mínimo',rec:true},
+    {n:'G · Folguista ⭐',         fx:4,ex:'~12 noites',dom:'✅',he:'Folg.(BH)',  c:c.sg, clt:'✅(BH)',   risk:'Mínimo',rec:true},
   ];
-  const totals=rows.map(r=>(r.c?.fix||0)+(r.c?.free||0));
-  const minT=Math.min(...totals.filter((_,i)=>!rows[i].worst));
-  const tbody=$('cmp-body'); if(!tbody) return;
-  tbody.innerHTML=rows.map(r=>{
-    const tot=(r.c?.fix||0)+(r.c?.free||0);
-    return `<tr class="${r.rec?'rec':''}"><td><strong>${r.n}</strong></td>
-      <td class="center mono">${r.fix}</td><td style="font-size:.78rem">${r.extra}</td>
-      <td class="center">${r.dom}</td><td style="font-size:.78rem">${r.he}</td>
-      <td class="mono">${fmt(r.c?.fix||0)}</td><td class="mono">${r.c?.free>0?fmt(r.c.free):'—'}</td>
-      <td class="mono${tot===minT&&!r.worst?' best':''}${r.worst?' worst':''}">${fmt(tot)}</td>
-      <td style="font-size:.78rem;text-align:center">${r.clt}</td>
-      <td style="font-size:.78rem;text-align:center">${r.risk}</td></tr>`;
+  const totals = rows.map(r=>(r.c.fix||0)+(r.c.free||0));
+  const minT   = Math.min(...totals.filter((_,i)=>!rows[i].bad));
+  const tbody  = $('cmp-body');
+  if (!tbody) return;
+  tbody.innerHTML = rows.map((r,i)=>{
+    const tot = totals[i];
+    return `<tr class="${r.rec?'rec':r.bad?'bad':''}">
+      <td><strong>${r.n}</strong></td>
+      <td class="center">${r.fx}</td>
+      <td style="font-size:.76rem">${r.ex}</td>
+      <td class="center">${r.dom}</td>
+      <td style="font-size:.76rem">${r.he}</td>
+      <td class="mono">${fm(r.c.fix||0)}</td>
+      <td class="mono">${r.c.free>0?fm(r.c.free):'—'}</td>
+      <td class="mono${tot===minT&&!r.bad?' best':''}${r.bad?' worst':''}">${fm(tot)}</td>
+      <td style="text-align:center;font-size:.76rem">${r.clt}</td>
+      <td style="text-align:center;font-size:.76rem">${r.risk}</td>
+    </tr>`;
   }).join('');
-}
-
-// ── CONTRACTS TABLE ───────────────────────────────────────────
-function buildContractsTable() {
-  const sal=getSal(), enc=getEnc(), cfg=getCfg();
-  const OVERHEAD=1+enc.total/100, notMult=1+enc.not/100, wDays=4.33*2;
-  const dayDur=cfg.ns-cfg.ms;
-  const fdsD=sal.fds*OVERHEAD, fdsN=sal.fds2*OVERHEAD*notMult;
-  const rows=[
-    {mod:`T.Parcial FDS Diurno — Sáb ${pad(cfg.ms)}–${pad(cfg.ns)}h`,art:'58-A+59-A',ok:'✅ Sim',custo:`${fmt(fdsD)}/mês · ${dayDur}h/sem`,fgts:'✅',res:'CLT prop.',risk:'low',rl:'BAIXO'},
-    {mod:`T.Parcial FDS Noturno — Sáb+Dom ${pad(cfg.ns)}–${pad(cfg.ms)}h`,art:'58-A+59-A',ok:'✅ Sim',custo:`${fmt(fdsN)}/mês · ${cfg.nDur*2}h/sem`,fgts:'✅',res:'CLT + Adic.Not.',risk:'low',rl:'BAIXO'},
-    {mod:'Intermitente (Art.452-A)',art:'Art.452-A',ok:'⚠ Pool≥3',custo:`${fmt(wDays*2*sal.int)}/mês est.`,fgts:'✅',res:'Por convocação',risk:'med',rl:'MÉDIO'},
-    {mod:'Trabalho Temporário (Lei 6.019)',art:'Lei 6.019',ok:'✅ Sim',custo:`${fmt(wDays*2*sal.free*1.15)}/mês est.`,fgts:'✅',res:'Verbas rescisórias',risk:'low',rl:'BAIXO (270d)'},
-    {mod:'Freelancer PJ/MEI',art:'—',ok:'⚠ Risco',custo:`${fmt(wDays*2*sal.free)}/mês est.`,fgts:'❌',res:'Sem verbas',risk:'high',rl:'ALTO (vínculo)'},
-  ];
-  const tbody=$('contracts-table'); if(!tbody) return;
-  tbody.innerHTML=rows.map(r=>`<tr><td>${r.mod}</td><td class="mono" style="color:var(--blue2)">${r.art}</td>
-    <td class="center">${r.ok}</td><td class="mono">${r.custo}</td>
-    <td class="center">${r.fgts}</td><td>${r.res}</td>
-    <td><span class="risk-pill risk-${r.risk}">${r.rl}</span></td></tr>`).join('');
-}
-
-// ── COVERAGE TABLE ────────────────────────────────────────────
-function buildCoverageTable() {
-  const sal=getSal(), freeN=sal.free*1.4;
-  const rows=[
-    {n:'0 · Atual',          gap_d:16,gap_n:42,note:'Dom descoberto'},
-    {n:'A · 5×2+Freelancer', gap_d:0, gap_n:0, note:'Coberto c/ free.'},
-    {n:'B · 12×36 Universal',gap_d:0, gap_n:0, note:'100% coberto'},
-    {n:'C · Revezamento',    gap_d:0, gap_n:0, note:'Coberto c/ free.'},
-    {n:'E · Misto ⭐',        gap_d:0, gap_n:0, note:'Dom: free.'},
-    {n:'F · Interm. 12h ⭐',  gap_d:0, gap_n:0, note:'Coberto'},
-    {n:'G · Folguista ⭐',    gap_d:0, gap_n:0, note:'Falta coberta'},
-  ];
-  const tbody=$('coverage-body'); if(!tbody) return;
-  tbody.innerHTML=rows.map(r=>{
-    const gapH=r.gap_d+r.gap_n, pct=Math.round((1-gapH/168)*100);
-    const color=pct===100?'var(--green)':pct>80?'var(--gold2)':'var(--red)';
-    const gapCost=r.gap_n*freeN;
-    return `<tr><td>${r.n}</td>
-      <td style="font-size:.78rem">${r.gap_d>0?r.gap_d+'h gap':'✅'}</td>
-      <td style="font-size:.78rem">${r.gap_n>0?'~'+r.gap_n+'h gap':'✅'}</td>
-      <td style="font-weight:600;color:${color}">${pct}% (${168-gapH}h)</td>
-      <td class="mono${gapH>0?'" style="color:var(--red)':''">${gapH>0?gapH+'h':'—'}</td>
-      <td class="mono${gapH>0?'" style="color:var(--red)':''">${gapH>0?Math.round(gapH*4.33)+'h':'—'}</td>
-      <td class="mono${gapCost>0?'" style="color:var(--orange)':''">${gapCost>0?fmt(gapCost)+'/mês':r.note}</td></tr>`;
-  }).join('');
-}
-
-// ── MAIN RECALC ───────────────────────────────────────────────
-function recalcAll() {
-  const sal=getSal(), enc=getEnc(), cfg=getCfg();
-  const OVERHEAD=1+enc.total/100, NOT_MULT=1+enc.not/100, HE_PCT=11.8;
-  setEl('enc-total-pct',enc.total.toFixed(1)+'%');
-
-  const gioCost6x1=sal.gio*OVERHEAD*(1+HE_PCT/100), andCost6x1=sal.and*OVERHEAD*(1+HE_PCT/100);
-  const gioCost5x2=sal.gio*OVERHEAD, andCost5x2=sal.and*OVERHEAD;
-  const gabCost=sal.gab*OVERHEAD*NOT_MULT, newCost=sal.gab*OVERHEAD*NOT_MULT;
-  const fDay=sal.free, fNight=sal.free*1.4;
-  const folgCost=sal.folg*OVERHEAD*(1+HE_PCT/100);
-  const fdsD=sal.fds*OVERHEAD, fdsN=sal.fds2*OVERHEAD*NOT_MULT;
-
-  const s1Free=4.33*4*fDay+15*fNight, s3Free=15*fNight;
-  const gabHE=sal.gab*OVERHEAD*NOT_MULT*1.36;
-  const s4Free=4.33*4*fDay+8*fNight, s5Free=4.33*2*fDay+12*fNight;
-  const s6GabGaps=8*fNight, sgFree=12*fNight;
-
-  const set=(id,v)=>{const e=$(id);if(e)e.textContent=fmt(v);};
-
-  set('c0-gio',gioCost6x1); set('c0-and',andCost6x1);
-  set('c0-gab',gabCost);    set('c0-x',gabCost);
-  set('c0-tot',gioCost6x1+andCost6x1+gabCost*2);
-
-  set('c1-gio',gioCost5x2); set('c1-and',andCost5x2);
-  set('c1-gab',gabCost);    set('c1-free',s1Free);
-  set('c1-tot',gioCost5x2+andCost5x2+gabCost+s1Free);
-
-  set('c2-gio',gioCost5x2); set('c2-and',andCost5x2);
-  set('c2-gab',gabCost);    set('c2-new',newCost);
-  set('c2-tot',gioCost5x2+andCost5x2+gabCost+newCost);
-  setEl('s2-gab-noturno',fmt(sal.gab*(enc.not/100)));
-
-  set('c3-gio',gioCost6x1); set('c3-and',andCost6x1);
-  set('c3-gab',gabCost);    set('c3-free',s3Free);
-  set('c3-tot',gioCost6x1+andCost6x1+gabCost+s3Free);
-
-  set('c4-gio',gioCost5x2); set('c4-and',andCost5x2);
-  set('c4-gab',gabHE);      set('c4-free',s4Free);
-  set('c4-tot',gioCost5x2+andCost5x2+gabHE+s4Free);
-  setEl('s4-he-cost',fmt(sal.gab*(enc.not/100+0.36)*OVERHEAD));
-
-  set('c5-gio',gioCost5x2); set('c5-and',andCost6x1);
-  set('c5-gab',gabCost);    set('c5-free',s5Free);
-  set('c5-tot',gioCost5x2+andCost6x1+gabCost+s5Free);
-
-  // S6 — Intermediários 12h FDS
-  set('c6-gio',gioCost5x2);  set('c6-and',andCost5x2);
-  set('c6-gab',gabCost);     set('c6-fds',fdsD+fdsN);
-  set('c6-free',s6GabGaps);  set('c6-tot',gioCost5x2+andCost5x2+gabCost+fdsD+fdsN+s6GabGaps);
-
-  // SG — Folguista
-  const sgTotal=gioCost5x2+andCost5x2+gabCost+folgCost+sgFree;
-  ['cg-gio','cg2-gio'].forEach(id=>set(id,gioCost5x2));
-  ['cg-and','cg2-and'].forEach(id=>set(id,andCost5x2));
-  ['cg-gab','cg2-gab'].forEach(id=>set(id,gabCost));
-  ['cg-folg','cg2-folg'].forEach(id=>set(id,folgCost));
-  ['cg-free','cg2-free'].forEach(id=>set(id,sgFree));
-  ['cg-tot','cg2-tot'].forEach(id=>set(id,sgTotal));
-  setEl('cmp-no-folg',fmt(sal.free*1.5)+'/evento');
-  setFmt('cmp-atual',gioCost6x1+andCost6x1+gabCost*2);
-  setFmt('cmp-e',    gioCost5x2+andCost6x1+gabCost+s5Free);
-
-  // S6 CLT dynamic analysis
-  const interj=cfg.ns-cfg.ms, nightNoctH=Math.max(0,Math.min(cfg.ms+24,29)-Math.max(cfg.ns,22));
-  const intEl=$('s6-clt-analysis');
-  if(intEl){
-    const okI=interj>=11, okD=(cfg.ns-cfg.ms)<=30;
-    intEl.innerHTML=`<div class="alert alert-${okI&&okD?'green':'warn'}" style="margin:0">
-      <span>${okI&&okD?'✅':'⚠️'}</span>
-      <div><strong>Análise para turnos ${pad(cfg.ms)}h/${pad(cfg.ns)}h:</strong><br>
-      FDS Diurno: ${cfg.ns-cfg.ms}h/sem ≤ 30h — <strong>${okD?'✅ LEGAL':'⚠ REVISAR'}</strong> (Art.58-A+59-A)<br>
-      FDS Noturno: ${cfg.nDur*2}h/sem ≤ 30h — <strong>✅ LEGAL</strong> (Art.58-A+59-A)<br>
-      Interjornada Sáb→Dom noite: ${interj}h ${okI?'≥ 11h ✅':'— < 11h ⚠ ILEGAL · ajuste na configuração'} (Art.66)<br>
-      Adic. noturno: ~${nightNoctH}h/turno × 20% obrigatório (Art.73) · Contrato escrito obrigatório.
-      </div></div>`;
-  }
-  setEl('int-tp-sal',fmt(sal.fds));
-  buildSalaryCards(sal,enc);
-  buildCmpTable({
-    atual:{fix:gioCost6x1+andCost6x1+gabCost*2,            free:0},
-    s1:  {fix:gioCost5x2+andCost5x2+gabCost,               free:s1Free},
-    s2:  {fix:gioCost5x2+andCost5x2+gabCost+newCost,       free:0},
-    s3:  {fix:gioCost6x1+andCost6x1+gabCost,               free:s3Free},
-    s4:  {fix:gioCost5x2+andCost5x2+gabHE,                 free:s4Free},
-    s5:  {fix:gioCost5x2+andCost6x1+gabCost,               free:s5Free},
-    s6:  {fix:gioCost5x2+andCost5x2+gabCost+fdsD+fdsN,     free:s6GabGaps},
-    sg:  {fix:gioCost5x2+andCost5x2+gabCost+folgCost,      free:sgFree},
-  });
-  buildContractsTable();
-  buildCoverageTable();
-  updateLabels();
 }
 
 // ── INIT ──────────────────────────────────────────────────────
 function init() {
-  loadStoredConfig();
-  syncConfigBar();
-  setEl('gen-date',   new Date().toLocaleDateString('pt-BR'));
-  setEl('footer-date',new Date().toLocaleDateString('pt-BR'));
-  renderGantts();
-  recalcAll();
+  loadCFG();
+  syncInputs();
+  const d = new Date().toLocaleDateString('pt-BR');
+  se('gen-date',d); se('footer-date',d);
+  renderAll();
+  calcAll();
 }
 
 document.addEventListener('DOMContentLoaded', init);
