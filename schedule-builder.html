@@ -458,16 +458,10 @@ function renderGrid() {
 }
 
 // ── CELL INTERACTION ──────────────────────────────────────
-function cellMouseDown(r, c) {
-  if (!selectedEmp) return;
-function cellClick(r, c) {
-  if (!selectedEmp || isDragging) return;
-  pushHistory();
-  applyCell(r, c, selectedEmp);
-}
-
 function cellMouseDown(e, r, c) {
   if (!selectedEmp) return;
+  pushHistory();
+  applyCell(r, c, selectedEmp);
   isDragging = true;
 }
 
@@ -911,3 +905,4 @@ function renderHistoryBar() {
 </script>
 </body>
 </html>
+} 
