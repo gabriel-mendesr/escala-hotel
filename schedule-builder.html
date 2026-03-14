@@ -90,8 +90,6 @@ a{color:var(--blue);text-decoration:none}
 
 /* Grid cells */
 .sched-grid td.cell{
-  border:2px solid var(--bdr);height:72px;padding:0;
-  cursor:pointer;transition:all .12s;position:relative;vertical-align:middle;text-align:center;
   border:1px solid var(--bdr);height:72px;padding:0;
   cursor:crosshair;transition:all .12s;position:relative;vertical-align:middle;text-align:center;
   user-select: none;
@@ -502,7 +500,7 @@ function cellDragLeave(e) {
 }
 
 function ePaletteDrag(e, key) {
-  e.dataTransfer.setData('empKey', key);
+  e.dataTransfer.setData('text/plain', 'palette:' + key);
   selectEmp(key);
 }
 
@@ -510,14 +508,15 @@ function cellDrop(e, r, c) {
   e.preventDefault();
   e.currentTarget.classList.remove('drag-over');
   
-  var paletteKey = e.dataTransfer.getData('empKey');
-  
-  if (paletteKey) {
-    // If an employee is selected in palette, assign it
+  var data = e.dataTransfer.getData('text/plain');
+
+  if (data && data.indexOf('palette:') === 0) {
+    // Se veio da paleta da esquerda
+    var paletteKey = data.split(':')[1];
     pushHistory();
     applyCell(r, c, paletteKey);
   } else if (dragSrcRow !== null) {
-    // Move from source cell
+    // Se é um movimento interno na grade
     pushHistory();
     var srcEmp = grid[dragSrcRow][dragSrcCol];
     grid[r][c] = srcEmp;
@@ -905,4 +904,3 @@ function renderHistoryBar() {
 </script>
 </body>
 </html>
-} 
