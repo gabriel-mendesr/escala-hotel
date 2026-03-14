@@ -291,6 +291,27 @@ function buildScenarios() {
       morning:   [AND('6×1 Manhã'), AND('6×1 Manhã'), AND('6×1 Manhã'), AND('6×1 Manhã'), AND('6×1 Manhã'), AND('6×1 Manhã'), N],
       afternoon: [GAB('6×1 Tarde'), GAB('6×1 Tarde'), GAB('6×1 Tarde'), GAB('6×1 Tarde'), GAB('6×1 Tarde'), GAB('6×1 Tarde'), N],
       night:     GAB_A.map(function(g) { return g ? FOL('6×1 Noite') : FREE('Cobertura noturna'); })
+    },
+    s17: {
+      morning:   [FREE('Fim de semana'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), FREE('Fim de semana')],
+      afternoon: [FREE('Fim de semana'), AND('5×2'), AND('5×2'), AND('5×2'), AND('5×2'), AND('5×2'), FREE('Fim de semana')],
+      night:     GAB_A.map(function(g) { return g ? GAB('5×2 ⚠ ILEGAL') : FOLG('Folguista'); })
+    },
+    s18: {
+      morning:   [FREE('Fim de semana'), GIO('6×1'), GIO('6×1'), GIO('6×1'), GIO('6×1'), GIO('6×1'), FREE('Fim de semana')],
+      afternoon: [FREE('Fim de semana'), AND('6×1'), AND('6×1'), AND('6×1'), AND('6×1'), AND('6×1'), FREE('Fim de semana')],
+      night:     GAB_A.map(function(g) { return g ? GAB('6×1 ⚠ ILEGAL') : FOLG('Folguista'); })
+    },
+    s19: {
+      shift: {ms:6, as:14, ns:22},
+      morning:   [FREE('Fim de semana'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), FREE('Fim de semana')],
+      afternoon: [FREE('Fim de semana'), AND('5×2'), AND('5×2'), AND('5×2'), AND('5×2'), AND('5×2'), FREE('Fim de semana')],
+      night:     GAB_A.map(function(g) { return g ? GAB('5×2 ⚠ ILEGAL') : FOLG('Folguista'); })
+    },
+    s20: {
+      morning:   [FREE('Fim de semana'), GIO('6×1'), GIO('6×1'), GIO('6×1'), GIO('6×1'), GIO('6×1'), FREE('Fim de semana')],
+      afternoon: [FREE('Fim de semana'), AND('6×1'), AND('6×1'), AND('6×1'), AND('6×1'), AND('6×1'), FREE('Fim de semana')],
+      night:     GAB_A.map(function(g) { return g ? GAB('5×2 ⚠ ILEGAL') : FOLG('Folguista'); })
     }
   };
 }
@@ -313,7 +334,9 @@ var LEGS = {
   s13:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Anderson (5×2)',            c:C.and}, {n:'Gabriel (12×36)',            c:C.gab}, {n:'Freelancer / PJ',             c:C.free}],
   s14:   [{n:'Giovanna (6×1)',            c:C.gio}, {n:'Gabriel (6×1 Manhã)',       c:C.gab}, {n:'Anderson (6×1)',            c:C.and}, {n:'Folguista (noturno)',        c:C.folg}],
   s15:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Anderson (5×2)',            c:C.and}, {n:'Gabriel (12×36)',            c:C.gab}, {n:'Freelancer manhã + FDS',      c:C.free}],
-  s16:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Gabriel (6×1 Tarde)',       c:C.gab}, {n:'Anderson (6×1 Manhã)',       c:C.and}, {n:'Folguista (noturno)',        c:C.folg}]
+  s16:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Gabriel (6×1 Tarde)',       c:C.gab}, {n:'Anderson (6×1 Manhã)',       c:C.and}, {n:'Folguista (noturno)',        c:C.folg}],
+  s17:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Anderson (5×2)',            c:C.and}, {n:'Gabriel ⚠ ILEGAL (5×2)',    c:C.warn},{n:'Folguista (FDS)',            c:C.folg}],
+  s18:   [{n:'Giovanna (6×1)',            c:C.gio}, {n:'Anderson (6×1)',            c:C.and}, {n:'Gabriel ⚠ ILEGAL (6×1)',    c:C.warn},{n:'Folguista (FDS)',            c:C.folg}]
 };
 
 // ── TABLE BUILDER (innerHTML puro — mais robusto) ─────────────
@@ -471,6 +494,8 @@ function renderAll() {
   buildTable('gantt-s14',   'leg-s14',  SCENARIOS_DATA.s14,   's14');
   buildTable('gantt-s15',   'leg-s15',  SCENARIOS_DATA.s15,   's15');
   buildTable('gantt-s16',   'leg-s16',  SCENARIOS_DATA.s16,   's16');
+  buildTable('gantt-s17',   'leg-s17',  SCENARIOS_DATA.s17,   's17');
+  buildTable('gantt-s18',   'leg-s18',  SCENARIOS_DATA.s18,   's18');
 }
 
 // ── LABEL UPDATES ─────────────────────────────────────────────
@@ -588,7 +613,9 @@ function buildCmpTable(c) {
     { n:'P · Tarde 14h + Free',             fx:3, ex:'~30 diárias/mês', dom:'❌', he:'Nenhuma',               c:c.s15,clt:'✅ (PJ⚠)',   risk:'Médio'},
     { n:'A · 5×2 + Freelancer',          fx:3, ex:'~32 diárias/mês', dom:'✅', he:'Nenhuma',               c:c.s1, clt:'✅ (PJ⚠)',   risk:'Baixo'},
     { n:'L · 5×2 + Free FDS',              fx:3, ex:'~32 diárias/mês', dom:'✅', he:'Nenhuma',               c:c.s11,clt:'✅ (PJ⚠)',   risk:'Baixo'},
-    { n:'D · Gabriel Seg–Sex Noite ⚠',   fx:3, ex:'~24 diárias/mês', dom:'✅', he:'ILEGAL (60h/sem.)',     c:c.s4, clt:'🚨 ILEGAL',  risk:'ALTO',  bad:true}
+    { n:'D · Gabriel Seg–Sex Noite ⚠',   fx:3, ex:'~24 diárias/mês', dom:'✅', he:'ILEGAL (60h/sem.)',     c:c.s4, clt:'🚨 ILEGAL',  risk:'ALTO',  bad:true},
+    { n:'R · Gabriel 5×2 Seg–Sex ⚠',     fx:4, ex:'2 folguistas FDS', dom:'✅', he:'ILEGAL (60h/sem.)',     c:c.s17,clt:'🚨 ILEGAL',  risk:'ALTO',  bad:true},
+    { n:'S · Gabriel 6×1 Seg–Sex ⚠',     fx:4, ex:'2 folguistas FDS', dom:'✅', he:'ILEGAL (60h/sem.)',     c:c.s18,clt:'🚨 ILEGAL',  risk:'ALTO',  bad:true}
   ];
 
   var totals = rows.map(function(r) { return (r.c.fix || 0) + (r.c.free || 0); });
@@ -707,6 +734,12 @@ function calcAll() {
   sf('c16-gio', gio5);  sf('c16-gab', gab6);  sf('c16-and', and6);  sf('c16-free', 15 * folg);
   sf('c16-tot', gio5 + gab6 + and6 + 15 * folg);
 
+  sf('c17-gio', gio5);  sf('c17-and', and5);  sf('c17-gab', gabHE);  sf('c17-folg', folg * 2);
+  sf('c17-tot', gio5 + and5 + gabHE + folg * 2);
+
+  sf('c18-gio', gio6);  sf('c18-and', and6);  sf('c18-gab', gabHE);  sf('c18-folg', folg * 2);
+  sf('c18-tot', gio6 + and6 + gabHE + folg * 2);
+
   // Análise CLT S6
   var interj   = sc.ns - sc.ms;
   var nightH   = Math.max(0, Math.min(sc.ms + 24, 29) - Math.max(sc.ns, 22));
@@ -752,7 +785,9 @@ function calcAll() {
     s13:{ fix: gio5 + and5 + gab,              free: s1free },
     s14:{ fix: gio6 + gab + and6,              free: s3free },
     s15:{ fix: gio5 + and5 + gab,              free: 4.33 * 7 * fD },
-    s16:{ fix: gio5 + gab + and6,              free: s3free }
+    s16:{ fix: gio5 + gab + and6,              free: s3free },
+    s17:{ fix: gio5 + and5 + gabHE + folg * 2, free: 0 },
+    s18:{ fix: gio6 + and6 + gabHE + folg * 2, free: 0 }
   });
 
   buildSalCards();
