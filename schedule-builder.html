@@ -92,7 +92,7 @@ a{color:var(--blue);text-decoration:none}
 .sched-grid td.cell{
   border:1px solid var(--bdr);height:72px;padding:0;
   cursor:crosshair;transition:all .12s;position:relative;vertical-align:middle;text-align:center;
-  user-select: none;
+  user-select:none;
 }
 .sched-grid td.cell:hover{border-color:var(--blue);z-index:2;box-shadow:inset 0 0 0 2px rgba(44,110,242,.3)}
 .sched-grid td.cell.drag-over{border-color:var(--blue);background:rgba(44,110,242,.08)!important}
@@ -102,6 +102,7 @@ a{color:var(--blue);text-decoration:none}
 .cell-inner{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   height:100%;padding:5px;gap:2px;
+  pointer-events:none; /* Garante que o clique caia no TD */
 }
 .cell-name{font-size:.8rem;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:95%}
 .cell-regime{font-size:.64rem;color:rgba(255,255,255,.85);background:rgba(0,0,0,.18);padding:1px 5px;border-radius:3px;white-space:nowrap;max-width:95%;overflow:hidden;text-overflow:ellipsis}
@@ -459,12 +460,12 @@ function renderGrid() {
 function cellMouseDown(e, r, c) {
   if (!selectedEmp) return;
   pushHistory();
-  applyCell(r, c, selectedEmp);
   isDragging = true;
+  applyCell(r, c, selectedEmp);
 }
 
 function cellMouseEnter(r, c) {
-  if (!isDragging || !selectedEmp) return;
+  if (!isDragging || !selectedEmp || selectedEmp === 'empty' && !grid[r][c]) return;
   applyCell(r, c, selectedEmp);
 }
 
@@ -511,10 +512,11 @@ function cellDrop(e, r, c) {
   var data = e.dataTransfer.getData('text/plain');
 
   if (data && data.indexOf('palette:') === 0) {
-    // Se veio da paleta da esquerda
     var paletteKey = data.split(':')[1];
-    pushHistory();
-    applyCell(r, c, paletteKey);
+    if (paletteKey) {
+      pushHistory();
+      applyCell(r, c, paletteKey);
+    }
   } else if (dragSrcRow !== null) {
     // Se é um movimento interno na grade
     pushHistory();
@@ -747,7 +749,7 @@ function updateCost() {
     and:  sal.and  * OVHD * (1+HE/100),
     gab:  sal.gab  * OVHD * NOTT,
     folg: sal.folg * OVHD * (1+HE/100),
-    free: sal.free * 4.33, // per shift × weeks
+    free: sal.free * 4.33, // Base por turno
     fds_d:sal.fds  * OVHD,
     fds_n:sal.fds2 * OVHD * NOTT,
     novo: sal.gab  * OVHD * NOTT
@@ -759,6 +761,9 @@ function updateCost() {
 
   used.forEach(function(k) {
     var cost = empCosts[k] || 0;
+    // Para freelancers, o custo é por turno realizado
+    if (k === 'free') cost = cost * (counts[k] || 0);
+
     total += cost;
     html += '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bdr)">'
       +'<span style="color:'+EMPS[k].color+';font-weight:600">'+EMPS[k].name+'</span>'
