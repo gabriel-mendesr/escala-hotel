@@ -35,29 +35,6 @@ function SC_shift(shift) {
   };
 }
 
-  return {
-    gio:  lv('s-gio',  'giovanna',    1700),
-    and:  lv('s-and',  'anderson',    2100),
-    gab:  lv('s-gab',  'gabriel',     1800),
-    free: lv('s-free', 'freelancer',  250),
-    int:  lv('s-int',  'intermitente',220),
-    fds:  lv('s-fds',  'fdsDay',      491),
-    fds2: lv('s-fds2', 'fdsNight',    982),
-    folg: lv('s-folg', 'folguista',   1500)
-  };
-}
-
-  var inss = g('inss', 20), rat = g('rat', 2), terc = g('terceiros', 5.8), fgts = g('fgts', 8);
-  var fer = g('ferias', 11.11), e13 = g('decimo', 8.33), fp = g('fgtsProv', 1.92), not = g('noturno', 20);
-  return {
-    inss: inss, rat: rat, terc: terc, fgts: fgts,
-    fer: fer, e13: e13, fp: fp, not: not,
-    emp: inss + rat + terc + fgts,
-    prov: fer + e13 + fp,
-    total: inss + rat + terc + fgts + fer + e13 + fp
-  };
-}
-
 // ── CELL FACTORIES ────────────────────────────────────────────
 // Cores vibrantes com bom contraste em fundo claro
 var C = {
@@ -455,40 +432,6 @@ function showTab(id) {
   var tab   = gi('t-' + id);
   if (panel) panel.classList.add('active');
   if (tab)   tab.classList.add('active');
-}
-
-  ];
-  var cards = '', rows = '';
-  for (var i = 0; i < emps.length; i++) {
-    var e = emps[i];
-        cards += '<div class="emp-card">' +
-      '<div class="emp-card-hd"><div class="dot" style="background:' + e.color + '"></div>' +
-      '<div><div style="font-weight:600;font-size:.86rem">' + e.name + '</div>' +
-      '<div style="font-size:.7rem;color:var(--tx3)">' + e.regime + '</div></div></div>' +
-      '<div class="emp-card-bd">' +
-      '<div class="calc-row"><span class="lbl">Salário base</span><span class="val">' + fm(c.base) + '</span></div>' +
-      (c.adicHE > 0 ? '<div class="calc-row"><span class="lbl">Horas extras (~' + e.hePct + '%)</span><span class="val">' + fm(c.adicHE) + '</span></div>' : '') +
-      (c.adicNot > 0 ? '<div class="calc-row"><span class="lbl">Adicional noturno (' + enc.not + '%)</span><span class="val" style="color:var(--orange)">' + fm(c.adicNot) + '</span></div>' : '') +
-      '<div class="calc-row total"><span class="lbl">Salário bruto</span><span class="val">' + fm(c.gross) + '</span></div>' +
-      '<div class="calc-row enc"><span class="lbl">+ Encargos (' + enc.emp.toFixed(1) + '%)</span><span class="val">' + fm(c.encV) + '</span></div>' +
-      '<div class="calc-row enc"><span class="lbl">+ Provisões (' + enc.prov.toFixed(2) + '%)</span><span class="val">' + fm(c.provV) + '</span></div>' +
-      '<div class="calc-row total"><span class="lbl">CUSTO TOTAL / MÊS</span><span class="val">' + fm(c.total) + '</span></div>' +
-      '</div></div>';
-    rows += '<tr><td style="color:' + e.color + ';font-weight:600">' + e.name + '</td>' +
-      '<td>' + e.regime + '</td>' +
-      '<td class="mono">' + fm(c.base) + '</td>' +
-      '<td class="mono" style="color:var(--orange)">' + fm(c.adicHE + c.adicNot) + '</td>' +
-      '<td class="mono">' + fm(c.encV) + '</td>' +
-      '<td class="mono">' + fm(c.provV) + '</td>' +
-      '<td class="mono" style="font-weight:700">' + fm(c.total) + '</td></tr>';
-  }
-  var ce = gi('emp-cards'), se2 = gi('sal-summary');
-  if (ce)  ce.innerHTML  = cards;
-  if (se2) se2.innerHTML = rows;
-}
-
-  grid.innerHTML = html;
-  se('enc-total-pct', enc.total.toFixed(1) + '%');
 }
 
 // ── COMPARISON TABLE ──────────────────────────────────────────
