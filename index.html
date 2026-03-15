@@ -232,7 +232,7 @@ a{color:var(--blue);text-decoration:none}
 .ib h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3);margin-bottom:8px}
 .desc{font-size:.82rem;color:var(--tx2);line-height:1.7;margin-bottom:10px}
 
-/* ── SALARY SECTION ─────────────────────────────────── */
+
 .sal-section{background:var(--card);border:1px solid var(--bdr);border-radius:10px;box-shadow:var(--sh);margin-bottom:20px;overflow:hidden}
 .sal-hd{padding:14px 20px;background:var(--bg3);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .sal-hd h2{font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--tx2)}
@@ -252,10 +252,10 @@ a{color:var(--blue);text-decoration:none}
 .calc-row.enc .lbl{color:var(--orange)}
 .calc-row.enc .val{color:var(--orange)}
 
-.enc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px}
-.enc-card{background:var(--bg3);border:1px solid var(--bdr);border-radius:6px;padding:8px 10px}
-.enc-card .el{font-size:.66rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em}
-.enc-card .ev{font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:600;color:var(--tx);margin-top:2px}
+
+
+
+
 
 /* ── COMPARISON TABLE ───────────────────────────────── */
 .cmp-tbl{width:100%;border-collapse:collapse;font-size:.78rem}
@@ -274,7 +274,7 @@ a{color:var(--blue);text-decoration:none}
 .clt-card h4{font-size:.82rem;font-weight:700;margin-bottom:4px}
 .clt-card p{font-size:.75rem;color:var(--tx2);line-height:1.6}
 
-/* ── ANALYSIS NET-NEW SECTION ────────────────────────── */
+
 .netnew-section{background:var(--card);border:1px solid var(--bdr);border-radius:10px;box-shadow:var(--sh);margin-bottom:20px;overflow:hidden}
 .netnew-hd{padding:14px 20px;background:linear-gradient(135deg,#fefce8,var(--bg3));border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px}
 .netnew-hd h2{font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--tx2)}
@@ -329,61 +329,16 @@ a{color:var(--blue);text-decoration:none}
 <!-- ══ HEADER ══════════════════════════════════════════════ -->
 <div class="header">
   <div class="header-inner">
-    <h1>🏨 Escala Hotel 24/7 <span class="sub">Gestão · CLT 2026 · Relatório Interativo</span></h1>
+    <h1>🏨 Escala Hotel 24/7 <span class="sub">Gestão · CLT 2026 · Relatório Estratégico</span></h1>
     <div class="header-right">
       <span class="badge badge-blue">📅 <span id="gen-date"></span></span>
       <span class="badge badge-green">3 Ativos</span>
       <span class="badge badge-red">Func. X saindo</span>
       <a href="schedule-builder.html" class="btn-cfg" style="background:#f0fdf4;border-color:#bbf7d0;color:#15803d">🗓️ Construir Escala</a>
-      <a href="config.html" class="btn-cfg">⚙️ Configurações</a>
     </div>
   </div>
 </div>
 
-<!-- ══ CONFIG BAR ══════════════════════════════════════════ -->
-<div class="cbar">
-  <div class="cbar-inner">
-    <div class="cbar-group">
-      <span class="cbar-lbl">Turnos</span>
-      <span class="chip" id="b-morn">—</span>
-      <span class="chip" id="b-aft">—</span>
-      <span class="chip" id="b-night">—</span>
-    </div>
-    <div class="cbar-sep"></div>
-    <div class="cbar-group">
-      <span class="cbar-lbl">Equipe</span>
-      <span class="chip gio" id="b-gio">Giovanna</span>
-      <span class="chip and" id="b-and">Anderson</span>
-      <span class="chip gab" id="b-gab">Gabriel</span>
-    </div>
-    <div class="cbar-sep"></div>
-    <div class="cbar-group">
-      <span class="cbar-lbl">Encargos</span>
-      <span class="chip enc" id="b-enc">—%</span>
-    </div>
-    <a href="config.html" class="btn-cfg" style="margin-left:auto">⚙️ Editar configurações</a>
-  </div>
-</div>
-
-<!-- Hidden inputs for JS calculations -->
-<div id="hidden-inputs">
-  <input id="s-gio"  type="number" value="1700">
-  <input id="s-and"  type="number" value="2100">
-  <input id="s-gab"  type="number" value="1800">
-  <input id="s-free" type="number" value="250">
-  <input id="s-int"  type="number" value="220">
-  <input id="s-fds"  type="number" value="491">
-  <input id="s-fds2" type="number" value="982">
-  <input id="s-folg" type="number" value="1500">
-  <input id="enc-inss" type="number" value="20">
-  <input id="enc-rat"  type="number" value="2">
-  <input id="enc-terc" type="number" value="5.8">
-  <input id="enc-fgts" type="number" value="8">
-  <input id="enc-fer"  type="number" value="11.11">
-  <input id="enc-13"   type="number" value="8.33">
-  <input id="enc-fp"   type="number" value="1.92">
-  <input id="enc-not"  type="number" value="20">
-</div>
 
 <!-- ══ MAIN ════════════════════════════════════════════════ -->
 <div class="page">
@@ -415,15 +370,12 @@ a{color:var(--blue);text-decoration:none}
           <div class="alert alert-warn"><span class="ai">⚠️</span><div><strong>Domingos descobertos:</strong> Gio e Anderson folgam aos domingos — hotel sem diurno.</div></div>
           <div class="alert alert-warn"><span class="ai">⚠️</span><div><strong>48h/sem. no 6×1:</strong> 4h extras/semana ≈ 17h/mês. Devem ser pagas +50% ou banco de horas.</div></div>
         </div>
-        <div class="ib">
-          <h3>Custo Estimado Atual (4 func.)</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c0-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c0-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c0-gab">—</div><div class="cl">Gabriel</div></div>
-            <div class="cost-card"><div class="cv" id="c0-x">—</div><div class="cl">Func. X</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel</div></div>
+            <div class="cl">Func. X</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total/mês (c/ encargos)</span><span class="cv" id="c0-tot">—</span></div>
+          
         </div>
       </div>
       <div class="col-r">
@@ -479,14 +431,12 @@ a{color:var(--blue);text-decoration:none}
         </table>
         <div class="alert alert-warn"><span class="ai">🔧</span><div>~32 diárias freelancer/mês (Sáb+Dom + ~15 noites gap Gabriel)</div></div>
         <div class="alert alert-info"><span class="ai">💡</span><div>Banco de horas pode cobrir 1 FDS/mês sem custo extra</div></div>
-        <div class="ib mt12"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c1-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c1-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c1-gab">—</div><div class="cl">Gabriel</div></div>
-            <div class="cost-card"><div class="cv" id="c1-free">—</div><div class="cl">Freelancer</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel</div></div>
+            <div class="cl">Freelancer</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c1-tot">—</span></div>
+          
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">Sem H. Extra</span><span class="tag tag-g">Dom coberto</span>
@@ -520,14 +470,12 @@ a{color:var(--blue);text-decoration:none}
           </tbody>
         </table>
         <div class="alert alert-ok"><span class="ai">✅</span><div>Art. 59-A CLT: 12×36 por acordo individual. Feriados compensados, sem HE, cobertura total.</div></div>
-        <div class="ib mt12"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c2-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c2-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c2-gab">—</div><div class="cl">Gabriel</div></div>
-            <div class="cost-card"><div class="cv" id="c2-new">—</div><div class="cl">Novo</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel</div></div>
+            <div class="cl">Novo</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c2-tot">—</span></div>
+          
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">100% coberto</span><span class="tag tag-g">Sem freelancer</span>
@@ -561,14 +509,12 @@ a{color:var(--blue);text-decoration:none}
           </tbody>
         </table>
         <div class="alert alert-warn"><span class="ai">⚠️</span><div>6×1 gera ~4h extra/sem. Banco de horas (CCT hotelaria, 6 meses) zera o custo imediato.</div></div>
-        <div class="ib mt12"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c3-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c3-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c3-gab">—</div><div class="cl">Gabriel</div></div>
-            <div class="cost-card"><div class="cv" id="c3-free">—</div><div class="cl">Freelancer</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel</div></div>
+            <div class="cl">Freelancer</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c3-tot">—</span></div>
+          
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">Dom coberto</span><span class="tag tag-g">3 fixos</span>
@@ -600,14 +546,12 @@ a{color:var(--blue);text-decoration:none}
           ④ Risco de ação trabalhista com pagamento retroativo de HE (50–100%)
         </div></div>
         <div class="alert alert-ok mt8"><span class="ai">✅</span><div><strong>Alternativa legal:</strong> Gabriel seg–sex com 8h/noite (ex: 22h–6h). 40h/sem. Adicional noturno integral. Sem violação.</div></div>
-        <div class="ib mt12"><h3>Custo Mensal (c/ HE irregulares)</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c4-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c4-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c4-gab">—</div><div class="cl">Gabriel c/HE</div></div>
-            <div class="cost-card"><div class="cv" id="c4-free">—</div><div class="cl">Freelancer FDS</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel c/HE</div></div>
+            <div class="cl">Freelancer FDS</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c4-tot">—</span></div>
+          
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-r">ILEGAL 12h×5d</span><span class="tag tag-r">60h/sem.</span><span class="tag tag-r">Risco alto</span>
@@ -640,14 +584,12 @@ a{color:var(--blue);text-decoration:none}
             <tr><td class="c-free">Freelancer</td><td>PJ</td><td>Dom + gaps</td><td>—</td><td class="c-warn">⚠</td></tr>
           </tbody>
         </table>
-        <div class="ib"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c5-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c5-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c5-gab">—</div><div class="cl">Gabriel</div></div>
-            <div class="cost-card"><div class="cv" id="c5-free">—</div><div class="cl">Freelancer</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel</div></div>
+            <div class="cl">Freelancer</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c5-tot">—</span></div>
+          
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">3 fixos</span><span class="tag tag-g">Dom coberto</span><span class="tag tag-g">Custo mínimo</span>
@@ -682,15 +624,13 @@ a{color:var(--blue);text-decoration:none}
             <tr><td class="c-new">FDS Noturno</td><td>T.Parc+12×36</td><td>Sáb+Dom noite</td><td>24h</td><td class="c-ok">✅</td></tr>
           </tbody>
         </table>
-        <div class="ib"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c6-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c6-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c6-gab">—</div><div class="cl">Gabriel</div></div>
-            <div class="cost-card"><div class="cv" id="c6-fds">—</div><div class="cl">FDS D+N</div></div>
-            <div class="cost-card"><div class="cv" id="c6-free">—</div><div class="cl">Free. gaps</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel</div></div>
+            <div class="cl">FDS D+N</div></div>
+            <div class="cl">Free. gaps</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c6-tot">—</span></div>
+          
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">CLT total</span><span class="tag tag-g">12h legal</span>
@@ -723,14 +663,12 @@ a{color:var(--blue);text-decoration:none}
             <tr><td style="color:var(--folg);font-weight:600">Folguista</td><td>5×2</td><td>Variável</td><td>40h</td><td class="c-ok">✅</td></tr>
           </tbody>
         </table>
-        <div class="ib mt12"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c7-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c7-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c7-gab">—</div><div class="cl">Gabriel</div></div>
-            <div class="cost-card"><div class="cv" id="c7-folg">—</div><div class="cl">Folguista</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel</div></div>
+            <div class="cl">Folguista</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c7-tot">—</span></div>
+          
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">Sem freelancer</span><span class="tag tag-g">FDS coberto</span>
@@ -763,14 +701,12 @@ a{color:var(--blue);text-decoration:none}
             <tr><td style="color:var(--folg);font-weight:600">Folguista</td><td>5×2</td><td>FDS</td><td>40h</td><td class="c-ok">✅</td></tr>
           </tbody>
         </table>
-        <div class="ib mt12"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c8-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c8-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c8-gab">—</div><div class="cl">Gabriel</div></div>
-            <div class="cost-card"><div class="cv" id="c8-folg">—</div><div class="cl">Folguista</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel</div></div>
+            <div class="cl">Folguista</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c8-tot">—</span></div>
+          
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">FDS coberto</span><span class="tag tag-g">Sem free</span>
@@ -803,14 +739,12 @@ a{color:var(--blue);text-decoration:none}
             <tr><td class="c-free">Freelancer</td><td>PJ</td><td>Noite gaps</td><td>—</td><td class="c-warn">⚠</td></tr>
           </tbody>
         </table>
-        <div class="ib mt12"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c9-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c9-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c9-gab">—</div><div class="cl">Gabriel</div></div>
-            <div class="cost-card"><div class="cv" id="c9-free">—</div><div class="cl">Freelancer</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel</div></div>
+            <div class="cl">Freelancer</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c9-tot">—</span></div>
+          
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">3 fixos</span><span class="tag tag-r">HE</span>
@@ -843,13 +777,11 @@ a{color:var(--blue);text-decoration:none}
           </tbody>
         </table>
         <div class="alert alert-ok"><span class="ai">✅</span><div>Art. 59-A CLT: 12×36 por acordo individual. Sem HE, cobertura total.</div></div>
-        <div class="ib mt12"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c10-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c10-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c10-gab">—</div><div class="cl">Gabriel</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c10-tot">—</span></div>
+          
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">100% coberto</span><span class="tag tag-g">Sem extra</span>
@@ -882,14 +814,12 @@ a{color:var(--blue);text-decoration:none}
             <tr><td class="c-free">Freelancer</td><td>PJ</td><td>FDS</td><td>—</td><td class="c-warn">⚠</td></tr>
           </tbody>
         </table>
-        <div class="ib mt12"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c11-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c11-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c11-gab">—</div><div class="cl">Gabriel</div></div>
-            <div class="cost-card"><div class="cv" id="c11-free">—</div><div class="cl">Freelancer</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel</div></div>
+            <div class="cl">Freelancer</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c11-tot">—</span></div>
+          
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">3 fixos</span><span class="tag tag-r">Free FDS</span>
@@ -922,14 +852,12 @@ a{color:var(--blue);text-decoration:none}
             <tr><td class="c-new">Interm. Noite</td><td>T.Parc+12×36</td><td>FDS noite</td><td>24h</td><td class="c-ok">✅</td></tr>
           </tbody>
         </table>
-        <div class="ib mt12"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c12-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c12-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c12-gab">—</div><div class="cl">Gabriel</div></div>
-            <div class="cost-card"><div class="cv" id="c12-int">—</div><div class="cl">Interm.</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel</div></div>
+            <div class="cl">Interm.</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c12-tot">—</span></div>
+          
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">CLT total</span><span class="tag tag-g">FDS coberto</span>
@@ -978,14 +906,12 @@ a{color:var(--blue);text-decoration:none}
           </tbody>
         </table>
         <div class="alert alert-info"><span class="ai">💡</span><div>Horários mais cedo podem melhorar produtividade matinal e reduzir custos noturnos</div></div>
-        <div class="ib mt12"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c13-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c13-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c13-gab">—</div><div class="cl">Gabriel</div></div>
-            <div class="cost-card"><div class="cv" id="c13-free">—</div><div class="cl">Freelancer</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel</div></div>
+            <div class="cl">Freelancer</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c13-tot">—</span></div>
+          
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">Horários cedo</span><span class="tag tag-g">Sem H. Extra</span>
@@ -1019,14 +945,12 @@ a{color:var(--blue);text-decoration:none}
           </tbody>
         </table>
         <div class="alert alert-info"><span class="ai">💡</span><div>Gabriel ganha experiência em turnos matinais, reduzindo dependência de freelancers</div></div>
-        <div class="ib mt12"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c14-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c14-gab">—</div><div class="cl">Gabriel</div></div>
-            <div class="cost-card"><div class="cv" id="c14-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c14-free">—</div><div class="cl">Folguista</div></div>
+        
+            <div class="cl">Gabriel</div></div>
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Folguista</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c14-tot">—</span></div>
+          
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">Gabriel manhã</span><span class="tag tag-g">Revezamento</span>
@@ -1060,14 +984,12 @@ a{color:var(--blue);text-decoration:none}
           </tbody>
         </table>
         <div class="alert alert-warn"><span class="ai">🔧</span><div>Manhã coberta por freelancers — pode aumentar custos</div></div>
-        <div class="ib mt12"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c15-free">—</div><div class="cl">Freelancer</div></div>
-            <div class="cost-card"><div class="cv" id="c15-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c15-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c15-gab">—</div><div class="cl">Gabriel</div></div>
+        
+            <div class="cl">Giovanna</div></div>
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c15-tot">—</span></div>
+          
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-o">Manhã freelancer</span><span class="tag tag-g">Tarde equipe</span>
@@ -1101,14 +1023,12 @@ a{color:var(--blue);text-decoration:none}
           </tbody>
         </table>
         <div class="alert alert-info"><span class="ai">💡</span><div>Gabriel ganha experiência em turnos diurnos, reduzindo dependência de freelancers noturnos</div></div>
-        <div class="ib mt12"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c16-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c16-gab">—</div><div class="cl">Gabriel</div></div>
-            <div class="cost-card"><div class="cv" id="c16-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c16-free">—</div><div class="cl">Folguista</div></div>
+        
+            <div class="cl">Gabriel</div></div>
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Folguista</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c16-tot">—</span></div>
+          
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">Gabriel tarde</span><span class="tag tag-g">Revezamento</span>
@@ -1150,15 +1070,13 @@ a{color:var(--blue);text-decoration:none}
             <tr><td class="c-free">Freelancer</td><td>PJ</td><td>Noite gaps</td><td>—</td><td class="c-warn">⚠</td></tr>
           </tbody>
         </table>
-        <div class="ib"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="cg-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="cg-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="cg-gab">—</div><div class="cl">Gabriel</div></div>
-            <div class="cost-card"><div class="cv" id="cg-folg">—</div><div class="cl">Folguista</div></div>
-            <div class="cost-card"><div class="cv" id="cg-free">—</div><div class="cl">Free. noturno</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel</div></div>
+            <div class="cl">Folguista</div></div>
+            <div class="cl">Free. noturno</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="cg-tot">—</span></div>
+          
           <p class="mt8" style="font-size:.72rem;color:var(--tx3)">* Salário folguista configurável em ⚙️ Configurações</p>
         </div>
       </div>
@@ -1204,14 +1122,12 @@ a{color:var(--blue);text-decoration:none}
         <div class="ib"><h3>Proposta R — Gabriel 5×2 Seg–Sex ⚠ ILEGAL</h3>
           <p class="desc">Gabriel trabalha 5×2 noturno seg-sexta. Folguistas cobrem fins de semana. <strong class="c-bad">🚨 ILEGAL: Excede 60h/semana (CLT Art. 58).</strong></p>
         </div>
-        <div class="ib"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c17-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c17-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c17-gab">—</div><div class="cl">Gabriel ⚠</div></div>
-            <div class="cost-card"><div class="cv" id="c17-folg">—</div><div class="cl">Folguista FDS</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel ⚠</div></div>
+            <div class="cl">Folguista FDS</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c17-tot">—</span></div>
+          
         </div>
       </div>
       <div class="col-r">
@@ -1231,14 +1147,12 @@ a{color:var(--blue);text-decoration:none}
         <div class="ib"><h3>Proposta S — Gabriel 6×1 Seg–Sex ⚠ ILEGAL</h3>
           <p class="desc">Gabriel trabalha 6×1 noturno seg-sexta. Folguistas cobrem fins de semana. <strong class="c-bad">🚨 ILEGAL: Excede 60h/semana (CLT Art. 58).</strong></p>
         </div>
-        <div class="ib"><h3>Custo Mensal</h3>
-          <div class="cost-grid">
-            <div class="cost-card"><div class="cv" id="c18-gio">—</div><div class="cl">Giovanna</div></div>
-            <div class="cost-card"><div class="cv" id="c18-and">—</div><div class="cl">Anderson</div></div>
-            <div class="cost-card"><div class="cv" id="c18-gab">—</div><div class="cl">Gabriel ⚠</div></div>
-            <div class="cost-card"><div class="cv" id="c18-folg">—</div><div class="cl">Folguista FDS</div></div>
+        
+            <div class="cl">Anderson</div></div>
+            <div class="cl">Gabriel ⚠</div></div>
+            <div class="cl">Folguista FDS</div></div>
           </div>
-          <div class="cost-total"><span class="cl">Total estimado/mês</span><span class="cv" id="c18-tot">—</span></div>
+          
         </div>
       </div>
       <div class="col-r">
@@ -1247,34 +1161,6 @@ a{color:var(--blue);text-decoration:none}
           <div class="legend" id="leg-s18"></div>
           <div class="sched-wrap"><table id="gantt-s18"></table></div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── CALCULADORA SALARIAL ───────────────────────────────── -->
-<div class="section">
-  <div class="sec-hd">
-    <div class="sec-num blue">💰</div>
-    <div><h2>Calculadora Salarial Detalhada</h2><p>Custo real empregador · Encargos configuráveis em ⚙️ Configurações</p></div>
-  </div>
-  <div class="sal-section">
-    <div class="sal-hd"><h2>Custo por Funcionário</h2><span style="font-size:.75rem;color:var(--tx3)">Salário mínimo/hora 2026: R$ 7,37</span></div>
-    <div class="sal-bd">
-      <div class="ib">
-        <h3>⚙️ Encargos Patronais Ativos <a href="config.html" style="font-size:.72rem;color:var(--blue);margin-left:8px">Editar →</a></h3>
-        <div class="enc-grid" id="enc-ro-grid"></div>
-        <div style="margin-top:10px;padding:8px 12px;background:var(--bg3);border-radius:6px;border:1px solid var(--bdr);display:flex;justify-content:space-between;font-size:.8rem">
-          <span style="color:var(--tx3)">Total encargos sobre salário bruto (empregador):</span>
-          <span class="mono" style="font-weight:700" id="enc-total-pct">—%</span>
-        </div>
-      </div>
-      <div class="emp-cards" id="emp-cards"></div>
-      <div class="ovx">
-        <table class="tbl w100">
-          <thead><tr><th>Funcionário</th><th>Regime</th><th>Sal. Base</th><th>Adicionais</th><th>Encargos</th><th>Provisões</th><th>Custo Total/mês</th></tr></thead>
-          <tbody id="sal-summary"></tbody>
-        </table>
       </div>
     </div>
   </div>
@@ -1291,7 +1177,7 @@ a{color:var(--blue);text-decoration:none}
       <table class="cmp-tbl w100">
         <thead><tr>
           <th>Cenário</th><th>Fixos</th><th>Extras/FDS</th><th>Dom?</th><th>H.Extra</th>
-          <th>Custo Fixo</th><th>Custo Variável</th><th>Total/mês</th><th>CLT</th><th>Risco</th>
+          <th>CLT</th><th>Risco</th>
         </tr></thead>
         <tbody id="cmp-body"></tbody>
       </table>
@@ -1315,7 +1201,7 @@ a{color:var(--blue);text-decoration:none}
             <div class="cc-row"><span class="r-lbl">H/semana</span><span>12h ≤ 30h → Art. 58-A ok</span></div>
             <div class="cc-row"><span class="r-lbl">Jornada diária</span><span>12h → requer acordo 12×36 individual</span></div>
             <div class="cc-row"><span class="r-lbl">DSR</span><span>Compensado no 12×36 (Art. 59-A § único)</span></div>
-            <div class="cc-row"><span class="r-lbl">Custo/mês</span><span class="mono" id="ct-fds-d">—</span></div>
+            
             <div class="cc-row"><span class="r-lbl">Contrato</span><span>Escrito + acordo 12×36 assinado</span></div>
           </div>
         </div>
@@ -1326,7 +1212,7 @@ a{color:var(--blue);text-decoration:none}
             <div class="cc-row"><span class="r-lbl">Interjornada</span><span id="ct-interj">—</span></div>
             <div class="cc-row"><span class="r-lbl">Adic. noturno</span><span id="ct-noct">—</span></div>
             <div class="cc-row"><span class="r-lbl">DSR</span><span>>100h descanso entre Dom noite e Sáb → ✅</span></div>
-            <div class="cc-row"><span class="r-lbl">Custo/mês</span><span class="mono" id="ct-fds-n">—</span></div>
+            
           </div>
         </div>
         <div class="contract-card">
@@ -1334,7 +1220,7 @@ a{color:var(--blue);text-decoration:none}
           <div class="cc-bd">
             <div class="cc-row"><span class="r-lbl">Funcionamento</span><span>Convocação c/ 3 dias antecedência</span></div>
             <div class="cc-row"><span class="r-lbl">Risco</span><span>Uso habitual todo FDS → vínculo (pool ≥3)</span></div>
-            <div class="cc-row"><span class="r-lbl">Custo/mês</span><span class="mono" id="ct-int">—</span></div>
+            
           </div>
         </div>
         <div class="contract-card">
@@ -1342,7 +1228,7 @@ a{color:var(--blue);text-decoration:none}
           <div class="cc-bd">
             <div class="cc-row"><span class="r-lbl">Prazo máx.</span><span>180 + 90 dias prorrogação</span></div>
             <div class="cc-row"><span class="r-lbl">Ideal para</span><span>Transição enquanto contrata fixo</span></div>
-            <div class="cc-row"><span class="r-lbl">Custo/mês</span><span class="mono" id="ct-tmp">—</span></div>
+            
           </div>
         </div>
       </div>
@@ -1371,8 +1257,8 @@ a{color:var(--blue);text-decoration:none}
 
 </div><!-- end page -->
 <div class="footer">
-  Relatório de Gestão de Escalas · Hotel 24/7 · <span id="footer-date"></span><br>
-  Valores estimados com base na CLT 2026. Consulte seu contador/advogado trabalhista para valores precisos.
+  Relatório Estratégico de Escalas · Hotel 24/7 · <span id="footer-date"></span><br>
+  Análise de turnos e conformidade CLT 2026. Consulte seu advogado trabalhista para orientações precisas.
 </div>
 
 <script src="escala.js"></script>
