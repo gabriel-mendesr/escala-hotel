@@ -5,324 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Escala Hotel 24/7</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-/* ── RESET & TOKENS ─────────────────────────────────── */
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  /* bg */
-  --bg:      #f4f6fa;
-  --bg2:     #ffffff;
-  --bg3:     #eef1f7;
-  --card:    #ffffff;
-  /* borders */
-  --bdr:     #d8dde8;
-  --bdr2:    #c4cbdb;
-  /* text */
-  --tx:      #1a2035;
-  --tx2:     #4a5575;
-  --tx3:     #8792aa;
-  /* brand */
-  --blue:    #2c6ef2;
-  --blue2:   #1a56d6;
-  --gold:    #c47d10;
-  --gold2:   #a86200;
-  /* people */
-  --gio:     #c0392b;
-  --and:     #1a6fc4;
-  --gab:     #1a9950;
-  --free:    #b8860b;
-  --folg:    #7b3fa0;
-  --new_:    #0e7490;
-  /* status */
-  --green:   #16a34a;
-  --red:     #dc2626;
-  --orange:  #c2410c;
-  --warn-bg: #fff7ed;
-  --warn-bdr:#fed7aa;
-  --crit-bg: #fef2f2;
-  --crit-bdr:#fecaca;
-  --info-bg: #eff6ff;
-  --info-bdr:#bfdbfe;
-  --ok-bg:   #f0fdf4;
-  --ok-bdr:  #bbf7d0;
-  /* shadow */
-  --sh: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
-  --sh2:0 4px 12px rgba(0,0,0,.1);
-}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);line-height:1.5;font-size:14px}
-a{color:var(--blue);text-decoration:none}
-.mono{font-family:'JetBrains Mono',monospace}
-
-/* ── HEADER ─────────────────────────────────────────── */
-.header{
-  background:var(--bg2);border-bottom:1px solid var(--bdr);
-  padding:16px 24px;position:sticky;top:0;z-index:200;
-  box-shadow:var(--sh);
-}
-.header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.header h1{font-size:1.15rem;font-weight:700;color:var(--tx);display:flex;align-items:center;gap:8px}
-.header h1 .sub{font-size:.8rem;font-weight:400;color:var(--tx3)}
-.header-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-
-/* ── CONFIG BAR ─────────────────────────────────────── */
-.cbar{background:var(--bg3);border-bottom:1px solid var(--bdr);padding:8px 24px}
-.cbar-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.cbar-group{display:flex;align-items:center;gap:6px}
-.cbar-lbl{font-size:.72rem;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
-.chip{
-  display:inline-flex;align-items:center;gap:4px;padding:2px 9px;
-  border-radius:20px;font-size:.73rem;font-weight:600;
-  background:var(--bg2);border:1px solid var(--bdr2);color:var(--tx2);
-}
-.chip.gio{background:#fef2f2;border-color:#fca5a5;color:var(--gio)}
-.chip.and{background:#eff6ff;border-color:#93c5fd;color:var(--and)}
-.chip.gab{background:#f0fdf4;border-color:#86efac;color:var(--gab)}
-.chip.enc{background:#fefce8;border-color:#fde047;color:var(--gold2)}
-.cbar-sep{width:1px;height:18px;background:var(--bdr2)}
-.btn-cfg{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:5px 12px;border-radius:6px;border:1px solid var(--blue);
-  background:var(--blue);color:#fff;font-size:.78rem;font-weight:600;
-  cursor:pointer;transition:background .15s;text-decoration:none;
-}
-.btn-cfg:hover{background:var(--blue2);color:#fff}
-
-/* Hidden inputs for JS */
-#hidden-inputs{display:none}
-
-/* ── PAGE ───────────────────────────────────────────── */
-.page{max-width:1400px;margin:0 auto;padding:24px 20px 80px}
-.section{margin-bottom:28px}
-.sec-hd{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-.sec-num{
-  width:26px;height:26px;border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
-  font-weight:700;font-size:.78rem;flex-shrink:0;
-}
-.sec-num.blue{background:#dbeafe;color:var(--blue2);border:1px solid #bfdbfe}
-.sec-num.gold{background:#fef3c7;color:var(--gold2);border:1px solid #fde68a}
-.sec-hd h2{font-size:1rem;font-weight:700;color:var(--tx)}
-.sec-hd p{font-size:.8rem;color:var(--tx3);margin-top:2px}
-
-/* ── CARD ───────────────────────────────────────────── */
-.card{background:var(--card);border:1px solid var(--bdr);border-radius:10px;box-shadow:var(--sh);overflow:hidden}
-.card-hd{padding:14px 20px;border-bottom:1px solid var(--bdr);background:var(--bg3);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.card-hd h3{font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--tx2)}
-.card-bd{padding:20px}
-
-/* ── TWO-COL ────────────────────────────────────────── */
-.two-col{display:grid;grid-template-columns:380px 1fr}
-@media(max-width:960px){.two-col{grid-template-columns:1fr}}
-.col-l{padding:20px;border-right:1px solid var(--bdr)}
-.col-r{padding:20px;background:var(--bg3)}
-
-/* === GANTT LAYOUT (Cards à esquerda, Tabela no meio) === */
-.gantt-container {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-}
-@media(max-width:900px) { .gantt-container { flex-direction: column; } }
-
-.legend {
-  display: flex;
-  flex-direction: column; /* Alinhamento Vertical */
-  min-width: 190px;
-  gap: 8px;
-  flex-shrink: 0;
-}
-.leg-card {
-  background: var(--bg2); border: 1px solid var(--bdr); border-radius: 8px;
-  padding: 10px 12px; display: flex; align-items: center; gap: 10px;
-  cursor: pointer; transition: all 0.2s; box-shadow: var(--sh);
-}
-.leg-card:hover { border-color: var(--blue); }
-.leg-card.selected { border-left: 4px solid var(--blue); background: var(--info-bg); }
-.leg-dot { width: 10px; height: 10px; border-radius: 50%; }
-.leg-info { display: flex; flex-direction: column; line-height: 1.2; }
-.leg-info strong { font-size: 0.8rem; color: var(--tx); }
-.leg-info span { font-size: 0.65rem; color: var(--tx3); }
-
-/* ── TABS ───────────────────────────────────────────── */
-.tabs{display:flex;gap:2px;flex-wrap:wrap;padding-top:20px}
-.tab{
-  padding:7px 14px;border-radius:8px 8px 0 0;
-  border:1px solid var(--bdr);border-bottom:none;
-  background:var(--bg3);color:var(--tx3);font-size:.78rem;font-weight:500;
-  cursor:pointer;transition:all .15s;position:relative;
-}
-.tab.active{background:var(--card);color:var(--tx);font-weight:600;border-color:var(--bdr2)}
-.tab:hover:not(.active){color:var(--tx2);background:var(--bg2)}
-.tab.best{background:#f0fdf4;border-color:#bbf7d0;color:var(--green)}
-
-.panel{display:none;background:var(--card);border:1px solid var(--bdr2);border-radius:0 10px 10px 10px;box-shadow:var(--sh)}
-.panel.active{display:block}
-
-/* ── SCHEDULE GRID ──────────────────────────────────── */
-.sched-wrap{border-radius:8px;overflow:hidden;border:1px solid var(--bdr)}
-.sched{width:100%;border-collapse:collapse;table-layout:fixed}
-.sched thead th{
-  padding:9px 6px;text-align:center;font-weight:700;font-size:.76rem;
-  letter-spacing:.03em;text-transform:uppercase;background:var(--bg3);
-  border:1px solid var(--bdr);color:var(--tx2);
-}
-.sched thead th.sun{color:var(--orange);background:#fff7ed}
-.sched td.shift-lbl{
-  background:var(--bg3);border:1px solid var(--bdr);
-  padding:8px 10px;vertical-align:middle;width:88px;min-width:88px;
-}
-.sl-name{display:block;font-size:.78rem;font-weight:700;color:var(--tx)}
-.sl-hours{display:block;font-size:.65rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;margin-top:1px}
-.sched td.sc{
-  border:1px solid var(--bdr);padding:0;height:64px;
-  vertical-align:middle;text-align:center;cursor:default;transition:filter .15s;
-}
-.sched td.sc-tall{height:132px}
-.sched td.sc:hover{filter:brightness(.93)}
-.sched td.sc-empty{background:repeating-linear-gradient(
-  45deg,#fee2e2,#fee2e2 4px,#fef2f2 4px,#fef2f2 10px)}
-.sched td.sc-warn{box-shadow:inset 0 0 0 2px var(--red)}
-.sc-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:4px 3px;gap:2px}
-.sc-name{font-size:.8rem;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:96%}
-.sc-sub{font-size:.64rem;color:rgba(255,255,255,.8);font-family:'JetBrains Mono',monospace}
-.sc-badge{font-size:.6rem;padding:1px 5px;border-radius:3px;background:rgba(0,0,0,.2);color:rgba(255,255,255,.9);margin-top:1px;white-space:nowrap}
-.sc-badge.warn{background:rgba(200,0,0,.4)}
-.sc-empty-lbl{font-size:.7rem;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.04em}
-
-/* Legend */
-.leg{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--tx3)}
-.leg-box{width:11px;height:11px;border-radius:3px;flex-shrink:0;border:1px solid rgba(0,0,0,.1)}
-
-/* ── ALERTS ─────────────────────────────────────────── */
-.alert{border-radius:7px;padding:10px 14px;font-size:.8rem;display:flex;gap:9px;align-items:flex-start;margin-bottom:8px;line-height:1.6;border:1px solid}
-.alert-warn{background:var(--warn-bg);border-color:var(--warn-bdr);color:#92400e}
-.alert-crit{background:var(--crit-bg);border-color:var(--crit-bdr);color:#991b1b}
-.alert-info{background:var(--info-bg);border-color:var(--info-bdr);color:#1e40af}
-.alert-ok{background:var(--ok-bg);border-color:var(--ok-bdr);color:#15803d}
-.alert .ai{flex-shrink:0;margin-top:.1rem}
-
-/* ── TABLE ──────────────────────────────────────────── */
-.tbl{width:100%;border-collapse:collapse;font-size:.8rem;margin-bottom:8px}
-.tbl th{padding:7px 10px;background:var(--bg3);border:1px solid var(--bdr);color:var(--tx2);font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;text-align:left}
-.tbl td{padding:7px 10px;border:1px solid var(--bdr);vertical-align:middle}
-.tbl tr:nth-child(even) td{background:#f8faff}
-.c-gio{color:var(--gio);font-weight:600} .c-and{color:var(--and);font-weight:600}
-.c-gab{color:var(--gab);font-weight:600} .c-free{color:var(--free);font-weight:600}
-.c-new{color:var(--new_);font-weight:600}.c-folg{color:var(--folg);font-weight:600}
-.c-ok{color:var(--green)} .c-warn{color:var(--orange)} .c-bad{color:var(--red)}
-
-/* ── COST CARDS ─────────────────────────────────────── */
-.cost-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:10px}
-.cost-card{background:var(--bg3);border:1px solid var(--bdr);border-radius:8px;padding:10px;text-align:center}
-.cost-card .cv{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;color:var(--tx)}
-.cost-card .cl{font-size:.66rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
-.cost-total{background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.cost-total .cv{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--tx)}
-.cost-total .cl{font-size:.78rem;color:var(--tx3)}
-
-/* ── TAGS ───────────────────────────────────────────── */
-.tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.69rem;font-weight:500;margin:2px;border:1px solid}
-.tag-g{background:#f0fdf4;color:var(--green);border-color:#bbf7d0}
-.tag-r{background:#fef2f2;color:var(--red);border-color:#fecaca}
-.tag-o{background:#fff7ed;color:var(--orange);border-color:#fed7aa}
-.tag-b{background:#eff6ff;color:var(--blue2);border-color:#bfdbfe}
-
-/* ── INFO BLOCK ─────────────────────────────────────── */
-.ib{margin-bottom:16px}
-.ib h3{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3);margin-bottom:8px}
-.desc{font-size:.82rem;color:var(--tx2);line-height:1.7;margin-bottom:10px}
-
-
-.sal-section{background:var(--card);border:1px solid var(--bdr);border-radius:10px;box-shadow:var(--sh);margin-bottom:20px;overflow:hidden}
-.sal-hd{padding:14px 20px;background:var(--bg3);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.sal-hd h2{font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--tx2)}
-.sal-bd{padding:20px}
-.emp-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:20px}
-.emp-card{background:var(--bg3);border:1px solid var(--bdr);border-radius:8px;overflow:hidden}
-.emp-card-hd{padding:10px 14px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px;background:var(--bg2)}
-.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.emp-card-bd{padding:12px 14px}
-.calc-row{display:flex;justify-content:space-between;padding:4px 0;font-size:.79rem;border-bottom:1px solid var(--bdr)}
-.calc-row:last-child{border:none}
-.calc-row .lbl{color:var(--tx2)}
-.calc-row .val{font-family:'JetBrains Mono',monospace;color:var(--tx)}
-.calc-row.total{border-top:1px solid var(--bdr2);padding-top:6px;margin-top:3px}
-.calc-row.total .lbl{font-weight:700;color:var(--tx)}
-.calc-row.total .val{font-weight:700}
-.calc-row.enc .lbl{color:var(--orange)}
-.calc-row.enc .val{color:var(--orange)}
-
-
-
-
-
-
-/* ── COMPARISON TABLE ───────────────────────────────── */
-.cmp-tbl{width:100%;border-collapse:collapse;font-size:.78rem}
-.cmp-tbl th{background:var(--bg3);padding:8px 10px;border:1px solid var(--bdr);color:var(--tx2);font-size:.69rem;text-transform:uppercase;letter-spacing:.04em;text-align:left}
-.cmp-tbl td{padding:8px 10px;border:1px solid var(--bdr);vertical-align:middle}
-.cmp-tbl tr.rec td{background:#f0fdf4}
-.cmp-tbl tr.rec td:first-child{border-left:3px solid var(--green)}
-.cmp-tbl tr.bad td{background:#fef2f2}
-.cmp-tbl .best{color:var(--green);font-weight:700}
-.cmp-tbl .worst{color:var(--red)}
-
-/* ── CLT CARDS ──────────────────────────────────────── */
-.clt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
-.clt-card{background:var(--bg3);border:1px solid var(--bdr);border-radius:7px;padding:12px}
-.clt-art{font-size:.65rem;color:var(--blue2);font-family:'JetBrains Mono',monospace;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
-.clt-card h4{font-size:.82rem;font-weight:700;margin-bottom:4px}
-.clt-card p{font-size:.75rem;color:var(--tx2);line-height:1.6}
-
-
-.netnew-section{background:var(--card);border:1px solid var(--bdr);border-radius:10px;box-shadow:var(--sh);margin-bottom:20px;overflow:hidden}
-.netnew-hd{padding:14px 20px;background:linear-gradient(135deg,#fefce8,var(--bg3));border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px}
-.netnew-hd h2{font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--tx2)}
-.contrib-grid{display:flex;flex-direction:column;gap:12px;padding:20px}
-.contrib-card{background:var(--bg3);border:1px solid var(--bdr);border-radius:8px;overflow:hidden}
-.contrib-card-hd{padding:12px 16px;border-bottom:1px solid var(--bdr);background:var(--bg2);display:flex;align-items:center;gap:10px}
-.contrib-num{width:24px;height:24px;border-radius:6px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
-.contrib-card-bd{padding:14px 16px}
-
-/* ── RISK GRID ──────────────────────────────────────── */
-.risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:600px){.risk-grid{grid-template-columns:1fr}}
-.risk-card{background:var(--bg3);border:1px solid var(--bdr);border-radius:7px;padding:14px}
-.risk-card h4{font-size:.78rem;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.risk-list{list-style:none;display:flex;flex-direction:column;gap:5px}
-.risk-list li{font-size:.77rem;color:var(--tx2);display:flex;gap:7px;line-height:1.5}
-.risk-list li::before{content:'•';flex-shrink:0;color:var(--gold)}
-
-/* ── CONTRACTS ──────────────────────────────────────── */
-.contract-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:14px 0}
-.contract-card{background:var(--bg3);border:1px solid var(--bdr);border-radius:8px;overflow:hidden}
-.contract-card.valid{border-color:#86efac}
-.contract-card .cc-hd{padding:12px 14px;border-bottom:1px solid var(--bdr);background:var(--bg2);display:flex;align-items:flex-start;gap:8px}
-.contract-card .cc-bd{padding:12px 14px}
-.cc-row{display:grid;grid-template-columns:120px 1fr;gap:6px;font-size:.77rem;padding:3px 0;border-bottom:1px solid var(--bdr)}
-.cc-row:last-child{border:none}
-.cc-row .r-lbl{color:var(--tx3);font-size:.72rem}
-.risk-pill{display:inline-block;padding:1px 8px;border-radius:10px;font-size:.69rem;font-weight:700}
-.risk-low{background:#dcfce7;color:#15803d}
-.risk-med{background:#fef3c7;color:#92400e}
-.risk-high{background:#fee2e2;color:#991b1b}
-.rec-badge{display:inline-block;padding:1px 7px;border-radius:4px;font-size:.65rem;font-weight:700;background:#dcfce7;color:#15803d;margin-left:5px}
-
-/* ── UTIL ───────────────────────────────────────────── */
-.divider{height:1px;background:var(--bdr);margin:14px 0}
-.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}
-.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}
-.w100{width:100%} .ovx{overflow-x:auto}
-.center{text-align:center}
-.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.7rem;font-weight:600;border:1px solid}
-.badge-blue{background:#eff6ff;border-color:#bfdbfe;color:var(--blue2)}
-.badge-green{background:#f0fdf4;border-color:#bbf7d0;color:var(--green)}
-.badge-red{background:#fef2f2;border-color:#fecaca;color:var(--red)}
-.badge-gold{background:#fefce8;border-color:#fde68a;color:var(--gold2)}
-
-/* ── FOOTER ─────────────────────────────────────────── */
-.footer{border-top:1px solid var(--bdr);padding:16px 20px;text-align:center;color:var(--tx3);font-size:.72rem;background:var(--bg2)}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -369,13 +52,6 @@ a{color:var(--blue);text-decoration:none}
           <div class="alert alert-crit"><span class="ai">🚨</span><div><strong>Saída de X:</strong> Gabriel sozinho no noturno → ~15 noites/mês descobertas.</div></div>
           <div class="alert alert-warn"><span class="ai">⚠️</span><div><strong>Domingos descobertos:</strong> Gio e Anderson folgam aos domingos — hotel sem diurno.</div></div>
           <div class="alert alert-warn"><span class="ai">⚠️</span><div><strong>48h/sem. no 6×1:</strong> 4h extras/semana ≈ 17h/mês. Devem ser pagas +50% ou banco de horas.</div></div>
-        </div>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel</div></div>
-            <div class="cl">Func. X</div></div>
-          </div>
-          
         </div>
       </div>
       <div class="col-r">
@@ -431,13 +107,6 @@ a{color:var(--blue);text-decoration:none}
         </table>
         <div class="alert alert-warn"><span class="ai">🔧</span><div>~32 diárias freelancer/mês (Sáb+Dom + ~15 noites gap Gabriel)</div></div>
         <div class="alert alert-info"><span class="ai">💡</span><div>Banco de horas pode cobrir 1 FDS/mês sem custo extra</div></div>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel</div></div>
-            <div class="cl">Freelancer</div></div>
-          </div>
-          
-        </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">Sem H. Extra</span><span class="tag tag-g">Dom coberto</span>
           <span class="tag tag-r">Custo variável</span><span class="tag tag-o">~32 diárias/mês</span>
@@ -470,13 +139,6 @@ a{color:var(--blue);text-decoration:none}
           </tbody>
         </table>
         <div class="alert alert-ok"><span class="ai">✅</span><div>Art. 59-A CLT: 12×36 por acordo individual. Feriados compensados, sem HE, cobertura total.</div></div>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel</div></div>
-            <div class="cl">Novo</div></div>
-          </div>
-          
-        </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">100% coberto</span><span class="tag tag-g">Sem freelancer</span>
           <span class="tag tag-r">Precisa 4° func.</span><span class="tag tag-o">Adic. noturno</span>
@@ -509,13 +171,6 @@ a{color:var(--blue);text-decoration:none}
           </tbody>
         </table>
         <div class="alert alert-warn"><span class="ai">⚠️</span><div>6×1 gera ~4h extra/sem. Banco de horas (CCT hotelaria, 6 meses) zera o custo imediato.</div></div>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel</div></div>
-            <div class="cl">Freelancer</div></div>
-          </div>
-          
-        </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">Dom coberto</span><span class="tag tag-g">3 fixos</span>
           <span class="tag tag-r">HE não eliminada</span><span class="tag tag-o">Banco de horas</span>
@@ -546,13 +201,6 @@ a{color:var(--blue);text-decoration:none}
           ④ Risco de ação trabalhista com pagamento retroativo de HE (50–100%)
         </div></div>
         <div class="alert alert-ok mt8"><span class="ai">✅</span><div><strong>Alternativa legal:</strong> Gabriel seg–sex com 8h/noite (ex: 22h–6h). 40h/sem. Adicional noturno integral. Sem violação.</div></div>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel c/HE</div></div>
-            <div class="cl">Freelancer FDS</div></div>
-          </div>
-          
-        </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-r">ILEGAL 12h×5d</span><span class="tag tag-r">60h/sem.</span><span class="tag tag-r">Risco alto</span>
         </div>
@@ -584,13 +232,6 @@ a{color:var(--blue);text-decoration:none}
             <tr><td class="c-free">Freelancer</td><td>PJ</td><td>Dom + gaps</td><td>—</td><td class="c-warn">⚠</td></tr>
           </tbody>
         </table>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel</div></div>
-            <div class="cl">Freelancer</div></div>
-          </div>
-          
-        </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">3 fixos</span><span class="tag tag-g">Dom coberto</span><span class="tag tag-g">Custo mínimo</span>
           <span class="tag tag-o">And banco horas</span><span class="tag tag-o">Free. residual</span>
@@ -624,14 +265,6 @@ a{color:var(--blue);text-decoration:none}
             <tr><td class="c-new">FDS Noturno</td><td>T.Parc+12×36</td><td>Sáb+Dom noite</td><td>24h</td><td class="c-ok">✅</td></tr>
           </tbody>
         </table>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel</div></div>
-            <div class="cl">FDS D+N</div></div>
-            <div class="cl">Free. gaps</div></div>
-          </div>
-          
-        </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">CLT total</span><span class="tag tag-g">12h legal</span>
           <span class="tag tag-g">FDS coberto</span><span class="tag tag-o">2 novas contratações</span>
@@ -663,13 +296,6 @@ a{color:var(--blue);text-decoration:none}
             <tr><td style="color:var(--folg);font-weight:600">Folguista</td><td>5×2</td><td>Variável</td><td>40h</td><td class="c-ok">✅</td></tr>
           </tbody>
         </table>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel</div></div>
-            <div class="cl">Folguista</div></div>
-          </div>
-          
-        </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">Sem freelancer</span><span class="tag tag-g">FDS coberto</span>
           <span class="tag tag-g">4 fixos</span><span class="tag tag-o">Folguista</span>
@@ -701,13 +327,6 @@ a{color:var(--blue);text-decoration:none}
             <tr><td style="color:var(--folg);font-weight:600">Folguista</td><td>5×2</td><td>FDS</td><td>40h</td><td class="c-ok">✅</td></tr>
           </tbody>
         </table>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel</div></div>
-            <div class="cl">Folguista</div></div>
-          </div>
-          
-        </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">FDS coberto</span><span class="tag tag-g">Sem free</span>
           <span class="tag tag-g">4 fixos</span><span class="tag tag-o">Folguista</span>
@@ -739,13 +358,6 @@ a{color:var(--blue);text-decoration:none}
             <tr><td class="c-free">Freelancer</td><td>PJ</td><td>Noite gaps</td><td>—</td><td class="c-warn">⚠</td></tr>
           </tbody>
         </table>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel</div></div>
-            <div class="cl">Freelancer</div></div>
-          </div>
-          
-        </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">3 fixos</span><span class="tag tag-r">HE</span>
           <span class="tag tag-o">Banco horas</span><span class="tag tag-o">Free gaps</span>
@@ -777,12 +389,6 @@ a{color:var(--blue);text-decoration:none}
           </tbody>
         </table>
         <div class="alert alert-ok"><span class="ai">✅</span><div>Art. 59-A CLT: 12×36 por acordo individual. Sem HE, cobertura total.</div></div>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel</div></div>
-          </div>
-          
-        </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">100% coberto</span><span class="tag tag-g">Sem extra</span>
           <span class="tag tag-g">3 fixos</span><span class="tag tag-o">Revezamento</span>
@@ -814,13 +420,6 @@ a{color:var(--blue);text-decoration:none}
             <tr><td class="c-free">Freelancer</td><td>PJ</td><td>FDS</td><td>—</td><td class="c-warn">⚠</td></tr>
           </tbody>
         </table>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel</div></div>
-            <div class="cl">Freelancer</div></div>
-          </div>
-          
-        </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">3 fixos</span><span class="tag tag-r">Free FDS</span>
           <span class="tag tag-o">Variável</span>
@@ -852,13 +451,6 @@ a{color:var(--blue);text-decoration:none}
             <tr><td class="c-new">Interm. Noite</td><td>T.Parc+12×36</td><td>FDS noite</td><td>24h</td><td class="c-ok">✅</td></tr>
           </tbody>
         </table>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel</div></div>
-            <div class="cl">Interm.</div></div>
-          </div>
-          
-        </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">CLT total</span><span class="tag tag-g">FDS coberto</span>
           <span class="tag tag-g">4 func.</span><span class="tag tag-o">Interm.</span>
@@ -906,13 +498,6 @@ a{color:var(--blue);text-decoration:none}
           </tbody>
         </table>
         <div class="alert alert-info"><span class="ai">💡</span><div>Horários mais cedo podem melhorar produtividade matinal e reduzir custos noturnos</div></div>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel</div></div>
-            <div class="cl">Freelancer</div></div>
-          </div>
-          
-        </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">Horários cedo</span><span class="tag tag-g">Sem H. Extra</span>
           <span class="tag tag-o">FDS freelancer</span>
@@ -945,13 +530,6 @@ a{color:var(--blue);text-decoration:none}
           </tbody>
         </table>
         <div class="alert alert-info"><span class="ai">💡</span><div>Gabriel ganha experiência em turnos matinais, reduzindo dependência de freelancers</div></div>
-        
-            <div class="cl">Gabriel</div></div>
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Folguista</div></div>
-          </div>
-          
-        </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">Gabriel manhã</span><span class="tag tag-g">Revezamento</span>
           <span class="tag tag-o">FDS folguista</span>
@@ -984,13 +562,6 @@ a{color:var(--blue);text-decoration:none}
           </tbody>
         </table>
         <div class="alert alert-warn"><span class="ai">🔧</span><div>Manhã coberta por freelancers — pode aumentar custos</div></div>
-        
-            <div class="cl">Giovanna</div></div>
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel</div></div>
-          </div>
-          
-        </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-o">Manhã freelancer</span><span class="tag tag-g">Tarde equipe</span>
           <span class="tag tag-r">Custo alto</span>
@@ -1023,13 +594,6 @@ a{color:var(--blue);text-decoration:none}
           </tbody>
         </table>
         <div class="alert alert-info"><span class="ai">💡</span><div>Gabriel ganha experiência em turnos diurnos, reduzindo dependência de freelancers noturnos</div></div>
-        
-            <div class="cl">Gabriel</div></div>
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Folguista</div></div>
-          </div>
-          
-        </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <span class="tag tag-g">Gabriel tarde</span><span class="tag tag-g">Revezamento</span>
           <span class="tag tag-o">FDS folguista</span>
@@ -1070,13 +634,6 @@ a{color:var(--blue);text-decoration:none}
             <tr><td class="c-free">Freelancer</td><td>PJ</td><td>Noite gaps</td><td>—</td><td class="c-warn">⚠</td></tr>
           </tbody>
         </table>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel</div></div>
-            <div class="cl">Folguista</div></div>
-            <div class="cl">Free. noturno</div></div>
-          </div>
-          
           <p class="mt8" style="font-size:.72rem;color:var(--tx3)">* Salário folguista configurável em ⚙️ Configurações</p>
         </div>
       </div>
@@ -1122,21 +679,14 @@ a{color:var(--blue);text-decoration:none}
         <div class="ib"><h3>Proposta R — Gabriel 5×2 Seg–Sex ⚠ ILEGAL</h3>
           <p class="desc">Gabriel trabalha 5×2 noturno seg-sexta. Folguistas cobrem fins de semana. <strong class="c-bad">🚨 ILEGAL: Excede 60h/semana (CLT Art. 58).</strong></p>
         </div>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel ⚠</div></div>
-            <div class="cl">Folguista FDS</div></div>
-          </div>
-          
-        </div>
       </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta R</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s17"></div>
-          <div class="sched-wrap"><table id="gantt-s17"></table></div>
-        </div>
-      </div>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Escala Hotel 24/7</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
     </div>
   </div>
 
@@ -1146,20 +696,6 @@ a{color:var(--blue);text-decoration:none}
       <div class="col-l">
         <div class="ib"><h3>Proposta S — Gabriel 6×1 Seg–Sex ⚠ ILEGAL</h3>
           <p class="desc">Gabriel trabalha 6×1 noturno seg-sexta. Folguistas cobrem fins de semana. <strong class="c-bad">🚨 ILEGAL: Excede 60h/semana (CLT Art. 58).</strong></p>
-        </div>
-        
-            <div class="cl">Anderson</div></div>
-            <div class="cl">Gabriel ⚠</div></div>
-            <div class="cl">Folguista FDS</div></div>
-          </div>
-          
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta S</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s18"></div>
-          <div class="sched-wrap"><table id="gantt-s18"></table></div>
         </div>
       </div>
     </div>
