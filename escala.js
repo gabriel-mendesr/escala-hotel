@@ -814,14 +814,21 @@ function updateLabels() {
 
 // ── TAB SWITCHING ─────────────────────────────────────────────
 function showTab(id) {
-  var panels = document.querySelectorAll('.panel');
-  var tabs   = document.querySelectorAll('.tab');
-  for (var i = 0; i < panels.length; i++) panels[i].classList.remove('active');
-  for (var i = 0; i < tabs.length;   i++) tabs[i].classList.remove('active');
   var panel = gi('panel-' + id);
   var tab   = gi('t-' + id);
-  if (panel) panel.classList.add('active');
-  if (tab)   tab.classList.add('active');
+  if (!panel) return;
+
+  // Só afeta painéis e abas dentro da mesma seção (pai)
+  var section = panel.parentElement;
+  if (section) {
+    var localPanels = section.querySelectorAll('.panel');
+    var localTabs   = section.querySelectorAll('.tab');
+    for (var i = 0; i < localPanels.length; i++) localPanels[i].classList.remove('active');
+    for (var i = 0; i < localTabs.length;   i++) localTabs[i].classList.remove('active');
+  }
+
+  panel.classList.add('active');
+  if (tab) tab.classList.add('active');
 }
 
 // ── COMPARISON TABLE ──────────────────────────────────────────
