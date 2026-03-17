@@ -173,6 +173,22 @@ a{color:var(--blue);text-decoration:none}
 .badge-green{background:var(--ok-bg);border-color:var(--ok-bdr);color:var(--green)}
 .badge-red{background:var(--crit-bg);border-color:var(--crit-bdr);color:var(--red)}
 .badge-amber{background:#fffbeb;border-color:#fde68a;color:var(--amber)}
+/* ── OVERLAP VIZ ── */
+.ov-mini{margin:8px 0}
+.ov-mini .ov-ruler{position:relative;height:12px;margin-left:50px;margin-bottom:2px}
+.ov-mini .ov-ruler span{position:absolute;top:0;font-size:.44rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;transform:translateX(-50%)}
+.ov-mini .ov-row{display:flex;align-items:center;height:18px;margin-bottom:2px}
+.ov-mini .ov-lbl{width:50px;font-size:.58rem;font-weight:600;flex-shrink:0}
+.ov-mini .ov-track{flex:1;position:relative;height:14px;background:var(--bg3);border-radius:3px;border:1px solid var(--bdr)}
+.ov-mini .ov-bar{position:absolute;top:0;height:100%;border-radius:3px;display:flex;align-items:center;justify-content:center}
+.ov-mini .ov-bar span{font-size:.46rem;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3);white-space:nowrap;padding:0 2px}
+.ov-mini .ov-bar-purple{background:linear-gradient(135deg,#7c3aed,#6366f1)!important;border:1px solid #a78bfa}
+.ov-pause-list{margin:6px 0;font-size:.7rem}
+.ov-pause-item{display:flex;gap:6px;padding:3px 0;border-bottom:1px solid var(--bdr)}
+.ov-pause-item:last-child{border:none}
+.ov-pause-item .opl{color:var(--tx3);width:60px;flex-shrink:0;font-weight:500;font-size:.66rem}
+.ov-pause-item .opv{font-weight:600;font-size:.68rem}
+
 .footer{padding:14px 20px;text-align:center;color:var(--tx3);font-size:.72rem;border-top:1px solid var(--bdr);background:var(--bg2)}
 
 /* Selected employee indicator */
@@ -194,7 +210,7 @@ a{color:var(--blue);text-decoration:none}
   <div class="header-inner">
     <h1>🗓️ Construtor de Escala <span style="font-size:.78rem;font-weight:400;color:var(--tx3);margin-left:4px">Hotel 24/7 · Arraste ou clique para montar</span></h1>
     <div class="header-actions">
-      <a href="index.html" class="btn btn-gray">← Voltar ao relatório</a>
+      <a href="./index.html" class="btn btn-gray">← Voltar ao relatório</a>
       <button class="btn btn-gray" onclick="undoLast()">↩ Desfazer</button>
       <button class="btn btn-red" onclick="clearGrid()">🗑️ Limpar</button>
       <button class="btn btn-green" onclick="saveToReport()">💾 Salvar escala</button>
@@ -298,6 +314,14 @@ a{color:var(--blue);text-decoration:none}
       </div>
     </div>
 
+    <!-- Overlap -->
+    <div class="status-card">
+      <div class="status-hd">⟷ Sobreposição & Pausas</div>
+      <div class="status-bd" id="overlap-area">
+        <div style="font-size:.74rem;color:var(--tx3)">Atribua Giovanna e Anderson para ver o overlap</div>
+      </div>
+    </div>
+
     <!-- Cobertura -->
     <div class="status-card">
       <div class="status-hd">📅 Cobertura Semanal</div>
@@ -341,7 +365,7 @@ a{color:var(--blue);text-decoration:none}
 </div>
 
 <div class="footer">
-  Construtor de Escala · Hotel 24/7 · <a href="index.html">← Voltar ao Relatório</a> · <a href="config.html">⚙️ Configurações</a>
+  Construtor de Escala · Hotel 24/7 · <a href="./index.html">← Voltar ao Relatório</a> · <a href="./config.html">⚙️ Configurações</a>
 </div>
 
 <script>
@@ -453,6 +477,7 @@ function renderGrid() {
   tbl.innerHTML = html;
 
   validate();
+  updateOverlap();
   updateSimilarity();
   updateCost();
 }
@@ -682,6 +707,30 @@ function validate() {
   var sunCoverage = grid[0][0] || grid[1][0];
   if (!sunCoverage) issues.push({type:'warn', msg: 'Domingo sem cobertura diurna.'});
 
+  // Overlap check for lunch coverage
+  var overlapOk = 0, overlapMiss = 0;
+  for (var c=0; c<7; c++) {
+    var gRow = null, aRow = null;
+    for (var r=0; r<3; r++) {
+      if (grid[r][c] === 'gio') gRow = r;
+      if (grid[r][c] === 'and') aRow = r;
+    }
+    if (gRow !== null && aRow !== null) {
+      var gS = [sc.ms, sc.as, sc.ns][gRow];
+      var gE = [sc.as, sc.ns, sc.ms+24][gRow];
+      var aS = [sc.ms, sc.as, sc.ns][aRow] - 1; // And chega 1h antes
+      var aE = [sc.as, sc.ns, sc.ms+24][aRow];
+      var ovH = Math.max(0, Math.min(gE, aE) - Math.max(gS, aS));
+      if (ovH > 0) overlapOk++; else overlapMiss++;
+    }
+  }
+  if (overlapOk > 0) {
+    issues.push({type:'ok', msg: overlapOk + ' dia(s) com sobreposição — cobertura mútua de almoço ✅'});
+  }
+  if (overlapMiss > 0) {
+    issues.push({type:'warn', msg: overlapMiss + ' dia(s) sem overlap. Almoço não coberto — Art. 71 CLT.'});
+  }
+
   // Freelancer habituality
   var freeCount = 0;
   for (var r=0; r<3; r++) for (var c=0; c<7; c++) if (grid[r][c] === 'free') freeCount++;
@@ -773,6 +822,139 @@ function updateCoverage() {
     '<div class="stat-box"><div class="stat-val">'+Math.round(totalCovered/21*100)+'%</div><div class="stat-lbl">% Cobertura</div></div>'+
     '<div class="stat-box"><div class="stat-val">'+cltCount+'</div><div class="stat-lbl">Func. CLT</div></div>'+
     '<div class="stat-box"><div class="stat-val">'+extCount+'</div><div class="stat-lbl">Ext. / FDS</div></div>';
+}
+
+// ── OVERLAP VISUALIZATION ────────────────────────────────
+function updateOverlap() {
+  var el = document.getElementById('overlap-area');
+  if (!el) return;
+  var sc = SC();
+  var ph = function(h){h=((h%24)+24)%24;return(h<10?'0':'')+h;};
+
+  // Find where Gio and And are placed
+  var gioDays = [], andDays = [], gabDays = [];
+  for (var c=0; c<7; c++) {
+    for (var r=0; r<3; r++) {
+      if (grid[r][c] === 'gio') gioDays.push({row:r, col:c});
+      if (grid[r][c] === 'and') andDays.push({row:r, col:c});
+      if (grid[r][c] === 'gab' || grid[r][c] === 'novo') gabDays.push({row:r, col:c});
+    }
+  }
+
+  if (!gioDays.length || !andDays.length) {
+    el.innerHTML = '<div style="font-size:.74rem;color:var(--tx3)">Atribua Giovanna e Anderson para ver o overlap</div>';
+    return;
+  }
+
+  // Calculate hours per shift row
+  var rowStart = [sc.ms, sc.as, sc.ns];
+  var rowEnd   = [sc.as, sc.ns, sc.ms + 24];
+
+  // Find overlap: days where both Gio and And are present
+  var overlapDays = 0, totalOverlapH = 0;
+  var dayDetails = [];
+
+  for (var c=0; c<7; c++) {
+    var gRow = null, aRow = null;
+    for (var r=0; r<3; r++) {
+      if (grid[r][c] === 'gio') gRow = r;
+      if (grid[r][c] === 'and') aRow = r;
+    }
+
+    if (gRow !== null && aRow !== null) {
+      var gS = rowStart[gRow], gE = rowEnd[gRow];
+      var aS = rowStart[aRow], aE = rowEnd[aRow];
+      // For overlap, Anderson arrives 1h early
+      var aRealS = aS - 1;
+      var ovS = Math.max(gS, aRealS);
+      var ovE = Math.min(gE, aE);
+      var ovH = Math.max(0, ovE - ovS);
+      if (ovH > 0) { overlapDays++; totalOverlapH += ovH; }
+      dayDetails.push({day:c, gRow:gRow, aRow:aRow, ovH:ovH, gS:gS, gE:gE, aS:aRealS, aE:aE});
+    } else if (gRow !== null || aRow !== null) {
+      dayDetails.push({day:c, gRow:gRow, aRow:aRow, ovH:0});
+    }
+  }
+
+  var html = '';
+
+  // Mini timeline for a typical day (first day with overlap)
+  var typical = dayDetails.find(function(d){return d.ovH > 0;});
+  if (typical) {
+    var RS = Math.min(typical.gS, typical.aS) - 1;
+    var RE = Math.max(typical.gE, typical.aE) + 1;
+    var RNG = RE - RS;
+    var pct = function(h){return ((h-RS)/RNG*100).toFixed(1);};
+    var w = function(s,e){return ((e-s)/RNG*100).toFixed(1);};
+
+    html += '<div class="ov-mini">';
+    html += '<div class="ov-ruler">';
+    for (var h=RS; h<=RE; h+=2) html += '<span style="left:'+pct(h)+'%">'+ph(h)+'</span>';
+    html += '</div>';
+    // Gio
+    html += '<div class="ov-row"><div class="ov-lbl" style="color:#b84040">Gio</div><div class="ov-track">';
+    html += '<div class="ov-bar" style="left:'+pct(typical.gS)+'%;width:'+w(typical.gS,typical.gE)+'%;background:#b84040"><span>'+ph(typical.gS)+'–'+ph(typical.gE)+'</span></div>';
+    html += '</div></div>';
+    // Overlap
+    var ovS = Math.max(typical.gS, typical.aS);
+    var ovE = Math.min(typical.gE, typical.aE);
+    html += '<div class="ov-row"><div class="ov-lbl" style="color:#6b35a0;font-size:.5rem">⟷ '+typical.ovH+'h</div><div class="ov-track">';
+    html += '<div class="ov-bar ov-bar-purple" style="left:'+pct(ovS)+'%;width:'+w(ovS,ovE)+'%"><span>'+typical.ovH+'h</span></div>';
+    html += '</div></div>';
+    // And
+    html += '<div class="ov-row"><div class="ov-lbl" style="color:#1a6fc4">And</div><div class="ov-track">';
+    html += '<div class="ov-bar" style="left:'+pct(typical.aS)+'%;width:'+w(typical.aS,typical.aE)+'%;background:#1a6fc4"><span>'+ph(typical.aS)+'–'+ph(typical.aE)+'</span></div>';
+    html += '</div></div>';
+    // Gab
+    var gabNight = gabDays.length > 0;
+    if (gabNight) {
+      html += '<div class="ov-row"><div class="ov-lbl" style="color:#1e8a4a">Gab</div><div class="ov-track">';
+      html += '<div class="ov-bar" style="left:'+pct(sc.ns)+'%;width:'+w(sc.ns,RE)+'%;background:#1e8a4a;border-radius:3px 0 0 3px"><span>'+ph(sc.ns)+'→</span></div>';
+      html += '</div></div>';
+    }
+    html += '</div>';
+  }
+
+  // Summary
+  if (overlapDays > 0) {
+    html += '<div style="display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:7px;background:#f0fdf4;border:1px solid #bbf7d0;margin:8px 0">';
+    html += '<span style="font-size:.9rem">✅</span>';
+    html += '<div style="font-size:.74rem;color:#14532d"><strong>'+overlapDays+' dia(s)</strong> com overlap · Média '+Math.round(totalOverlapH/overlapDays)+'h/dia<br>Cobertura mútua de almoço ✅</div>';
+    html += '</div>';
+  } else if (dayDetails.length > 0) {
+    html += '<div style="display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:7px;background:#fef2f2;border:1px solid #fecaca;margin:8px 0">';
+    html += '<span style="font-size:.9rem">⚠</span>';
+    html += '<div style="font-size:.74rem;color:#991b1b"><strong>Sem sobreposição</strong><br>Turnos sequenciais — sem cobertura de almoço mútua</div>';
+    html += '</div>';
+  }
+
+  // Pause info
+  html += '<div class="ov-pause-list">';
+  var gioH = sc.as - sc.ms;
+  var andH = sc.ns - sc.as;
+  var gabH = sc.nDur;
+  html += '<div class="ov-pause-item"><span class="opl">Giovanna</span><span class="opv">' + (gioH > 6 ? '🍽️ 1h almoço' : gioH > 4 ? '☕ 15min' : '—') + '</span></div>';
+  html += '<div class="ov-pause-item"><span class="opl">Anderson</span><span class="opv">' + (andH > 6 ? '🍽️ 1h almoço' : andH > 4 ? '☕ 15min' : '—') + '</span></div>';
+  html += '<div class="ov-pause-item"><span class="opl">Gabriel</span><span class="opv">' + (gabH > 6 ? '💤 1h descanso (sozinho)' : '—') + '</span></div>';
+  html += '</div>';
+
+  // Per-day detail
+  if (dayDetails.length > 0) {
+    html += '<div style="margin-top:8px;font-size:.66rem;color:var(--tx3);font-weight:600;text-transform:uppercase;letter-spacing:.04em">Por dia</div>';
+    html += '<div style="display:flex;flex-direction:column;gap:2px;margin-top:4px">';
+    var DNAMES = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    dayDetails.forEach(function(d) {
+      var cls = d.ovH > 0 ? 'color:#16a34a' : 'color:#dc2626';
+      var label = d.ovH > 0 ? d.ovH + 'h ✅' : '0h ⚠';
+      html += '<div style="display:flex;justify-content:space-between;padding:2px 4px;border-bottom:1px solid var(--bdr);font-size:.68rem">';
+      html += '<span style="font-weight:600">'+DNAMES[d.day]+'</span>';
+      html += '<span style="font-weight:700;'+cls+'">'+label+'</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  el.innerHTML = html;
 }
 
 // ── COST ESTIMATE ─────────────────────────────────────────
@@ -947,6 +1129,7 @@ function renderHistoryBar() {
   renderGrid();
   renderHistoryBar();
   validate();
+  updateOverlap();
   updateCoverage();
   updateCost();
   updateSimilarity();
