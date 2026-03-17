@@ -173,7 +173,45 @@ a{color:var(--blue);text-decoration:none}
 .badge-green{background:var(--ok-bg);border-color:var(--ok-bdr);color:var(--green)}
 .badge-red{background:var(--crit-bg);border-color:var(--crit-bdr);color:var(--red)}
 .badge-amber{background:#fffbeb;border-color:#fde68a;color:var(--amber)}
-/* ── OVERLAP VIZ ── */
+/* ── GENERATOR SECTION (top) ── */
+.gen-section{max-width:1400px;margin:0 auto;padding:16px 20px 0}
+.gen-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:900px){.gen-grid{grid-template-columns:1fr}}
+.gen-card{background:var(--card);border:1px solid var(--bdr);border-radius:10px;box-shadow:var(--sh);overflow:hidden}
+.gen-card-hd{padding:10px 14px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px;font-weight:700;font-size:.8rem}
+.gen-card-hd .gdot{width:10px;height:10px;border-radius:50%}
+.gen-card-bd{padding:12px 14px}
+.gfield{margin-bottom:10px}
+.gfield label{display:block;font-size:.66rem;font-weight:600;color:var(--tx2);margin-bottom:3px;text-transform:uppercase;letter-spacing:.03em}
+.gfield select,.gfield input[type=text]{width:100%;padding:7px 10px;border-radius:6px;border:1.5px solid var(--bdr);font-family:'Inter',sans-serif;font-size:.76rem;color:var(--tx);background:var(--bg2)}
+.gfield select:focus{outline:none;border-color:var(--blue)}
+.gfield-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gresult{font-size:.7rem;margin-top:6px}
+.gresult .gr{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid var(--bdr)}
+.gresult .gr:last-child{border:none}
+.gresult .gl{color:var(--tx3)}.gresult .gv{font-weight:700;font-family:'JetBrains Mono',monospace}
+.gv.gok{color:var(--green)}.gv.gwarn{color:var(--amber)}.gv.gbad{color:var(--red)}
+
+.gen-overlap{background:var(--card);border:1px solid var(--bdr);border-radius:10px;box-shadow:var(--sh);overflow:hidden;margin-top:12px}
+.gen-ov-hd{padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--bdr);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--tx2)}
+.gen-ov-bd{padding:14px}
+.gov-ruler{position:relative;height:14px;margin-left:62px;margin-bottom:2px}
+.gov-ruler span{position:absolute;top:0;font-size:.46rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;transform:translateX(-50%)}
+.gov-row{display:flex;align-items:center;height:24px;margin-bottom:3px}
+.gov-lbl{width:62px;font-size:.62rem;font-weight:700;flex-shrink:0}
+.gov-track{flex:1;position:relative;height:20px;background:var(--bg3);border-radius:4px;border:1px solid var(--bdr)}
+.gov-bar{position:absolute;top:0;height:100%;border-radius:4px;display:flex;align-items:center;justify-content:center}
+.gov-bar span{font-size:.5rem;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3);white-space:nowrap;padding:0 2px}
+.gov-bar-purple{background:linear-gradient(135deg,#7c3aed,#6366f1)!important;border:1.5px solid #a78bfa}
+.gen-alerts{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.ga{display:flex;gap:8px;align-items:flex-start;padding:8px 12px;border-radius:8px;font-size:.74rem;line-height:1.5;border:1px solid}
+.ga-ok{background:var(--ok-bg);border-color:var(--ok-bdr);color:#15803d}
+.ga-warn{background:var(--warn-bg);border-color:var(--warn-bdr);color:#92400e}
+.ga-bad{background:var(--crit-bg);border-color:var(--crit-bdr);color:#991b1b}
+.ga .ga-i{flex-shrink:0;font-size:.85rem}
+.gen-divider{max-width:1400px;margin:16px auto 0;border:none;border-top:2px solid var(--bdr);opacity:.5}
+
+/* ── OVERLAP VIZ (sidebar) ── */
 .ov-mini{margin:8px 0}
 .ov-mini .ov-ruler{position:relative;height:12px;margin-left:50px;margin-bottom:2px}
 .ov-mini .ov-ruler span{position:absolute;top:0;font-size:.44rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;transform:translateX(-50%)}
@@ -208,7 +246,7 @@ a{color:var(--blue);text-decoration:none}
 <!-- HEADER -->
 <div class="header">
   <div class="header-inner">
-    <h1>🗓️ Construtor de Escala <span style="font-size:.78rem;font-weight:400;color:var(--tx3);margin-left:4px">Hotel 24/7 · Arraste ou clique para montar</span></h1>
+    <h1>🗓️ Construtor de Escala <span style="font-size:.78rem;font-weight:400;color:var(--tx3);margin-left:4px">Hotel 24/7</span></h1>
     <div class="header-actions">
       <a href="./index.html" class="btn btn-gray">← Voltar ao relatório</a>
       <button class="btn btn-gray" onclick="undoLast()">↩ Desfazer</button>
@@ -217,6 +255,90 @@ a{color:var(--blue);text-decoration:none}
     </div>
   </div>
 </div>
+
+<!-- ══ GERADOR INTERATIVO ══════════════════════════════════ -->
+<div class="gen-section">
+  <div class="gen-grid">
+    <!-- Giovanna -->
+    <div class="gen-card">
+      <div class="gen-card-hd"><div class="gdot" style="background:var(--c-gio)"></div> Giovanna</div>
+      <div class="gen-card-bd">
+        <div class="gfield">
+          <label>Regime</label>
+          <select id="g-gio-reg" onchange="recalcGen()">
+            <option value="5x2">5×2 (seg–sex)</option>
+            <option value="6x1">6×1 (seg–sáb)</option>
+          </select>
+        </div>
+        <div class="gfield-row">
+          <div class="gfield"><label>Entrada</label>
+            <select id="g-gio-in" onchange="recalcGen()"><option value="6">06h</option><option value="7" selected>07h</option></select>
+          </div>
+          <div class="gfield"><label>Saída</label>
+            <select id="g-gio-out" onchange="recalcGen()"><option value="13">13h</option><option value="14">14h</option><option value="15" selected>15h</option><option value="16">16h</option></select>
+          </div>
+        </div>
+        <div class="gresult" id="g-gio-res"></div>
+      </div>
+    </div>
+    <!-- Anderson -->
+    <div class="gen-card">
+      <div class="gen-card-hd"><div class="gdot" style="background:var(--c-and)"></div> Anderson</div>
+      <div class="gen-card-bd">
+        <div class="gfield">
+          <label>Regime</label>
+          <select id="g-and-reg" onchange="recalcGen()">
+            <option value="5x2">5×2 (seg–sex)</option>
+            <option value="6x1">6×1 (seg–sáb)</option>
+          </select>
+        </div>
+        <div class="gfield-row">
+          <div class="gfield"><label>Entrada</label>
+            <select id="g-and-in" onchange="recalcGen()"><option value="10">10h</option><option value="11">11h</option><option value="13">13h</option><option value="14" selected>14h</option><option value="15">15h</option></select>
+          </div>
+          <div class="gfield"><label>Saída</label>
+            <select id="g-and-out" onchange="recalcGen()"><option value="19" selected>19h</option><option value="20">20h</option><option value="21">21h</option><option value="22">22h</option></select>
+          </div>
+        </div>
+        <div class="gresult" id="g-and-res"></div>
+      </div>
+    </div>
+    <!-- Gabriel -->
+    <div class="gen-card">
+      <div class="gen-card-hd"><div class="gdot" style="background:var(--c-gab)"></div> Gabriel</div>
+      <div class="gen-card-bd">
+        <div class="gfield">
+          <label>Regime</label>
+          <select id="g-gab-reg" onchange="recalcGen()">
+            <option value="12x36" selected>12×36 (alternado)</option>
+            <option value="5x2">5×2 (seg–sex)</option>
+            <option value="6x1">6×1 (seg–sáb)</option>
+            <option value="ilegal">12h seg–sex (ILEGAL)</option>
+          </select>
+        </div>
+        <div class="gfield-row">
+          <div class="gfield"><label>Entrada</label>
+            <select id="g-gab-in" onchange="recalcGen()"><option value="19" selected>19h</option><option value="22">22h</option></select>
+          </div>
+          <div class="gfield"><label>Saída (calc.)</label>
+            <input type="text" id="g-gab-out" value="07h" readonly style="background:var(--bg3);color:var(--tx3)">
+          </div>
+        </div>
+        <div class="gresult" id="g-gab-res"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlap viz -->
+  <div class="gen-overlap">
+    <div class="gen-ov-hd">⟷ Sobreposição e Pausas</div>
+    <div class="gen-ov-bd">
+      <div id="gen-ov-viz"></div>
+      <div class="gen-alerts" id="gen-alerts"></div>
+    </div>
+  </div>
+</div>
+<hr class="gen-divider">
 
 <!-- WORKSPACE -->
 <div class="workspace">
@@ -1118,6 +1240,85 @@ function renderHistoryBar() {
   });
 }
 
+// ── GENERATOR (top section) ──────────────────────────────
+function recalcGen() {
+  var ph = function(h){h=((h%24)+24)%24;return(h<10?'0':'')+h;};
+  var gV = function(id){return document.getElementById(id).value;};
+  var gN = function(id){return parseInt(gV(id),10);};
+
+  var gIn=gN('g-gio-in'),gOut=gN('g-gio-out');
+  var aIn=gN('g-and-in'),aOut=gN('g-and-out');
+  var gabIn=gN('g-gab-in'),gabReg=gV('g-gab-reg');
+
+  var gH=gOut-gIn, aH=aOut-aIn;
+  var gP=gH>6?1:(gH>4?.25:0), aP=aH>6?1:(aH>4?.25:0);
+  var gEff=gH-gP, aEff=aH-aP;
+  var gDays=gV('g-gio-reg')==='6x1'?6:5;
+  var aDays=gV('g-and-reg')==='6x1'?6:5;
+  var gW=gEff*gDays, aW=aEff*aDays;
+
+  var gabOut,gabH,gabW;
+  if(gabReg==='12x36'){gabOut=(gabIn+12)%24;gabH=12;gabW=42;}
+  else if(gabReg==='5x2'){gabOut=(gabIn+8)%24;gabH=8;gabW=35;}
+  else if(gabReg==='6x1'){gabOut=(gabIn+7)%24;gabH=7;gabW=36;}
+  else{gabOut=(gabIn+12)%24;gabH=12;gabW=60;}
+  document.getElementById('g-gab-out').value=ph(gabOut)+'h';
+
+  var ovS=Math.max(gIn,aIn),ovE=Math.min(gOut,aOut),ovH=Math.max(0,ovE-ovS);
+
+  // Results
+  function rr(id,h,p,eff,w,d){
+    var cls=w>44?'gwarn':'gok';
+    var ps=p>=1?'1h almoço':(p>0?'15min':'Nenhuma');
+    document.getElementById(id).innerHTML=
+      '<div class="gr"><span class="gl">Presença</span><span class="gv">'+h+'h/dia</span></div>'+
+      '<div class="gr"><span class="gl">Pausa</span><span class="gv">'+ps+'</span></div>'+
+      '<div class="gr"><span class="gl">Efetivo</span><span class="gv">'+eff+'h × '+d+'d</span></div>'+
+      '<div class="gr"><span class="gl">Semanal</span><span class="gv '+cls+'">'+w+'h '+(w>44?'⚠':'✅')+'</span></div>';
+  }
+  rr('g-gio-res',gH,gP,gEff,gW,gDays);
+  rr('g-and-res',aH,aP,aEff,aW,aDays);
+  var gcls=gabReg==='ilegal'?'gbad':(gabW>44?'gwarn':'gok');
+  document.getElementById('g-gab-res').innerHTML=
+    '<div class="gr"><span class="gl">Turno</span><span class="gv">'+gabH+'h/noite</span></div>'+
+    '<div class="gr"><span class="gl">Semanal</span><span class="gv '+gcls+'">'+gabW+'h '+(gabReg==='ilegal'?'🚨':'✅')+'</span></div>';
+
+  // Overlap viz
+  var RS=Math.min(gIn,aIn)-1, RE=Math.max(gOut,aOut,gabIn)+1, RNG=RE-RS;
+  var pct=function(h){return((h-RS)/RNG*100).toFixed(1);};
+  var w=function(s,e){return((e-s)/RNG*100).toFixed(1);};
+
+  var oh='<div style="margin-bottom:8px">';
+  oh+='<div class="gov-ruler">';
+  for(var h=RS;h<=RE;h+=2) oh+='<span style="left:'+pct(h)+'%">'+ph(h)+'</span>';
+  oh+='</div>';
+  oh+='<div class="gov-row"><div class="gov-lbl" style="color:var(--c-gio)">Giovanna</div><div class="gov-track"><div class="gov-bar" style="left:'+pct(gIn)+'%;width:'+w(gIn,gOut)+'%;background:var(--c-gio)"><span>'+ph(gIn)+'–'+ph(gOut)+'</span></div></div></div>';
+  if(ovH>0){
+    oh+='<div class="gov-row"><div class="gov-lbl" style="color:#6b35a0;font-size:.54rem">⟷ Overlap</div><div class="gov-track"><div class="gov-bar gov-bar-purple" style="left:'+pct(ovS)+'%;width:'+w(ovS,ovE)+'%"><span>'+ovH+'h</span></div></div></div>';
+  } else {
+    oh+='<div class="gov-row"><div class="gov-lbl" style="color:var(--red);font-size:.54rem">⚠ 0h</div><div class="gov-track"><div style="text-align:center;font-size:.56rem;color:var(--red);font-weight:600;padding:3px">Sem sobreposição</div></div></div>';
+  }
+  oh+='<div class="gov-row"><div class="gov-lbl" style="color:var(--c-and)">Anderson</div><div class="gov-track"><div class="gov-bar" style="left:'+pct(aIn)+'%;width:'+w(aIn,aOut)+'%;background:var(--c-and)"><span>'+ph(aIn)+'–'+ph(aOut)+'</span></div></div></div>';
+  oh+='<div class="gov-row"><div class="gov-lbl" style="color:var(--c-gab)">Gabriel</div><div class="gov-track"><div class="gov-bar" style="left:'+pct(gabIn)+'%;width:'+w(gabIn,RE)+'%;background:var(--c-gab);border-radius:4px 0 0 4px"><span>'+ph(gabIn)+'→'+ph(gabOut)+'</span></div></div></div>';
+  oh+='</div>';
+  document.getElementById('gen-ov-viz').innerHTML=oh;
+
+  // Alerts
+  var al='';
+  if(ovH>0) al+='<div class="ga ga-ok"><span class="ga-i">✅</span><div><strong>'+ovH+'h de sobreposição ('+ph(ovS)+'–'+ph(ovE)+')</strong> — cobertura mútua de almoço.</div></div>';
+  else al+='<div class="ga ga-bad"><span class="ga-i">🚨</span><div><strong>Sem sobreposição.</strong> Ajuste horários para criar overlap.</div></div>';
+  if(ovH>=2) al+='<div class="ga ga-ok"><span class="ga-i">⭐</span><div>Overlap de '+ovH+'h permite almoços intercalados com folga.</div></div>';
+  if(gW>44) al+='<div class="ga ga-warn"><span class="ga-i">⚠</span><div>Giovanna '+gW+'h/sem &gt; 44h. Pagar extras ou banco de horas.</div></div>';
+  if(aW>44) al+='<div class="ga ga-warn"><span class="ga-i">⚠</span><div>Anderson '+aW+'h/sem &gt; 44h. Pagar extras ou banco de horas.</div></div>';
+  if(gabReg==='ilegal') al+='<div class="ga ga-bad"><span class="ga-i">🚨</span><div>Gabriel 60h/sem — ILEGAL (Art. 58+59 CLT).</div></div>';
+  if(gP>=1) al+='<div class="ga ga-ok"><span class="ga-i">🍽️</span><div>Giovanna: 1h almoço obrigatório (Art. 71)'+(ovH>0?' — coberto pelo Anderson ✅':'')+'</div></div>';
+  if(aP>=1) al+='<div class="ga ga-ok"><span class="ga-i">🍽️</span><div>Anderson: 1h refeição obrigatório (Art. 71)'+(ovH>0?' — coberto pela Giovanna ✅':'')+'</div></div>';
+  else if(aP>0) al+='<div class="ga ga-ok"><span class="ga-i">☕</span><div>Anderson: 15min intervalo (turno ≤ 6h).</div></div>';
+  else al+='<div class="ga ga-ok"><span class="ga-i">☕</span><div>Anderson: sem pausa obrigatória (turno ≤ 4h).</div></div>';
+  al+='<div class="ga ga-ok"><span class="ga-i">💤</span><div>Gabriel: 1h descanso noturno (sozinho, sem cobertura necessária).</div></div>';
+  document.getElementById('gen-alerts').innerHTML=al;
+}
+
 // ── INIT ──────────────────────────────────────────────────
 (function init() {
   // Load saved slots
@@ -1126,6 +1327,7 @@ function renderHistoryBar() {
     if (ss) savedSlots = JSON.parse(ss);
   } catch(e){}
 
+  recalcGen();
   renderGrid();
   renderHistoryBar();
   validate();
