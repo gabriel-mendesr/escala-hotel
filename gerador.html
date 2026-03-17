@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🗓️ Gerador de Escala — Hotel 24/7</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f7fa;--bg2:#fff;--bg3:#eef1f6;
+  --bdr:#dce1e8;--bdr2:#b8c1cf;
+  --tx:#0d1117;--tx2:#3d4b5c;--tx3:#7a8699;
+  --blue:#2563eb;--green:#16a34a;--red:#dc2626;--amber:#d97706;
+  --gio:#be123c;--and:#1d4ed8;--gab:#047857;
+  --purple:#6366f1;
+  --r:8px;--r2:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--tx);line-height:1.6;font-size:14px;-webkit-font-smoothing:antialiased}
+.mono{font-family:'JetBrains Mono',monospace;font-size:.9em}
+
+.topbar{
+  background:linear-gradient(135deg,#0f172a,#1e3a5f);
+  padding:16px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  position:sticky;top:0;z-index:100;
+}
+.topbar h1{font-size:1rem;font-weight:800;color:#fff}
+.topbar .sub{font-size:.68rem;color:rgba(255,255,255,.4)}
+.topbar a{
+  margin-left:auto;padding:6px 14px;border-radius:var(--r);
+  font-size:.72rem;font-weight:600;color:#93c5fd;
+  border:1px solid rgba(147,197,253,.3);text-decoration:none;
+  transition:all .15s;
+}
+.topbar a:hover{background:rgba(255,255,255,.08);color:#fff}
+
+.page{max-width:1000px;margin:0 auto;padding:24px 20px 80px}
+
+.card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r2);margin-bottom:16px;overflow:hidden}
+.card-hd{padding:12px 18px;background:var(--bg3);border-bottom:1px solid var(--bdr);font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--tx2);display:flex;align-items:center;gap:8px}
+.card-bd{padding:18px}
+
+.config-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.emp-config{border:1.5px solid var(--bdr);border-radius:var(--r2);overflow:hidden}
+.emp-hd{padding:10px 14px;display:flex;align-items:center;gap:8px;font-weight:700;font-size:.82rem;border-bottom:1px solid var(--bdr)}
+.emp-hd .dot{width:10px;height:10px;border-radius:50%}
+.emp-bd{padding:14px}
+
+.field{margin-bottom:12px}
+.field label{display:block;font-size:.68rem;font-weight:600;color:var(--tx2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.03em}
+.field select,.field input{
+  width:100%;padding:8px 10px;border-radius:6px;border:1.5px solid var(--bdr);
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:.78rem;color:var(--tx);
+  background:var(--bg2);transition:border .15s;
+}
+.field select:focus,.field input:focus{outline:none;border-color:var(--blue)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field .hint{font-size:.6rem;color:var(--tx3);margin-top:3px}
+
+.result-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.72rem;padding:3px 0;border-bottom:1px solid var(--bdr)}
+.result-row:last-child{border:none}
+.result-row .rl{color:var(--tx3);font-weight:500}
+.result-row .rv{font-weight:700;font-family:'JetBrains Mono',monospace}
+.rv.ok{color:var(--green)}.rv.warn{color:var(--amber)}.rv.bad{color:var(--red)}
+
+.overlap-viz{margin:14px 0}
+.ov-ruler{position:relative;height:14px;margin-left:72px;margin-bottom:2px}
+.ov-ruler span{position:absolute;top:0;font-size:.48rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;transform:translateX(-50%)}
+.ov-row{display:flex;align-items:center;height:30px;margin-bottom:3px}
+.ov-lbl{width:72px;font-size:.64rem;font-weight:700;flex-shrink:0}
+.ov-track{flex:1;position:relative;height:24px;background:var(--bg3);border-radius:4px;border:1px solid var(--bdr)}
+.ov-bar{position:absolute;top:0;height:100%;border-radius:4px;display:flex;align-items:center;justify-content:center}
+.ov-bar span{font-size:.54rem;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3);white-space:nowrap;padding:0 3px}
+.ov-bar-purple{background:linear-gradient(135deg,#7c3aed,#6366f1)!important;border:1.5px solid #a78bfa}
+
+.week-grid{width:100%;border-collapse:collapse;table-layout:fixed;min-width:600px;font-size:.7rem}
+.week-grid th{padding:7px 4px;text-align:center;font-weight:700;font-size:.6rem;letter-spacing:.04em;text-transform:uppercase;background:linear-gradient(to bottom,#1e2d5a,#172554);color:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.06)}
+.week-grid th.sun{color:#fbbf24;background:linear-gradient(to bottom,#1c2e20,#14532d)}
+.week-grid td{border:1px solid var(--bdr);padding:4px;height:48px;vertical-align:top}
+.week-grid .cell-empty{background:repeating-linear-gradient(45deg,#fde8e8,#fde8e8 3px,#fff0f0 3px,#fff0f0 7px)}
+.wc-bar{border-radius:3px;padding:3px 5px;margin-bottom:2px;font-size:.56rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wc-overlap{background:var(--purple);font-size:.5rem;padding:1px 4px;border-radius:2px;margin-bottom:1px;text-align:center;color:#fff;font-weight:700}
+
+.alert{border-radius:var(--r);padding:10px 14px;font-size:.74rem;display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;line-height:1.55;border:1.5px solid}
+.alert-ok{background:#f0fdf4;border-color:#bbf7d0;color:#14532d}
+.alert-warn{background:#fffbeb;border-color:#fde68a;color:#78350f}
+.alert-bad{background:#fff1f2;border-color:#fecdd3;color:#881337}
+.alert .ai{flex-shrink:0;font-size:.85rem}
+
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:.62rem;font-weight:600;border:1px solid;margin:2px}
+.tag-g{background:#f0fdf4;border-color:#bbf7d0;color:var(--green)}
+.tag-r{background:#fef2f2;border-color:#fecaca;color:var(--red)}
+.tag-o{background:#fffbeb;border-color:#fde68a;color:var(--amber)}
+
+.footer{text-align:center;color:var(--tx3);font-size:.68rem;padding:1.5rem 0;border-top:1px solid var(--bdr);margin-top:2rem}
+
+@media(max-width:600px){
+  .config-grid{grid-template-columns:1fr}
+  .page{padding:16px 12px 60px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>🗓️ Gerador de Escala</h1>
+    <span class="sub">Construa e visualize a escala com overlap em tempo real</span>
+  </div>
+  <a href="./index.html">← Voltar ao Relatório</a>
+</div>
+
+<div class="page">
+
+<!-- CONFIGURAÇÃO -->
+<div class="card">
+  <div class="card-hd">⚙️ Configuração dos Turnos</div>
+  <div class="card-bd">
+    <div class="config-grid">
+
+      <!-- Giovanna -->
+      <div class="emp-config">
+        <div class="emp-hd"><div class="dot" style="background:var(--gio)"></div> Giovanna</div>
+        <div class="emp-bd">
+          <div class="field">
+            <label>Regime</label>
+            <select id="gio-regime" onchange="recalc()">
+              <option value="5x2">5×2 (seg–sex)</option>
+              <option value="6x1">6×1 (seg–sáb)</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Entrada</label>
+              <select id="gio-in" onchange="recalc()">
+                <option value="6">06h</option>
+                <option value="7" selected>07h</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Saída</label>
+              <select id="gio-out" onchange="recalc()">
+                <option value="13">13h</option>
+                <option value="14">14h</option>
+                <option value="15" selected>15h</option>
+                <option value="16">16h</option>
+              </select>
+            </div>
+          </div>
+          <div id="gio-result"></div>
+        </div>
+      </div>
+
+      <!-- Anderson -->
+      <div class="emp-config">
+        <div class="emp-hd"><div class="dot" style="background:var(--and)"></div> Anderson</div>
+        <div class="emp-bd">
+          <div class="field">
+            <label>Regime</label>
+            <select id="and-regime" onchange="recalc()">
+              <option value="5x2">5×2 (seg–sex)</option>
+              <option value="6x1">6×1 (seg–sáb)</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Entrada</label>
+              <select id="and-in" onchange="recalc()">
+                <option value="10">10h</option>
+                <option value="11">11h</option>
+                <option value="13">13h</option>
+                <option value="14" selected>14h</option>
+                <option value="15">15h</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Saída</label>
+              <select id="and-out" onchange="recalc()">
+                <option value="19" selected>19h</option>
+                <option value="20">20h</option>
+                <option value="21">21h</option>
+                <option value="22">22h</option>
+              </select>
+            </div>
+          </div>
+          <div id="and-result"></div>
+        </div>
+      </div>
+
+      <!-- Gabriel -->
+      <div class="emp-config">
+        <div class="emp-hd"><div class="dot" style="background:var(--gab)"></div> Gabriel</div>
+        <div class="emp-bd">
+          <div class="field">
+            <label>Regime</label>
+            <select id="gab-regime" onchange="recalc()">
+              <option value="12x36" selected>12×36 (alternado)</option>
+              <option value="5x2">5×2 (seg–sex)</option>
+              <option value="6x1">6×1 (seg–sáb)</option>
+              <option value="ilegal">12h seg–sex (ILEGAL)</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Entrada</label>
+              <select id="gab-in" onchange="recalc()">
+                <option value="19" selected>19h</option>
+                <option value="22">22h</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Saída (calculada)</label>
+              <input type="text" id="gab-out" value="07h" readonly style="background:var(--bg3);color:var(--tx3)">
+            </div>
+          </div>
+          <div id="gab-result"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAP -->
+<div class="card">
+  <div class="card-hd">⟷ Sobreposição e Pausas</div>
+  <div class="card-bd">
+    <div id="overlap-viz"></div>
+    <div id="overlap-alerts"></div>
+  </div>
+</div>
+
+<!-- GRADE SEMANAL -->
+<div class="card">
+  <div class="card-hd">📊 Grade Semanal Gerada</div>
+  <div class="card-bd" style="overflow-x:auto">
+    <div id="week-grid"></div>
+  </div>
+</div>
+
+<!-- CLT -->
+<div class="card">
+  <div class="card-hd">⚖️ Verificação CLT</div>
+  <div class="card-bd">
+    <div id="clt-check"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  Gerador de Escala · Hotel 24/7 · CLT 2026<br>
+  Consulte seu advogado trabalhista para orientações precisas.
+</div>
+
+<script>
+var DAYS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+function v(id) { return document.getElementById(id).value; }
+function n(id) { return parseInt(v(id), 10); }
+function ph(h) { h = ((h % 24) + 24) % 24; return (h < 10 ? '0' : '') + h; }
+
+function recalc() {
+  var gioIn = n('gio-in'), gioOut = n('gio-out');
+  var andIn = n('and-in'), andOut = n('and-out');
+  var gabIn = n('gab-in');
+  var gioReg = v('gio-regime'), andReg = v('and-regime'), gabReg = v('gab-regime');
+
+  var gioH = gioOut - gioIn;
+  var andH = andOut - andIn;
+  var gioPause = gioH > 6 ? 1 : (gioH > 4 ? 0.25 : 0);
+  var andPause = andH > 6 ? 1 : (andH > 4 ? 0.25 : 0);
+  var gioEff = gioH - gioPause;
+  var andEff = andH - andPause;
+
+  var gioDays = gioReg === '6x1' ? 6 : 5;
+  var andDays = andReg === '6x1' ? 6 : 5;
+  var gioWeek = gioEff * gioDays;
+  var andWeek = andEff * andDays;
+
+  // Gabriel
+  var gabOut, gabH, gabEff, gabWeek, gabLabel;
+  if (gabReg === '12x36') {
+    gabOut = (gabIn + 12) % 24;
+    gabH = 12; gabEff = 11; gabWeek = 42;
+    gabLabel = '12×36 ~42h/sem';
+  } else if (gabReg === '5x2') {
+    gabOut = (gabIn + 8) % 24;
+    gabH = 8; gabEff = 7; gabWeek = 35;
+    gabLabel = '5×2 ' + gabH + 'h/noite = ' + gabWeek + 'h/sem';
+  } else if (gabReg === '6x1') {
+    gabOut = (gabIn + 7) % 24;
+    gabH = 7; gabEff = 6; gabWeek = 36;
+    gabLabel = '6×1 ' + gabH + 'h/noite = ' + gabWeek + 'h/sem';
+  } else {
+    gabOut = (gabIn + 12) % 24;
+    gabH = 12; gabEff = 11; gabWeek = 60;
+    gabLabel = '12h×5 = 60h/sem ILEGAL';
+  }
+  document.getElementById('gab-out').value = ph(gabOut) + 'h';
+
+  // Overlap
+  var ovStart = Math.max(gioIn, andIn);
+  var ovEnd = Math.min(gioOut, andOut);
+  var ovH = Math.max(0, ovEnd - ovStart);
+
+  // --- Results ---
+  renderResult('gio-result', gioH, gioPause, gioEff, gioWeek, gioDays);
+  renderResult('and-result', andH, andPause, andEff, andWeek, andDays);
+  renderGabResult(gabReg, gabH, gabEff, gabWeek);
+  renderOverlap(gioIn, gioOut, andIn, andOut, gabIn, gabOut, ovH, ovStart, ovEnd);
+  renderWeekGrid(gioIn, gioOut, andIn, andOut, gabIn, gabOut, gioReg, andReg, gabReg, ovStart, ovEnd, ovH);
+  renderCLT(gioWeek, andWeek, gabWeek, gabReg, ovH, gioPause, andPause);
+}
+
+function renderResult(id, h, pause, eff, week, days) {
+  var cls = week > 44 ? 'warn' : 'ok';
+  var pauseStr = pause >= 1 ? '1h almoço' : (pause > 0 ? '15min' : 'Nenhuma');
+  document.getElementById(id).innerHTML =
+    '<div class="result-row"><span class="rl">Presença</span><span class="rv">' + h + 'h/dia</span></div>' +
+    '<div class="result-row"><span class="rl">Pausa</span><span class="rv">' + pauseStr + '</span></div>' +
+    '<div class="result-row"><span class="rl">Efetivo</span><span class="rv">' + eff + 'h/dia × ' + days + 'd</span></div>' +
+    '<div class="result-row"><span class="rl">Semanal</span><span class="rv ' + cls + '">' + week + 'h/sem ' + (week > 44 ? '⚠' : '✅') + '</span></div>';
+}
+
+function renderGabResult(reg, h, eff, week) {
+  var cls = reg === 'ilegal' ? 'bad' : (week > 44 ? 'warn' : 'ok');
+  document.getElementById('gab-result').innerHTML =
+    '<div class="result-row"><span class="rl">Turno</span><span class="rv">' + h + 'h/noite</span></div>' +
+    '<div class="result-row"><span class="rl">Semanal</span><span class="rv ' + cls + '">' + week + 'h/sem ' + (reg === 'ilegal' ? '🚨' : '✅') + '</span></div>';
+}
+
+function renderOverlap(gIn, gOut, aIn, aOut, gabIn, gabOut, ovH, ovS, ovE) {
+  var RS = Math.min(gIn, aIn) - 1;
+  var RE = Math.max(gOut, aOut, gabIn) + 1;
+  var RNG = RE - RS;
+  function pct(h) { return ((h - RS) / RNG * 100).toFixed(1); }
+  function w(s, e) { return ((e - s) / RNG * 100).toFixed(1); }
+
+  var html = '<div class="overlap-viz">';
+  // Ruler
+  html += '<div class="ov-ruler">';
+  for (var h = RS; h <= RE; h += 2) html += '<span style="left:' + pct(h) + '%">' + ph(h) + '</span>';
+  html += '</div>';
+
+  // Giovanna
+  html += '<div class="ov-row"><div class="ov-lbl" style="color:var(--gio)">Giovanna</div><div class="ov-track">';
+  html += '<div class="ov-bar" style="left:'+pct(gIn)+'%;width:'+w(gIn,gOut)+'%;background:var(--gio)"><span>'+ph(gIn)+'–'+ph(gOut)+'</span></div>';
+  html += '</div></div>';
+
+  // Overlap
+  html += '<div class="ov-row"><div class="ov-lbl" style="color:var(--purple);font-size:.58rem">⟷ Overlap</div><div class="ov-track">';
+  if (ovH > 0) {
+    html += '<div class="ov-bar ov-bar-purple" style="left:'+pct(ovS)+'%;width:'+w(ovS,ovE)+'%"><span>'+ovH+'h</span></div>';
+  } else {
+    html += '<div style="text-align:center;font-size:.58rem;color:var(--red);font-weight:700;padding:4px">0h — Sem sobreposição ⚠</div>';
+  }
+  html += '</div></div>';
+
+  // Anderson
+  html += '<div class="ov-row"><div class="ov-lbl" style="color:var(--and)">Anderson</div><div class="ov-track">';
+  html += '<div class="ov-bar" style="left:'+pct(aIn)+'%;width:'+w(aIn,aOut)+'%;background:var(--and)"><span>'+ph(aIn)+'–'+ph(aOut)+'</span></div>';
+  html += '</div></div>';
+
+  // Gabriel
+  html += '<div class="ov-row"><div class="ov-lbl" style="color:var(--gab)">Gabriel</div><div class="ov-track">';
+  html += '<div class="ov-bar" style="left:'+pct(gabIn)+'%;width:'+w(gabIn,RE)+'%;background:var(--gab);border-radius:4px 0 0 4px"><span>'+ph(gabIn)+'→'+ph(gabOut)+'</span></div>';
+  html += '</div></div>';
+
+  html += '</div>';
+  document.getElementById('overlap-viz').innerHTML = html;
+
+  // Alerts
+  var alerts = '';
+  if (ovH > 0) {
+    alerts += '<div class="alert alert-ok"><span class="ai">✅</span><div><strong>' + ovH + 'h de sobreposição (' + ph(ovS) + '–' + ph(ovE) + ').</strong> Cobertura mútua de almoço garantida.</div></div>';
+  } else {
+    alerts += '<div class="alert alert-bad"><span class="ai">🚨</span><div><strong>Sem sobreposição.</strong> Não há cobertura de almoço. Ajuste os horários para criar overlap.</div></div>';
+  }
+  if (ovH >= 2) {
+    alerts += '<div class="alert alert-ok"><span class="ai">⭐</span><div>Overlap de ' + ovH + 'h permite almoços intercalados com folga (ex: Gio ' + ph(ovS) + '–' + ph(ovS+1) + ', And ' + ph(ovS+1) + '–' + ph(ovS+2) + ').</div></div>';
+  }
+  document.getElementById('overlap-alerts').innerHTML = alerts;
+}
+
+function renderWeekGrid(gIn, gOut, aIn, aOut, gabIn, gabOut, gReg, aReg, gabReg, ovS, ovE, ovH) {
+  var html = '<table class="week-grid"><thead><tr><th style="background:var(--bg3);color:var(--tx);border:1px solid var(--bdr);width:50px"></th>';
+  for (var d = 0; d < 7; d++) html += '<th class="' + (d === 0 ? 'sun' : '') + '">' + DAYS[d] + '</th>';
+  html += '</tr></thead><tbody>';
+
+  for (var d = 0; d < 7; d++) {
+    var isSun = d === 0;
+    var isSat = d === 6;
+    var gioOff = (gReg === '5x2' && (isSun || isSat)) || (gReg === '6x1' && isSun);
+    var andOff = (aReg === '5x2' && (isSun || isSat)) || (aReg === '6x1' && isSun);
+    var gabOff = false;
+    if (gabReg === '12x36') gabOff = (d % 2 === 1); // simplified: alternate days
+    if (gabReg === '5x2') gabOff = (isSun || isSat);
+    if (gabReg === '6x1') gabOff = isSun;
+
+    var cells = '';
+    // Build cell
+    var empty = gioOff && andOff;
+    cells += '<td' + (empty ? ' class="cell-empty"' : '') + '>';
+
+    if (!gioOff) {
+      cells += '<div class="wc-bar" style="background:var(--gio)">' + ph(gIn) + '–' + ph(gOut) + ' Gio</div>';
+    }
+    if (!gioOff && !andOff && ovH > 0) {
+      cells += '<div class="wc-overlap">⟷ ' + ovH + 'h</div>';
+    }
+    if (!andOff) {
+      cells += '<div class="wc-bar" style="background:var(--and)">' + ph(aIn) + '–' + ph(aOut) + ' And</div>';
+    }
+    if (!gabOff) {
+      cells += '<div class="wc-bar" style="background:var(--gab)">' + ph(gabIn) + '→ Gab</div>';
+    }
+    if (empty) {
+      cells += '<div style="font-size:.56rem;color:var(--red);font-weight:700;text-align:center;padding:4px">VAGO</div>';
+    }
+    if (gioOff && andOff && !gabOff) {
+      cells += '<div style="font-size:.5rem;color:var(--amber);text-align:center">Diurno vago</div>';
+    }
+
+    cells += '</td>';
+
+    if (d === 0) html += '<tr>' + cells; // start new approach
+    // Actually let me restructure
+  }
+
+  // Rebuild properly: one row, 7 columns
+  html = '<table class="week-grid"><thead><tr><th style="background:var(--bg3);color:var(--tx);border:1px solid var(--bdr);width:40px"></th>';
+  for (var d = 0; d < 7; d++) html += '<th class="' + (d === 0 ? 'sun' : '') + '">' + DAYS[d] + '</th>';
+  html += '</tr></thead><tbody><tr><td style="background:var(--bg3);border:1px solid var(--bdr);font-size:.58rem;font-weight:700;padding:4px;vertical-align:middle">Escala</td>';
+
+  for (var d = 0; d < 7; d++) {
+    var isSun = d === 0, isSat = d === 6;
+    var gioOff = (gReg === '5x2' && (isSun || isSat)) || (gReg === '6x1' && isSun);
+    var andOff = (aReg === '5x2' && (isSun || isSat)) || (aReg === '6x1' && isSun);
+    var gabOff = false;
+    if (gabReg === '12x36') gabOff = (d % 2 === 1);
+    else if (gabReg === '5x2') gabOff = (isSun || isSat);
+    else if (gabReg === '6x1') gabOff = isSun;
+
+    var empty = gioOff && andOff;
+    html += '<td' + (empty ? ' class="cell-empty"' : '') + ' style="vertical-align:top;padding:3px">';
+
+    if (gioOff && andOff) {
+      html += '<div style="font-size:.52rem;color:var(--red);font-weight:700;text-align:center;padding:6px 0">DIURNO VAGO</div>';
+    } else {
+      if (!gioOff) html += '<div class="wc-bar" style="background:var(--gio)">' + ph(gIn) + '–' + ph(gOut) + ' Gio</div>';
+      if (!gioOff && !andOff && ovH > 0) html += '<div class="wc-overlap">⟷ ' + ovH + 'h overlap</div>';
+      if (!andOff) html += '<div class="wc-bar" style="background:var(--and)">' + ph(aIn) + '–' + ph(aOut) + ' And</div>';
+    }
+
+    if (!gabOff) {
+      html += '<div class="wc-bar" style="background:var(--gab)">' + ph(gabIn) + '→' + ph(gabOut) + ' Gab</div>';
+    } else {
+      html += '<div style="font-size:.48rem;color:var(--tx3);text-align:center;margin-top:2px">Gab folga</div>';
+    }
+
+    html += '</td>';
+  }
+
+  html += '</tr></tbody></table>';
+  document.getElementById('week-grid').innerHTML = html;
+}
+
+function renderCLT(gioW, andW, gabW, gabReg, ovH, gP, aP) {
+  var checks = [];
+
+  // Gio
+  if (gioW <= 44) checks.push({ok:true, t:'Giovanna ' + gioW + 'h/sem ≤ 44h', d:'Art. 58 CLT — dentro do limite'});
+  else checks.push({ok:false, t:'Giovanna ' + gioW + 'h/sem > 44h ⚠', d:'Art. 58 — excede ' + (gioW-44) + 'h extras/sem. Pagar +50% ou banco de horas.'});
+
+  // And
+  if (andW <= 44) checks.push({ok:true, t:'Anderson ' + andW + 'h/sem ≤ 44h', d:'Art. 58 CLT — dentro do limite'});
+  else checks.push({ok:false, t:'Anderson ' + andW + 'h/sem > 44h ⚠', d:'Art. 58 — excede ' + (andW-44) + 'h extras/sem.'});
+
+  // Gab
+  if (gabReg === 'ilegal') checks.push({ok:false, t:'Gabriel 60h/sem — ILEGAL 🚨', d:'Art. 58+59 — 12h×5d sem acordo 12×36 não é permitido'});
+  else if (gabReg === '12x36') checks.push({ok:true, t:'Gabriel 12×36 — Art. 59-A ✅', d:'Acordo individual escrito. Feriados compensados.'});
+  else checks.push({ok:true, t:'Gabriel ' + gabW + 'h/sem ≤ 44h', d:'Art. 58 CLT'});
+
+  // Overlap
+  if (ovH > 0) checks.push({ok:true, t:'Sobreposição: ' + ovH + 'h ✅', d:'Cobertura mútua de almoço garantida.'});
+  else checks.push({ok:false, t:'Sem sobreposição ⚠', d:'Ajuste horários para criar overlap e cobrir almoço.'});
+
+  // Pausas
+  if (gP >= 1) checks.push({ok:true, t:'Pausa Giovanna: 1h almoço', d:'Art. 71 — jornada > 6h'});
+  if (aP >= 1) checks.push({ok:true, t:'Pausa Anderson: 1h almoço', d:'Art. 71 — jornada > 6h'});
+  else if (aP > 0) checks.push({ok:true, t:'Pausa Anderson: 15min', d:'Art. 71 §1° — jornada 4–6h'});
+
+  var html = '';
+  for (var i = 0; i < checks.length; i++) {
+    var c = checks[i];
+    var cls = c.ok ? 'alert-ok' : 'alert-bad';
+    html += '<div class="alert ' + cls + '"><span class="ai">' + (c.ok ? '✅' : '⚠') + '</span><div><strong>' + c.t + '</strong><br><span style="font-size:.66rem;opacity:.8">' + c.d + '</span></div></div>';
+  }
+  document.getElementById('clt-check').innerHTML = html;
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', recalc);
+</script>
+</body>
+</html>
