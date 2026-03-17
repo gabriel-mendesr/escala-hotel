@@ -788,6 +788,9 @@ function renderAll() {
   buildOverlapGrid('og-atual', ATUAL_REAL);
   // Atual: standard grid too
   buildTable('gantt-atual', 'leg-atual', SCENARIOS_DATA.atual, 'atual');
+  // Pausas: Modelo A e B
+  buildTable('gantt-exA',   'leg-exA',  SCENARIOS_DATA.exA,   'exA');
+  buildTable('gantt-exB',   'leg-exB',  SCENARIOS_DATA.exB,   'exB');
   // Giovanna 7h
   buildTable('gantt-g7a',   'leg-g7a',  SCENARIOS_DATA.g7a,   'g7a');
   buildTable('gantt-g7b',   'leg-g7b',  SCENARIOS_DATA.g7b,   'g7b');
@@ -805,23 +808,8 @@ function renderAll() {
 
 // ── LABEL UPDATES ─────────────────────────────────────────────
 function updateLabels() {
-  var s = SC();
-  // Labels dos cenários propostos
-  var pairs = [
-    ['la-gio-s1',s.lM],['la-and-s1',s.lA],['la-gab-s1',s.lN],
-    ['la-gio-s2',s.lD],['la-and-s2',s.lD],['la-gab-s2',s.lN],['la-new-s2',s.lN],
-    ['la-gio-s3',s.lM],['la-and-s3',s.lA],['la-gab-s3',s.lN],
-    ['la-gio-s5',s.lM],['la-and-s5',s.lA],['la-gab-s5',s.lN],
-    ['la-gio-s6',s.lM],['la-and-s6',s.lA],['la-gab-s6',s.lN],
-    ['la-gio-sg',s.lM],['la-and-sg',s.lA],['la-gab-sg',s.lN],
-    ['la-gio-s7',s.lM],['la-and-s7',s.lA],['la-gab-s7',s.lN],
-    ['la-gio-s8',s.lM],['la-and-s8',s.lA],['la-gab-s8',s.lN],
-    ['la-gio-s9',s.lM],['la-and-s9',s.lA],['la-gab-s9',s.lN],
-    ['la-gio-s10',s.lD],['la-and-s10',s.lD],['la-gab-s10',s.lN],
-    ['la-gio-s11',s.lM],['la-and-s11',s.lA],['la-gab-s11',s.lN],
-    ['la-gio-s12',s.lM],['la-and-s12',s.lA],['la-gab-s12',s.lN]
-  ];
-  for (var i = 0; i < pairs.length; i++) se(pairs[i][0], pairs[i][1]);
+  // Labels are now hardcoded in HTML tables per scenario
+  // Only dynamic labels are in the Contratos section (handled by calcAll)
 }
 
 // ── TAB SWITCHING ─────────────────────────────────────────────
