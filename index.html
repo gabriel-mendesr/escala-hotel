@@ -9,705 +9,548 @@
 </head>
 <body>
 
-<!-- ══ HEADER ══════════════════════════════════════════════ -->
-<div class="header">
-  <div class="header-inner">
-    <h1>🏨 Escala Hotel 24/7 <span class="sub">Gestão · CLT 2026 · Relatório Estratégico</span></h1>
-    <div class="header-right">
-      <span class="badge badge-blue">📅 <span id="gen-date"></span></span>
-      <span class="badge badge-green">3 Ativos</span>
-      <span class="badge badge-red">Func. X saindo</span>
-      <a href="schedule-builder.html" class="btn-cfg" style="background:#f0fdf4;border-color:#bbf7d0;color:#15803d">🗓️ Construir Escala</a>
+<div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<div class="app">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <h1>🏨 Escala Hotel 24/7</h1>
+    <span class="sub">Gestão · CLT 2026</span>
+    <div class="sidebar-badges">
+      <span class="sbadge sbadge-blue">📅 <span id="gen-date"></span></span>
+      <span class="sbadge sbadge-green">3 Ativos</span>
+      <span class="sbadge sbadge-red">X saindo</span>
     </div>
   </div>
-</div>
+  <div class="sidebar-nav">
 
+    <div class="nav-group">
+      <div class="nav-group-title">Diagnóstico</div>
+      <a class="nav-item active" data-section="sec-atual" onclick="navigateTo('sec-atual')">
+        <span class="nav-icon">📊</span> Situação Atual
+        <span class="nav-pip red"></span>
+      </a>
+      <a class="nav-item" data-section="sec-pausas" onclick="navigateTo('sec-pausas')">
+        <span class="nav-icon">🍽️</span> Pausas e Horários
+        <span class="nav-pip amber"></span>
+      </a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Giovanna</div>
+      <a class="nav-item" data-section="sec-gio7" onclick="navigateTo('sec-gio7')">
+        <span class="nav-icon">☀️</span> Entrada 7h
+        <span class="nav-pip green"></span>
+      </a>
+      <a class="nav-item" data-section="sec-gio6" onclick="navigateTo('sec-gio6')">
+        <span class="nav-icon">🌅</span> Entrada 6h
+      </a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Gabriel</div>
+      <a class="nav-item" data-section="sec-gab" onclick="navigateTo('sec-gab')">
+        <span class="nav-icon">🌙</span> Regimes Noturnos
+      </a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Análise</div>
+      <a class="nav-item" data-section="sec-comparativo" onclick="navigateTo('sec-comparativo')">
+        <span class="nav-icon">📊</span> Comparativo Geral
+      </a>
+      <a class="nav-item" data-section="sec-contratos" onclick="navigateTo('sec-contratos')">
+        <span class="nav-icon">📋</span> Contratos FDS
+      </a>
+      <a class="nav-item" data-section="sec-clt" onclick="navigateTo('sec-clt')">
+        <span class="nav-icon">⚖️</span> CLT Referência
+      </a>
+    </div>
+
+  </div>
+</nav>
 
 <!-- ══ MAIN ════════════════════════════════════════════════ -->
-<div class="page">
+<div class="main">
 
-<!-- ── 0. SITUAÇÃO ATUAL ─────────────────────────────────── -->
-<div class="section">
+  <div class="topbar">
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <span class="topbar-title">Relatório Estratégico de Escalas</span>
+    <span class="topbar-date" id="topbar-date"></span>
+  </div>
+
+  <div class="page">
+
+<!-- ═══════════════════════════════════════════════════════════
+     0. SITUAÇÃO ATUAL
+     ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="sec-atual">
   <div class="sec-hd">
     <div class="sec-num blue">0</div>
-    <div><h2>Situação Atual — Diagnóstico</h2><p>Mapa do modelo vigente antes da mudança</p></div>
+    <div><h2>Situação Atual — Diagnóstico</h2><p>Escala real vigente · Horários variáveis, sobreposição e pausas por dia</p></div>
   </div>
-  <div class="card">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib">
-          <h3>Escala em Uso</h3>
-          <table class="tbl">
-            <thead><tr><th>Funcionário</th><th>Regime</th><th>Turno</th><th>Dias</th><th>H/sem.</th></tr></thead>
-            <tbody>
-              <tr><td class="c-gio">Giovanna</td><td>6×1</td><td class="mono" id="lbl-gio-a">—</td><td>Seg–Sáb</td><td class="mono c-warn">48h ⚠</td></tr>
-              <tr><td class="c-and">Anderson</td><td>6×1</td><td class="mono" id="lbl-and-a">—</td><td>Seg–Sáb</td><td class="mono c-warn">48h ⚠</td></tr>
-              <tr><td class="c-gab">Gabriel</td><td>12×36</td><td class="mono" id="lbl-gab-a">—</td><td>Alternado</td><td class="mono">~42h</td></tr>
-              <tr><td style="color:var(--tx3)">Func. X</td><td>12×36</td><td class="mono">—</td><td>Alternado</td><td class="mono">~42h</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="ib">
-          <h3>Problemas Identificados</h3>
-          <div class="alert alert-crit"><span class="ai">🚨</span><div><strong>Saída de X:</strong> Gabriel sozinho no noturno → ~15 noites/mês descobertas.</div></div>
-          <div class="alert alert-warn"><span class="ai">⚠️</span><div><strong>Domingos descobertos:</strong> Gio e Anderson folgam aos domingos — hotel sem diurno.</div></div>
-          <div class="alert alert-warn"><span class="ai">⚠️</span><div><strong>48h/sem. no 6×1:</strong> 4h extras/semana ≈ 17h/mês. Devem ser pagas +50% ou banco de horas.</div></div>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Situação Atual</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-atual"></div>
-          <div class="sched-wrap"><table id="gantt-atual"></table></div>
-        </div>
-        <p class="mt8" style="font-size:.72rem;color:var(--tx3)">⤷ Noturno em ciclo 12×36: semana A = Gabriel (Dom/Ter/Qui/Sáb), semana B = Func.X. Com saída de X, semana B fica descoberta.</p>
-      </div>
+
+  <!-- Tabela detalhada por dia -->
+  <div class="card"><div class="card-bd">
+    <div class="ib"><h3>Escala Detalhada por Dia</h3></div>
+    <div class="ovx">
+    <table class="tbl">
+      <thead><tr><th>Dia</th><th class="c-gio" style="color:#fff">Giovanna</th><th>Presença</th><th class="c-and" style="color:#fff">Anderson</th><th>Presença</th><th>Sobreposição</th><th>Pausa Gio</th><th>Pausa And</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Seg</strong></td><td class="mono">07–16h</td><td class="mono">9h</td><td class="mono">11–19h</td><td class="mono">8h</td><td class="mono c-ok">11–16h (5h) ✅</td><td>1h almoço</td><td>1h almoço</td></tr>
+        <tr><td><strong>Ter</strong></td><td class="mono">07–15h</td><td class="mono">8h</td><td class="mono">10–19h</td><td class="mono">9h</td><td class="mono c-ok">10–15h (5h) ✅</td><td>1h almoço</td><td>1h almoço</td></tr>
+        <tr><td><strong>Qua</strong></td><td class="mono">07–15h</td><td class="mono">8h</td><td class="mono">11–19h</td><td class="mono">8h</td><td class="mono c-ok">11–15h (4h) ✅</td><td>1h almoço</td><td>1h almoço</td></tr>
+        <tr><td><strong>Qui</strong></td><td class="mono">07–16h</td><td class="mono">9h</td><td class="mono">10–19h</td><td class="mono">9h</td><td class="mono c-ok">10–16h (6h) ✅</td><td>1h almoço</td><td>1h almoço</td></tr>
+        <tr><td><strong>Sex</strong></td><td class="mono">07–16h</td><td class="mono">9h</td><td class="mono">10–19h</td><td class="mono">9h</td><td class="mono c-ok">10–16h (6h) ✅</td><td>1h almoço</td><td>1h almoço</td></tr>
+        <tr><td><strong>Sáb</strong></td><td class="mono">07–13h</td><td class="mono">6h</td><td class="mono">13–19h</td><td class="mono">6h</td><td class="mono c-warn">0h (revez.) ⚠</td><td>15min</td><td>15min</td></tr>
+        <tr><td><strong>Dom</strong></td><td class="mono c-bad" colspan="2">Folga</td><td class="mono c-bad" colspan="2">Folga</td><td class="mono c-bad">Descoberto 🚨</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
     </div>
-  </div>
+  </div></div>
+
+  <!-- Resumo semanal -->
+  <div class="card"><div class="card-bd">
+    <div class="ib"><h3>Resumo Semanal</h3></div>
+    <div class="ovx">
+    <table class="tbl">
+      <thead><tr><th>Funcionário</th><th>Regime</th><th>Presença/sem.</th><th>Pausas/sem.</th><th>Efetivo/sem.</th><th>Limite CLT</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td class="c-gio">Giovanna</td><td>Variável</td><td class="mono">49h</td><td class="mono">5h15min</td><td class="mono">43h45</td><td class="mono">44h</td><td class="c-ok">✅ OK</td></tr>
+        <tr><td class="c-and">Anderson</td><td>Variável</td><td class="mono">49h</td><td class="mono">5h15min</td><td class="mono">43h45</td><td class="mono">44h</td><td class="c-ok">✅ OK</td></tr>
+        <tr><td class="c-gab">Gabriel</td><td>12×36</td><td class="mono">~84h/mês</td><td class="mono">~7h/mês</td><td class="mono">~42h/sem.</td><td class="mono">Art.59-A</td><td class="c-ok">✅ OK</td></tr>
+        <tr><td style="color:var(--tx3)">Func. X</td><td>12×36</td><td class="mono" colspan="4">Saindo em breve</td><td class="c-bad">🚨</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="desc" style="font-size:.64rem;margin-top:6px">Efetivo = presença − pausas. Sáb = 6h (pausa 15min). Seg–Sex: turnos &gt;6h → 1h de almoço obrigatório (Art. 71).</p>
+  </div></div>
+
+  <!-- Overlap Grid — Timeline visual por dia -->
+  <div class="card"><div class="card-bd">
+    <div class="ib"><h3>📊 Grade com Sobreposição — Visualização por Dia</h3>
+      <p class="desc">Barras mostram o horário real de cada funcionário. Linha roxa = período de sobreposição onde ambos estão presentes.</p>
+    </div>
+    <div class="ovx">
+      <div id="og-atual"></div>
+    </div>
+  </div></div>
+
+  <!-- Análise -->
+  <div class="alert alert-ok"><span class="ai">✅</span><div>
+    <strong>Seg–Sex: cobertura mútua de almoço funciona.</strong> Sobreposição de 4 a 6h permite que ambos almocem em sequência (ex: Gio 12h–13h, And 13h–14h). A recepção nunca fica vazia.
+  </div></div>
+  <div class="alert alert-info"><span class="ai">ℹ️</span><div>
+    <strong>Sábado: revezamento direto às 13h.</strong> Giovanna sai e Anderson assume. Sem sobreposição, mas ambos trabalham 6h (pausa de só 15min), então não há problema — cada um faz sua pausa curta durante o próprio turno.
+  </div></div>
+  <div class="alert alert-crit"><span class="ai">🚨</span><div><strong>Domingo: hotel totalmente descoberto no diurno.</strong> Ambos folgam. Somente Gabriel no noturno (quando é dia dele no 12×36).</div></div>
+  <div class="alert alert-crit"><span class="ai">🚨</span><div><strong>Saída de Func. X:</strong> Gabriel fica sozinho no noturno → ~15 noites/mês descobertas nas folgas do 12×36.</div></div>
+  <div class="alert alert-ok"><span class="ai">✅</span><div><strong>Carga horária CLT:</strong> Giovanna ~43h45/sem e Anderson ~43h45/sem — ambos dentro do limite de 44h. Sem hora extra.</div></div>
+
+  <!-- Grade semanal padrão -->
+  <div class="card mt12"><div class="card-bd">
+    <div class="ib"><h3>📋 Grade Semanal Simplificada</h3></div>
+    <div class="gantt-container">
+      <div class="legend" id="leg-atual"></div>
+      <div class="sched-wrap"><table id="gantt-atual"></table></div>
+    </div>
+    <p class="mt8 desc" style="font-size:.64rem;color:var(--tx3)">Cada célula mostra o horário real do dia. Noturno 12×36: semana A = Gabriel, semana B = Func.X (saindo).</p>
+  </div></div>
 </div>
 
-<!-- ── A-F. CENÁRIOS ──────────────────────────────────────── -->
-<div class="section">
+<!-- ═══════════════════════════════════════════════════════════
+     PAUSAS E ALMOÇO — DECISÃO PARA ADMINISTRAÇÃO
+     ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="sec-pausas">
   <div class="sec-hd">
-    <div class="sec-num blue">A</div>
-    <div><h2>Cenários Propostos</h2><p>Grade de turnos por proposta · valores atualizados conforme configuração</p></div>
+    <div class="sec-num gold">🍽️</div>
+    <div><h2>Pausas e Almoço — Decisão de Horários</h2><p>Dois modelos para avaliação da administração · Anderson cobre almoço da Giovanna</p></div>
+  </div>
+
+  <div class="alert alert-info"><span class="ai">⚖️</span><div><strong>Art. 71 CLT:</strong> Jornada &gt; 6h → intervalo de <strong>1 a 2h</strong> para refeição. Entre 4h e 6h → <strong>15min</strong>. Intervalo <strong>não conta</strong> como tempo trabalhado.</div></div>
+
+  <div class="alert alert-ok"><span class="ai">💡</span><div><strong>Mecanismo de cobertura:</strong> Anderson chega <strong>1h antes</strong> do turno oficial, criando sobreposição. Giovanna almoça com a recepção coberta. Gabriel trabalha sozinho no noturno — faz descanso no horário de menor movimento (sem necessidade de cobertura).</div></div>
+
+  <!-- ── MODELO A ── -->
+  <div class="card"><div class="card-bd">
+    <div class="ib"><h3>Modelo A — Turnos 07h / 14h / 19h</h3>
+      <p class="desc">Anderson chega às 14h (1h antes do turno original das 15h). Giovanna almoça das 14h–15h. Anderson trabalha apenas 5h.</p>
+    </div>
+    <div class="pause-grid">
+      <div class="pause-card">
+        <div class="pc-turno">☀️ Giovanna — Manhã</div>
+        <div class="pc-horario">07h – 14h (7h efetivas)</div>
+        <div class="pc-pausa">🍽️ 1h almoço (14h–15h)</div>
+        <div class="pc-lei">Anderson cobre · Art. 71 CLT</div>
+      </div>
+      <div class="pause-card">
+        <div class="pc-turno">🌆 Anderson — Tarde</div>
+        <div class="pc-horario">14h – 19h (5h total)</div>
+        <div class="pc-pausa">☕ Apenas 15min intervalo</div>
+        <div class="pc-lei">Jornada ≤ 6h · Art. 71 §1°</div>
+      </div>
+      <div class="pause-card">
+        <div class="pc-turno">🌙 Gabriel — Noite</div>
+        <div class="pc-horario">19h – 07h (12h — 12×36)</div>
+        <div class="pc-pausa">💤 1h descanso (~02h–03h)</div>
+        <div class="pc-lei">Sozinho · sem cobertura</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin:10px 0">
+      <span class="tag tag-g">And. não precisa almoço</span>
+      <span class="tag tag-g">Zero buracos de cobertura</span>
+      <span class="tag tag-o">And. trabalha menos (5h vs 7h Gio)</span>
+      <span class="tag tag-o">Noite longa (12h)</span>
+    </div>
+    <div class="ib mt12"><h3>📊 Grade Modelo A (exemplo cenário F)</h3></div>
+    <div class="gantt-container">
+      <div class="legend" id="leg-exA"></div>
+      <div class="sched-wrap"><table id="gantt-exA"></table></div>
+    </div>
+  </div></div>
+
+  <!-- ── MODELO B ── -->
+  <div class="card mt12"><div class="card-bd">
+    <div class="ib"><h3>Modelo B — Turnos 06h / 13h / 22h</h3>
+      <p class="desc">Anderson chega às 13h (1h antes do turno das 14h). Giovanna almoça das 12h–13h. Anderson trabalha 9h total (8h efetivas + 1h jantar).</p>
+    </div>
+    <div class="pause-grid">
+      <div class="pause-card">
+        <div class="pc-turno">☀️ Giovanna — Manhã</div>
+        <div class="pc-horario">06h – 13h (7h efetivas)</div>
+        <div class="pc-pausa">🍽️ 1h almoço (12h–13h)</div>
+        <div class="pc-lei">Anderson chega às 13h e cobre</div>
+      </div>
+      <div class="pause-card">
+        <div class="pc-turno">🌆 Anderson — Tarde</div>
+        <div class="pc-horario">13h – 22h (8h efetivas)</div>
+        <div class="pc-pausa">🍽️ 1h jantar (17h–18h)</div>
+        <div class="pc-lei">Jornada &gt; 6h · Art. 71 CLT</div>
+      </div>
+      <div class="pause-card">
+        <div class="pc-turno">🌙 Gabriel — Noite</div>
+        <div class="pc-horario">22h – 06h (8h)</div>
+        <div class="pc-pausa">💤 1h descanso (~02h–03h)</div>
+        <div class="pc-lei">Sozinho · sem cobertura</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin:10px 0">
+      <span class="tag tag-g">Turnos equilibrados (ambos ~8h)</span>
+      <span class="tag tag-g">Noite curta (8h vs 12h)</span>
+      <span class="tag tag-g">Cobertura diurna ampla (06h–22h)</span>
+      <span class="tag tag-o">And. precisa 1h jantar obrigatório</span>
+      <span class="tag tag-o">Recepção vazia 17h–18h (jantar And.)</span>
+      <span class="tag tag-o">Começa cedo (06h)</span>
+    </div>
+    <div class="ib mt12"><h3>📊 Grade Modelo B (exemplo cenário F)</h3></div>
+    <div class="gantt-container">
+      <div class="legend" id="leg-exB"></div>
+      <div class="sched-wrap"><table id="gantt-exB"></table></div>
+    </div>
+  </div></div>
+
+  <!-- ── TABELA COMPARATIVA ── -->
+  <div class="card mt12"><div class="card-bd">
+    <div class="ib"><h3>📊 Comparativo — Modelo A vs Modelo B</h3></div>
+    <div class="ovx">
+    <table class="tbl w100">
+      <thead><tr><th>Critério</th><th>Modelo A (07h/14h/19h)</th><th>Modelo B (06h/13h/22h)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Cobertura diurna</strong></td><td>07h–19h = 12h</td><td class="c-ok">06h–22h = 16h ✅</td></tr>
+        <tr><td><strong>Turno noturno (Gabriel)</strong></td><td>19h–07h = 12h</td><td class="c-ok">22h–06h = 8h ✅</td></tr>
+        <tr><td><strong>Horas Giovanna</strong></td><td>7h efetivas</td><td>7h efetivas</td></tr>
+        <tr><td><strong>Horas Anderson</strong></td><td class="c-warn">5h total ⚠</td><td class="c-ok">8h efetivas ✅</td></tr>
+        <tr><td><strong>Pausa Anderson</strong></td><td class="c-ok">Só 15min (turno ≤ 6h) ✅</td><td class="c-warn">1h jantar obrigatório ⚠</td></tr>
+        <tr><td><strong>Buraco de cobertura</strong></td><td class="c-ok">Nenhum ✅</td><td class="c-warn">17h–18h jantar And. ⚠</td></tr>
+        <tr><td><strong>Equidade de horas</strong></td><td class="c-warn">Gio 7h vs And 5h ⚠</td><td class="c-ok">Gio 7h ≈ And 8h ✅</td></tr>
+        <tr><td><strong>Início mais cedo</strong></td><td class="c-ok">07h ✅</td><td class="c-warn">06h ⚠</td></tr>
+        <tr><td><strong>Simplicidade operacional</strong></td><td class="c-ok">Mais simples ✅</td><td>Mais complexo</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="alert alert-info mt8"><span class="ai">📝</span><div><strong>Decisão pendente:</strong> A administração deve escolher entre simplicidade operacional (Modelo A) e equidade de carga horária (Modelo B). Nos dois modelos, o almoço da Giovanna é coberto pelo Anderson.</div></div>
+  </div></div>
+
+  <div class="alert alert-info"><span class="ai">📐</span><div><strong>Interjornada (Art. 66):</strong> Mínimo de <strong>11h consecutivas</strong> entre jornadas. No 12×36, as 36h de folga já excedem o mínimo.</div></div>
+  <div class="alert alert-ok"><span class="ai">ℹ️</span><div><strong>12×36:</strong> O intervalo pode ser <strong>indenizado</strong> (pago sem pausa real) por acordo individual, conforme Art. 59-A §único. Na hotelaria, a prática comum é conceder 1h de descanso durante o turno.</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     GIOVANNA — ENTRADA 7h
+     ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="sec-gio7">
+  <div class="sec-hd">
+    <div class="sec-num gold">☀️</div>
+    <div><h2>Giovanna — Entrada às 7h</h2><p>Cenários com Giovanna iniciando às 07h · Overlap com Anderson sempre presente</p></div>
   </div>
 
   <div class="tabs">
-    <button class="tab active" id="t-s6" onclick="showTab('s6')">F · Intermediários 12h <span class="pip ok"></span></button>
-    <button class="tab best" id="t-s10" onclick="showTab('s10')">K · 12×36 Revezamento</button>
-    <button class="tab best" id="t-s12" onclick="showTab('s12')">M · Interm. Noites</button>
-    <button class="tab best" id="t-sg" onclick="showTab('sg')">G · Folguista Coringa <span class="pip ok"></span></button>
-    <button class="tab best" id="t-s5" onclick="showTab('s5')">⭐ E · Misto Recomendado <span class="pip ok"></span></button>
-    <button class="tab" id="t-s2" onclick="showTab('s2')">B · 12×36 Universal</button>
-    <button class="tab" id="t-s3" onclick="showTab('s3')">C · Revezamento 6×1</button>
-    <button class="tab" id="t-s9" onclick="showTab('s9')">J · 6×1 Manhã + Free</button>
-    <button class="tab" id="t-s7" onclick="showTab('s7')">H · 5×2 + Folguista</button>
-    <button class="tab" id="t-s8" onclick="showTab('s8')">I · Misto Folguista</button>
-    <button class="tab" id="t-s1" onclick="showTab('s1')">A · 5×2 + Freelancer</button>
-    <button class="tab" id="t-s11" onclick="showTab('s11')">L · 5×2 + Free FDS</button>
-    <button class="tab" id="t-s4" onclick="showTab('s4')">D · Gab Seg–Sex Noite <span class="pip warn"></span></button>
+    <button class="tab best active" id="t-g7a" onclick="showTab('g7a')">5×2 (07–15) <span class="pip ok"></span></button>
+    <button class="tab best" id="t-g7b" onclick="showTab('g7b')">6×1 (07–15)</button>
+    <button class="tab best" id="t-g7c" onclick="showTab('g7c')">5×2 (07–16) +2h overlap</button>
   </div>
 
-  <!-- ─ PANEL S1 ─ -->
-  <div class="panel" id="panel-s1">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>Proposta A — 5×2 + Freelancer</h3>
-          <p class="desc">Giovanna e Anderson em 5×2 (seg–sex), sem horas extras. Gabriel 12×36 noturno. FDS e gaps noturnos com freelancers PJ/MEI.</p>
-        </div>
-        <table class="tbl mb12">
-          <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/sem.</th><th>CLT</th></tr></thead>
-          <tbody>
-            <tr><td class="c-gio">Giovanna</td><td>5×2</td><td class="mono" id="la-gio-s1">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-and">Anderson</td><td>5×2</td><td class="mono" id="la-and-s1">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>12×36</td><td class="mono" id="la-gab-s1">—</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-free">Freelancer</td><td>PJ/MEI</td><td>Variável</td><td>—</td><td class="c-warn">⚠ PJ</td></tr>
-          </tbody>
-        </table>
-        <div class="alert alert-warn"><span class="ai">🔧</span><div>~32 diárias freelancer/mês (Sáb+Dom + ~15 noites gap Gabriel)</div></div>
-        <div class="alert alert-info"><span class="ai">💡</span><div>Banco de horas pode cobrir 1 FDS/mês sem custo extra</div></div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <span class="tag tag-g">Sem H. Extra</span><span class="tag tag-g">Dom coberto</span>
-          <span class="tag tag-r">Custo variável</span><span class="tag tag-o">~32 diárias/mês</span>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta A</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s1"></div>
-          <div class="sched-wrap"><table id="gantt-s1"></table></div>
-        </div>
-      </div>
+  <!-- g7a -->
+  <div class="panel active" id="panel-g7a"><div class="panel-bd">
+    <div class="rating rating-top">★★★ Overlap 1h · CLT OK</div>
+    <div class="ib"><h3>Gio 5×2 (07–15) + And 5×2 (14–19) + Gab 12×36</h3>
+      <p class="desc">Giovanna 07–15 (8h, 7h eff.), Anderson chega às 14h (5h turno). 1h de sobreposição 14–15 para cobertura de almoço. FDS com folguista.</p>
     </div>
-  </div>
-
-  <!-- ─ PANEL S2 ─ -->
-  <div class="panel" id="panel-s2">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>Proposta B — 12×36 Universal (4 func.)</h3>
-          <p class="desc">Todos em 12×36. Gio e Anderson no diurno alternado, Gabriel e novo funcionário no noturno alternado. Cobertura 100%, sem freelancer.</p>
-        </div>
-        <table class="tbl mb12">
-          <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/mês</th><th>CLT</th></tr></thead>
-          <tbody>
-            <tr><td class="c-gio">Giovanna</td><td>12×36</td><td class="mono" id="la-gio-s2">—</td><td>~180h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-and">Anderson</td><td>12×36</td><td class="mono" id="la-and-s2">—</td><td>~180h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>12×36</td><td class="mono" id="la-gab-s2">—</td><td>~180h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-new">Novo noturno</td><td>12×36</td><td class="mono" id="la-new-s2">—</td><td>~180h</td><td class="c-ok">✅</td></tr>
-          </tbody>
-        </table>
-        <div class="alert alert-ok"><span class="ai">✅</span><div>Art. 59-A CLT: 12×36 por acordo individual. Feriados compensados, sem HE, cobertura total.</div></div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <span class="tag tag-g">100% coberto</span><span class="tag tag-g">Sem freelancer</span>
-          <span class="tag tag-r">Precisa 4° func.</span><span class="tag tag-o">Adic. noturno</span>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta B</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s2"></div>
-          <div class="sched-wrap"><table id="gantt-s2"></table></div>
-        </div>
-      </div>
+    <div class="ovx"><table class="tbl mb12">
+      <thead><tr><th>Quem</th><th>Horário</th><th>Presença</th><th>Efetivo</th><th>H/sem</th><th>Pausa</th><th>CLT</th></tr></thead>
+      <tbody>
+        <tr><td class="c-gio">Giovanna</td><td class="mono">07–15h</td><td>8h</td><td>7h</td><td class="mono">35h</td><td>1h almoço (And. cobre)</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-and">Anderson</td><td class="mono">14–19h</td><td>5h</td><td>5h</td><td class="mono">25h</td><td>15min (≤6h)</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-gab">Gabriel</td><td class="mono">19–07h</td><td>12h</td><td>11h</td><td class="mono">~42h</td><td>1h descanso</td><td class="c-ok">✅ 12×36</td></tr>
+      </tbody>
+    </table></div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="tag tag-g">Overlap 1h ✅</span><span class="tag tag-g">CLT OK</span><span class="tag tag-g">And. sem almoço obrig.</span>
+      <span class="tag tag-o">And. 25h (baixo)</span><span class="tag tag-o">FDS descoberto</span>
     </div>
-  </div>
+    <div class="gantt-container"><div class="legend" id="leg-g7a"></div><div class="sched-wrap"><table id="gantt-g7a"></table></div></div>
+  </div></div>
 
-  <!-- ─ PANEL S3 ─ -->
-  <div class="panel" id="panel-s3">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>Proposta C — Revezamento 6×1</h3>
-          <p class="desc">Gio e Anderson em 6×1 com folgas alternadas: uma semana Gio folga Dom, And cobre; semana seguinte invertem. Gabriel 12×36. Freelancer só para noites de gap.</p>
-        </div>
-        <table class="tbl mb12">
-          <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/sem.</th><th>CLT</th></tr></thead>
-          <tbody>
-            <tr><td class="c-gio">Giovanna</td><td>6×1 revez.</td><td class="mono" id="la-gio-s3">—</td><td class="c-warn">48h</td><td class="c-warn">⚠ BH</td></tr>
-            <tr><td class="c-and">Anderson</td><td>6×1 revez.</td><td class="mono" id="la-and-s3">—</td><td class="c-warn">48h</td><td class="c-warn">⚠ BH</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>12×36</td><td class="mono" id="la-gab-s3">—</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-free">Freelancer</td><td>PJ</td><td>Noite gap</td><td>—</td><td class="c-warn">⚠</td></tr>
-          </tbody>
-        </table>
-        <div class="alert alert-warn"><span class="ai">⚠️</span><div>6×1 gera ~4h extra/sem. Banco de horas (CCT hotelaria, 6 meses) zera o custo imediato.</div></div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <span class="tag tag-g">Dom coberto</span><span class="tag tag-g">3 fixos</span>
-          <span class="tag tag-r">HE não eliminada</span><span class="tag tag-o">Banco de horas</span>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta C (semana ímpar)</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s3"></div>
-          <div class="sched-wrap"><table id="gantt-s3"></table></div>
-        </div>
-      </div>
+  <!-- g7b -->
+  <div class="panel" id="panel-g7b"><div class="panel-bd">
+    <div class="rating rating-good">★★☆ 6×1 · Sáb coberto</div>
+    <div class="ib"><h3>Gio 6×1 (07–15) + And 6×1 (14–19) + Gab 12×36</h3>
+      <p class="desc">Ambos em 6×1 (seg–sáb). Sábado: Gio 07–13, And 13–19 (revezamento direto). Overlap seg–sex de 1h. Dom descoberto.</p>
     </div>
-  </div>
-
-  <!-- ─ PANEL S4 ─ -->
-  <div class="panel" id="panel-s4">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>⚠️ Proposta D — Gabriel Seg–Sex Noite (IRREGULAR)</h3>
-          <p class="desc">Gabriel trabalhando 12h/noite de segunda a sexta. Gera múltiplas violações CLT.</p>
-        </div>
-        <div class="alert alert-crit"><span class="ai">🚨</span><div>
-          <strong>Violações CLT:</strong><br>
-          ① Art. 59: 12h/dia &gt; máximo de 10h<br>
-          ② Art. 58+59: 60h/sem. &gt; 54h máximo<br>
-          ③ Turno sex. termina no sábado — não é realmente seg–sex<br>
-          ④ Risco de ação trabalhista com pagamento retroativo de HE (50–100%)
-        </div></div>
-        <div class="alert alert-ok mt8"><span class="ai">✅</span><div><strong>Alternativa legal:</strong> Gabriel seg–sex com 8h/noite (ex: 22h–6h). 40h/sem. Adicional noturno integral. Sem violação.</div></div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <span class="tag tag-r">ILEGAL 12h×5d</span><span class="tag tag-r">60h/sem.</span><span class="tag tag-r">Risco alto</span>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta D ⚠️</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s4"></div>
-          <div class="sched-wrap"><table id="gantt-s4"></table></div>
-        </div>
-      </div>
+    <div class="ovx"><table class="tbl mb12">
+      <thead><tr><th>Quem</th><th>Seg–Sex</th><th>Sábado</th><th>Efet/sem</th><th>Pausa</th><th>CLT</th></tr></thead>
+      <tbody>
+        <tr><td class="c-gio">Giovanna</td><td class="mono">07–15h</td><td class="mono">07–13h</td><td class="mono">42h</td><td>1h almoço seg–sex / 15min sáb</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-and">Anderson</td><td class="mono">14–19h</td><td class="mono">13–19h</td><td class="mono">30h</td><td>15min (≤6h)</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-gab">Gabriel</td><td class="mono" colspan="2">19–07h (12×36)</td><td class="mono">~42h</td><td>1h descanso</td><td class="c-ok">✅</td></tr>
+      </tbody>
+    </table></div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="tag tag-g">Overlap 1h seg–sex</span><span class="tag tag-g">Sáb coberto</span>
+      <span class="tag tag-o">Sáb: 0h overlap</span><span class="tag tag-r">Dom descoberto</span>
     </div>
-  </div>
+    <div class="gantt-container"><div class="legend" id="leg-g7b"></div><div class="sched-wrap"><table id="gantt-g7b"></table></div></div>
+  </div></div>
 
-  <!-- ─ PANEL S5 ─ -->
-  <div class="panel" id="panel-s5">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>⭐ Proposta E — Modelo Misto Recomendado</h3>
-          <p class="desc">Giovanna 5×2 (sem HE), Anderson 6×1 rotativo + banco de horas, Gabriel 12×36. Freelancer cobre domingos e gaps noturnos residuais. 3 fixos, custo mínimo, CLT ok.</p>
-        </div>
-        <div class="alert alert-ok"><span class="ai">⭐</span><div>Menor custo com cobertura 7 dias. Sem contratar 4° funcionário fixo.</div></div>
-        <table class="tbl mb12 mt8">
-          <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/sem.</th><th>CLT</th></tr></thead>
-          <tbody>
-            <tr><td class="c-gio">Giovanna</td><td>5×2</td><td class="mono" id="la-gio-s5">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-and">Anderson</td><td>6×1 + BH</td><td class="mono" id="la-and-s5">—</td><td>48h</td><td class="c-warn">⚠ BH</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>12×36</td><td class="mono" id="la-gab-s5">—</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-free">Freelancer</td><td>PJ</td><td>Dom + gaps</td><td>—</td><td class="c-warn">⚠</td></tr>
-          </tbody>
-        </table>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <span class="tag tag-g">3 fixos</span><span class="tag tag-g">Dom coberto</span><span class="tag tag-g">Custo mínimo</span>
-          <span class="tag tag-o">And banco horas</span><span class="tag tag-o">Free. residual</span>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta E ⭐</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s5"></div>
-          <div class="sched-wrap"><table id="gantt-s5"></table></div>
-        </div>
-      </div>
+  <!-- g7c -->
+  <div class="panel" id="panel-g7c"><div class="panel-bd">
+    <div class="rating rating-top">★★★ Overlap 2h! · Melhor cobertura</div>
+    <div class="ib"><h3>Gio 5×2 (07–16) + And 5×2 (15–19) + Gab 12×36</h3>
+      <p class="desc">Giovanna estende até 16h (9h presença, 8h eff.). Anderson chega às 15h. <strong>2h de sobreposição</strong> (14–16) — mais margem para almoços intercalados.</p>
     </div>
-  </div>
-
-  <!-- ─ PANEL S6 ─ -->
-  <div class="panel active" id="panel-s6">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>⭐ Proposta F — Intermediários 12h FDS</h3>
-          <p class="desc">Giovanna e Anderson em 5×2. Dois intermediários CLT (Tempo Parcial + 12×36): um no <strong>Sábado diurno 12h</strong>, outro nas <strong>noites de Sáb+Dom 12h/noite</strong>. Gabriel 12×36 noturno.</p>
-          <div id="s6-clt-analysis" class="mt8"></div>
-        </div>
-        <table class="tbl mb12">
-          <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/sem.</th><th>CLT</th></tr></thead>
-          <tbody>
-            <tr><td class="c-gio">Giovanna</td><td>5×2</td><td class="mono" id="la-gio-s6">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-and">Anderson</td><td>5×2</td><td class="mono" id="la-and-s6">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>12×36</td><td class="mono" id="la-gab-s6">—</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-new">FDS Diurno</td><td>T.Parc+12×36</td><td>Sáb 12h</td><td>12h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-new">FDS Noturno</td><td>T.Parc+12×36</td><td>Sáb+Dom noite</td><td>24h</td><td class="c-ok">✅</td></tr>
-          </tbody>
-        </table>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <span class="tag tag-g">CLT total</span><span class="tag tag-g">12h legal</span>
-          <span class="tag tag-g">FDS coberto</span><span class="tag tag-o">2 novas contratações</span>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta F ⭐</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s6"></div>
-          <div class="sched-wrap"><table id="gantt-s6"></table></div>
-        </div>
-      </div>
+    <div class="ovx"><table class="tbl mb12">
+      <thead><tr><th>Quem</th><th>Horário</th><th>Presença</th><th>Efetivo</th><th>H/sem</th><th>Pausa</th><th>CLT</th></tr></thead>
+      <tbody>
+        <tr><td class="c-gio">Giovanna</td><td class="mono">07–16h</td><td>9h</td><td>8h</td><td class="mono">40h</td><td>1h almoço</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-and">Anderson</td><td class="mono">15–19h</td><td>4h</td><td>4h</td><td class="mono">20h</td><td>Nenhuma (≤4h)</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-gab">Gabriel</td><td class="mono">19–07h</td><td>12h</td><td>11h</td><td class="mono">~42h</td><td>1h descanso</td><td class="c-ok">✅</td></tr>
+      </tbody>
+    </table></div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="tag tag-g">Overlap 2h ✅✅</span><span class="tag tag-g">Gio 40h ideal</span>
+      <span class="tag tag-r">And. só 20h (muito baixo)</span><span class="tag tag-o">FDS descoberto</span>
     </div>
-  </div>
+    <div class="gantt-container"><div class="legend" id="leg-g7c"></div><div class="sched-wrap"><table id="gantt-g7c"></table></div></div>
+  </div></div>
+</div>
 
-  <!-- ─ PANEL S7 ─ -->
-  <div class="panel" id="panel-s7">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>Proposta H — 5×2 + Folguista</h3>
-          <p class="desc">Giovanna, Anderson e Gabriel em 5×2. Folguista cobre FDS e faltas imprevistas. Sem freelancer.</p>
-        </div>
-        <table class="tbl mb12">
-          <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/sem.</th><th>CLT</th></tr></thead>
-          <tbody>
-            <tr><td class="c-gio">Giovanna</td><td>5×2</td><td class="mono" id="la-gio-s7">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-and">Anderson</td><td>5×2</td><td class="mono" id="la-and-s7">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>5×2</td><td class="mono" id="la-gab-s7">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td style="color:var(--folg);font-weight:600">Folguista</td><td>5×2</td><td>Variável</td><td>40h</td><td class="c-ok">✅</td></tr>
-          </tbody>
-        </table>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <span class="tag tag-g">Sem freelancer</span><span class="tag tag-g">FDS coberto</span>
-          <span class="tag tag-g">4 fixos</span><span class="tag tag-o">Folguista</span>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta H</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s7"></div>
-          <div class="sched-wrap"><table id="gantt-s7"></table></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─ PANEL S8 ─ -->
-  <div class="panel" id="panel-s8">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>Proposta I — Misto Folguista</h3>
-          <p class="desc">Giovanna 5×2 manhã, Anderson 5×2 tarde, Gabriel 12×36 noite. Folguista cobre FDS.</p>
-        </div>
-        <table class="tbl mb12">
-          <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/sem.</th><th>CLT</th></tr></thead>
-          <tbody>
-            <tr><td class="c-gio">Giovanna</td><td>5×2</td><td class="mono" id="la-gio-s8">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-and">Anderson</td><td>5×2</td><td class="mono" id="la-and-s8">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>12×36</td><td class="mono" id="la-gab-s8">—</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td style="color:var(--folg);font-weight:600">Folguista</td><td>5×2</td><td>FDS</td><td>40h</td><td class="c-ok">✅</td></tr>
-          </tbody>
-        </table>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <span class="tag tag-g">FDS coberto</span><span class="tag tag-g">Sem free</span>
-          <span class="tag tag-g">4 fixos</span><span class="tag tag-o">Folguista</span>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta I</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s8"></div>
-          <div class="sched-wrap"><table id="gantt-s8"></table></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─ PANEL S9 ─ -->
-  <div class="panel" id="panel-s9">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>Proposta J — 6×1 Manhã + Free</h3>
-          <p class="desc">Giovanna 6×1 manhã, Anderson 5×2 tarde, Gabriel 12×36 noite. Freelancer para gaps noturnos.</p>
-        </div>
-        <table class="tbl mb12">
-          <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/sem.</th><th>CLT</th></tr></thead>
-          <tbody>
-            <tr><td class="c-gio">Giovanna</td><td>6×1</td><td class="mono" id="la-gio-s9">—</td><td>48h</td><td class="c-warn">⚠ BH</td></tr>
-            <tr><td class="c-and">Anderson</td><td>5×2</td><td class="mono" id="la-and-s9">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>12×36</td><td class="mono" id="la-gab-s9">—</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-free">Freelancer</td><td>PJ</td><td>Noite gaps</td><td>—</td><td class="c-warn">⚠</td></tr>
-          </tbody>
-        </table>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <span class="tag tag-g">3 fixos</span><span class="tag tag-r">HE</span>
-          <span class="tag tag-o">Banco horas</span><span class="tag tag-o">Free gaps</span>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta J</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s9"></div>
-          <div class="sched-wrap"><table id="gantt-s9"></table></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─ PANEL S10 ─ -->
-  <div class="panel" id="panel-s10">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>Proposta K — 12×36 Revezamento</h3>
-          <p class="desc">Todos os 3 em 12×36, revezando turnos diurnos e noturnos.</p>
-        </div>
-        <table class="tbl mb12">
-          <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/mês</th><th>CLT</th></tr></thead>
-          <tbody>
-            <tr><td class="c-gio">Giovanna</td><td>12×36</td><td class="mono" id="la-gio-s10">—</td><td>~180h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-and">Anderson</td><td>12×36</td><td class="mono" id="la-and-s10">—</td><td>~180h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>12×36</td><td class="mono" id="la-gab-s10">—</td><td>~180h</td><td class="c-ok">✅</td></tr>
-          </tbody>
-        </table>
-        <div class="alert alert-ok"><span class="ai">✅</span><div>Art. 59-A CLT: 12×36 por acordo individual. Sem HE, cobertura total.</div></div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <span class="tag tag-g">100% coberto</span><span class="tag tag-g">Sem extra</span>
-          <span class="tag tag-g">3 fixos</span><span class="tag tag-o">Revezamento</span>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta K</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s10"></div>
-          <div class="sched-wrap"><table id="gantt-s10"></table></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─ PANEL S11 ─ -->
-  <div class="panel" id="panel-s11">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>Proposta L — 5×2 + Free FDS</h3>
-          <p class="desc">Giovanna e Anderson 5×2, Gabriel 12×36. Freelancer para FDS.</p>
-        </div>
-        <table class="tbl mb12">
-          <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/sem.</th><th>CLT</th></tr></thead>
-          <tbody>
-            <tr><td class="c-gio">Giovanna</td><td>5×2</td><td class="mono" id="la-gio-s11">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-and">Anderson</td><td>5×2</td><td class="mono" id="la-and-s11">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>12×36</td><td class="mono" id="la-gab-s11">—</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-free">Freelancer</td><td>PJ</td><td>FDS</td><td>—</td><td class="c-warn">⚠</td></tr>
-          </tbody>
-        </table>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <span class="tag tag-g">3 fixos</span><span class="tag tag-r">Free FDS</span>
-          <span class="tag tag-o">Variável</span>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta L</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s11"></div>
-          <div class="sched-wrap"><table id="gantt-s11"></table></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─ PANEL S12 ─ -->
-  <div class="panel" id="panel-s12">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>Proposta M — Interm. Noites</h3>
-          <p class="desc">Giovanna e Anderson 5×2, Gabriel 12×36. Intermediários para noites de FDS.</p>
-        </div>
-        <table class="tbl mb12">
-          <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/sem.</th><th>CLT</th></tr></thead>
-          <tbody>
-            <tr><td class="c-gio">Giovanna</td><td>5×2</td><td class="mono" id="la-gio-s12">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-and">Anderson</td><td>5×2</td><td class="mono" id="la-and-s12">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>12×36</td><td class="mono" id="la-gab-s12">—</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-new">Interm. Noite</td><td>T.Parc+12×36</td><td>FDS noite</td><td>24h</td><td class="c-ok">✅</td></tr>
-          </tbody>
-        </table>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <span class="tag tag-g">CLT total</span><span class="tag tag-g">FDS coberto</span>
-          <span class="tag tag-g">4 func.</span><span class="tag tag-o">Interm.</span>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta M</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s12"></div>
-          <div class="sched-wrap"><table id="gantt-s12"></table></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div><!-- end scenarios section -->
-
-<!-- ── N. CENÁRIOS COM TURNOS ÀS 6H ────────────────────────── -->
-<div class="section">
+<!-- ═══════════════════════════════════════════════════════════
+     GIOVANNA — ENTRADA 6h
+     ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="sec-gio6">
   <div class="sec-hd">
-    <div class="sec-num blue">N</div>
-    <div><h2>Cenários com Turnos às 6h</h2><p>Alternativas com horários mais cedo · manhã 6h-14h, tarde 14h-22h, noite 22h-6h</p></div>
+    <div class="sec-num blue">🌅</div>
+    <div><h2>Giovanna — Entrada às 6h</h2><p>Cenários com turnos antecipados · Anderson cobre até 22h · Gabriel noite curta (8h)</p></div>
   </div>
 
   <div class="tabs">
-    <button class="tab active" id="t-s14" onclick="showTab('s14')">O · Gabriel Manhã 6h</button>
-    <button class="tab" id="t-s16" onclick="showTab('s16')">Q · Gabriel Tarde 14h</button>
-    <button class="tab" id="t-s13" onclick="showTab('s13')">N · Manhã 6h + Free</button>
-    <button class="tab" id="t-s15" onclick="showTab('s15')">P · Tarde 14h + Free</button>
+    <button class="tab best active" id="t-g6a" onclick="showTab('g6a')">5×2 (06–14) <span class="pip ok"></span></button>
+    <button class="tab" id="t-g6b" onclick="showTab('g6b')">6×1 (06–14)</button>
+    <button class="tab best" id="t-g6c" onclick="showTab('g6c')">5×2 (06–15) equil.</button>
   </div>
 
-  <!-- ─ PANEL S13 ─ -->
-  <div class="panel" id="panel-s13">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>Proposta N — Manhã às 6h + Freelancer</h3>
-          <p class="desc">Turnos ajustados para começar às 6h. Manhã 6h-14h, tarde 14h-22h, noite 22h-6h. FDS com freelancers.</p>
-        </div>
-        <table class="tbl mb12">
-          <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/sem.</th><th>CLT</th></tr></thead>
-          <tbody>
-            <tr><td class="c-gio">Giovanna</td><td>5×2</td><td class="mono">06h–14h</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-and">Anderson</td><td>5×2</td><td class="mono">14h–22h</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>12×36</td><td class="mono">22h–06h</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-free">Freelancer</td><td>PJ/MEI</td><td>FDS</td><td>—</td><td class="c-warn">⚠ PJ</td></tr>
-          </tbody>
-        </table>
-        <div class="alert alert-info"><span class="ai">💡</span><div>Horários mais cedo podem melhorar produtividade matinal e reduzir custos noturnos</div></div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <span class="tag tag-g">Horários cedo</span><span class="tag tag-g">Sem H. Extra</span>
-          <span class="tag tag-o">FDS freelancer</span>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta N</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s13"></div>
-          <div class="sched-wrap"><table id="gantt-s13"></table></div>
-        </div>
-      </div>
+  <!-- g6a -->
+  <div class="panel active" id="panel-g6a"><div class="panel-bd">
+    <div class="rating rating-top">★★★ Turnos equilibrados · Noite curta</div>
+    <div class="ib"><h3>Gio 5×2 (06–14) + And 5×2 (13–22) + Gab 12×36 22h</h3>
+      <p class="desc">Giovanna 06–14 (7h eff.), Anderson 13–22 (8h eff., 1h jantar). Gabriel noite curta 22–06 (8h). Overlap 13–14 (1h).</p>
     </div>
-  </div>
-
-  <!-- ─ PANEL S14 ─ -->
-  <div class="panel active" id="panel-s14">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>Proposta O — Gabriel na Manhã às 6h</h3>
-          <p class="desc">Gabriel trabalhando no turno da manhã 6h-14h, revezando com Giovanna. Anderson na tarde, freelancers no FDS.</p>
-        </div>
-        <table class="tbl mb12">
-          <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/sem.</th><th>CLT</th></tr></thead>
-          <tbody>
-            <tr><td class="c-gio">Giovanna</td><td>6×1</td><td class="mono">06h–14h / 14h–22h</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>6×1</td><td class="mono">06h–14h</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-and">Anderson</td><td>5×2</td><td class="mono">14h–22h</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-folg">Folguista</td><td>Intermitente</td><td>FDS / noite</td><td>—</td><td class="c-ok">✅</td></tr>
-          </tbody>
-        </table>
-        <div class="alert alert-info"><span class="ai">💡</span><div>Gabriel ganha experiência em turnos matinais, reduzindo dependência de freelancers</div></div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <span class="tag tag-g">Gabriel manhã</span><span class="tag tag-g">Revezamento</span>
-          <span class="tag tag-o">FDS folguista</span>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta O</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s14"></div>
-          <div class="sched-wrap"><table id="gantt-s14"></table></div>
-        </div>
-      </div>
+    <div class="ovx"><table class="tbl mb12">
+      <thead><tr><th>Quem</th><th>Horário</th><th>Presença</th><th>Efetivo</th><th>H/sem</th><th>Pausa</th><th>CLT</th></tr></thead>
+      <tbody>
+        <tr><td class="c-gio">Giovanna</td><td class="mono">06–14h</td><td>8h</td><td>7h</td><td class="mono">35h</td><td>1h almoço (And. cobre)</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-and">Anderson</td><td class="mono">13–22h</td><td>9h</td><td>8h</td><td class="mono">40h</td><td>1h jantar (17–18h)</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-gab">Gabriel</td><td class="mono">22–06h</td><td>8h</td><td>7h</td><td class="mono">~42h</td><td>1h descanso</td><td class="c-ok">✅ 12×36</td></tr>
+      </tbody>
+    </table></div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="tag tag-g">Overlap 1h ✅</span><span class="tag tag-g">And. 40h ideal</span><span class="tag tag-g">Noite 8h (menos desgaste)</span>
+      <span class="tag tag-o">Começa 6h (cedo)</span><span class="tag tag-o">And. jantar 17–18 sozinho</span>
     </div>
-  </div>
+    <div class="gantt-container"><div class="legend" id="leg-g6a"></div><div class="sched-wrap"><table id="gantt-g6a"></table></div></div>
+  </div></div>
 
-  <!-- ─ PANEL S15 ─ -->
-  <div class="panel" id="panel-s15">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>Proposta P — Tarde às 14h + Freelancer</h3>
-          <p class="desc">Turnos começando às 14h para tarde. Manhã freelancers, tarde equipe fixa, noite Gabriel.</p>
-        </div>
-        <table class="tbl mb12">
-          <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/sem.</th><th>CLT</th></tr></thead>
-          <tbody>
-            <tr><td class="c-free">Freelancer</td><td>PJ/MEI</td><td>06h–14h</td><td>—</td><td class="c-warn">⚠ PJ</td></tr>
-            <tr><td class="c-gio">Giovanna</td><td>5×2</td><td class="mono">14h–22h</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-and">Anderson</td><td>5×2</td><td class="mono">14h–22h</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>12×36</td><td class="mono">22h–06h</td><td>~42h</td><td class="c-ok">✅</td></tr>
-          </tbody>
-        </table>
-        <div class="alert alert-warn"><span class="ai">🔧</span><div>Manhã coberta por freelancers — pode aumentar custos</div></div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <span class="tag tag-o">Manhã freelancer</span><span class="tag tag-g">Tarde equipe</span>
-          <span class="tag tag-r">Custo alto</span>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta P</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s15"></div>
-          <div class="sched-wrap"><table id="gantt-s15"></table></div>
-        </div>
-      </div>
+  <!-- g6b -->
+  <div class="panel" id="panel-g6b"><div class="panel-bd">
+    <div class="rating rating-mid">★★☆ 6×1 · And. 48h ⚠</div>
+    <div class="ib"><h3>Gio 6×1 (06–14) + And 6×1 (13–22) + Gab 12×36 22h</h3>
+      <p class="desc">Ambos 6×1 (seg–sáb). Sábado: Gio 06–12, And 13–19 (gap 12–13 ⚠). Anderson acumula 48h/sem — precisa banco de horas.</p>
     </div>
-  </div>
-
-  <!-- ─ PANEL S16 ─ -->
-  <div class="panel" id="panel-s16">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>Proposta Q — Gabriel na Tarde 14h</h3>
-          <p class="desc">Gabriel trabalhando no turno da tarde 14h-22h, revezando com Anderson. Giovanna na manhã, freelancers no FDS.</p>
-        </div>
-        <table class="tbl mb12">
-          <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/sem.</th><th>CLT</th></tr></thead>
-          <tbody>
-            <tr><td class="c-gio">Giovanna</td><td>5×2</td><td class="mono">06h–14h</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>6×1</td><td class="mono">14h–22h</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-and">Anderson</td><td>6×1</td><td class="mono">06h–14h</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-folg">Folguista</td><td>Intermitente</td><td>22h–06h</td><td>—</td><td class="c-ok">✅</td></tr>
-          </tbody>
-        </table>
-        <div class="alert alert-info"><span class="ai">💡</span><div>Gabriel ganha experiência em turnos diurnos, reduzindo dependência de freelancers noturnos</div></div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <span class="tag tag-g">Gabriel tarde</span><span class="tag tag-g">Revezamento</span>
-          <span class="tag tag-o">FDS folguista</span>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta Q</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-s16"></div>
-          <div class="sched-wrap"><table id="gantt-s16"></table></div>
-        </div>
-      </div>
+    <div class="ovx"><table class="tbl mb12">
+      <thead><tr><th>Quem</th><th>Seg–Sex</th><th>Sábado</th><th>Efet/sem</th><th>CLT</th></tr></thead>
+      <tbody>
+        <tr><td class="c-gio">Giovanna</td><td class="mono">06–14h</td><td class="mono">06–12h</td><td class="mono">42h</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-and">Anderson</td><td class="mono">13–22h</td><td class="mono">13–19h</td><td class="mono c-warn">48h ⚠</td><td class="c-warn">⚠ BH</td></tr>
+        <tr><td class="c-gab">Gabriel</td><td class="mono" colspan="2">22–06h (12×36)</td><td class="mono">~42h</td><td class="c-ok">✅</td></tr>
+      </tbody>
+    </table></div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="tag tag-g">Sáb coberto</span><span class="tag tag-g">Noite 8h</span>
+      <span class="tag tag-r">And. 48h (B.Horas)</span><span class="tag tag-o">Gap sáb 12–13h</span>
     </div>
-  </div>
+    <div class="gantt-container"><div class="legend" id="leg-g6b"></div><div class="sched-wrap"><table id="gantt-g6b"></table></div></div>
+  </div></div>
 
-</div><!-- end 6h scenarios section -->
-
-<!-- ── G. PROPOSTA FOLGUISTA ──────────────────────────────── -->
-<div class="section">
-  <div class="sec-hd">
-    <div class="sec-num gold">G</div>
-    <div><h2>Proposta G — Folguista Coringa (4° CLT Diurno)</h2><p>Derivada da análise cruzada · Gio + Anderson 5×2 · Folguista cobre FDS + faltas</p></div>
-  </div>
-  <div class="card">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib">
-          <p class="desc">Gio e Anderson em 5×2. Um <strong>Folguista CLT</strong> (Auxiliar de Recepção, salário menor) trabalha 6×1 cobrindo Sáb/Dom e qualquer falta imprevista durante a semana. Gabriel 12×36 noturno. Freelancer só para gaps noturnos de Gabriel.</p>
-        </div>
-        <div class="alert alert-ok"><span class="ai">⭐</span><div><strong>Diferencial:</strong> único modelo que cobre faltas imprevistas sem custo extra. Com ~15–20 faltas/func./ano numa equipe de 3, representa economia real.</div></div>
-        <table class="tbl mt8 mb12">
-          <thead><tr><th>Quem</th><th>Regime</th><th>Turno</th><th>H/sem.</th><th>CLT</th></tr></thead>
-          <tbody>
-            <tr><td class="c-gio">Giovanna</td><td>5×2</td><td class="mono" id="la-gio-sg">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-and">Anderson</td><td>5×2</td><td class="mono" id="la-and-sg">—</td><td>40h</td><td class="c-ok">✅</td></tr>
-            <tr><td class="c-gab">Gabriel</td><td>12×36</td><td class="mono" id="la-gab-sg">—</td><td>~42h</td><td class="c-ok">✅</td></tr>
-            <tr><td style="color:var(--folg);font-weight:600">Folguista</td><td>6×1 + BH</td><td>Variável</td><td>48h</td><td class="c-warn">⚠ BH</td></tr>
-            <tr><td class="c-free">Freelancer</td><td>PJ</td><td>Noite gaps</td><td>—</td><td class="c-warn">⚠</td></tr>
-          </tbody>
-        </table>
-          <p class="mt8" style="font-size:.72rem;color:var(--tx3)">* Salário folguista configurável em ⚙️ Configurações</p>
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="ib"><h3>📊 Grade de Turnos — Proposta G</h3></div>
-        <div class="gantt-container">
-          <div class="legend" id="leg-sg"></div>
-          <div class="sched-wrap"><table id="gantt-sg"></table></div>
-        </div>
-        <div class="mt12">
-          <h3 class="ib" style="margin-bottom:8px">Folguista vs. Sem Folguista</h3>
-          <table class="tbl w100">
-            <thead><tr><th>Situação</th><th>Sem Folguista</th><th>Com Folguista</th></tr></thead>
-            <tbody>
-              <tr><td>Falta imprevista</td><td class="c-bad">Free. emergência (+50%)</td><td class="c-ok">Folguista (R$0)</td></tr>
-              <tr><td>Férias 30 dias</td><td class="c-bad">Temporário</td><td class="c-ok">Folguista cobre</td></tr>
-              <tr><td>Sábado diurno</td><td class="c-warn">Freelancer</td><td class="c-ok">Folguista</td></tr>
-              <tr><td>Domingo diurno</td><td class="c-warn">Freelancer</td><td class="c-ok">Folguista</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+  <!-- g6c -->
+  <div class="panel" id="panel-g6c"><div class="panel-bd">
+    <div class="rating rating-top">★★★ Mais equilibrado · Overlap 1h</div>
+    <div class="ib"><h3>Gio 5×2 (06–15) + And 5×2 (14–22) + Gab 12×36 22h</h3>
+      <p class="desc">Giovanna 06–15 (9h, 8h eff.), Anderson 14–22 (8h, 7h eff.). Overlap 14–15 (1h). Turnos mais equilibrados, noite curta.</p>
     </div>
-  </div>
+    <div class="ovx"><table class="tbl mb12">
+      <thead><tr><th>Quem</th><th>Horário</th><th>Presença</th><th>Efetivo</th><th>H/sem</th><th>Pausa</th><th>CLT</th></tr></thead>
+      <tbody>
+        <tr><td class="c-gio">Giovanna</td><td class="mono">06–15h</td><td>9h</td><td>8h</td><td class="mono">40h</td><td>1h almoço</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-and">Anderson</td><td class="mono">14–22h</td><td>8h</td><td>7h</td><td class="mono">35h</td><td>1h jantar</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-gab">Gabriel</td><td class="mono">22–06h</td><td>8h</td><td>7h</td><td class="mono">~42h</td><td>1h descanso</td><td class="c-ok">✅</td></tr>
+      </tbody>
+    </table></div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="tag tag-g">Overlap 1h ✅</span><span class="tag tag-g">Ambos ~40h</span><span class="tag tag-g">Noite 8h</span><span class="tag tag-g">Cobertura 06–22h (16h)</span>
+      <span class="tag tag-o">Começa 6h</span><span class="tag tag-o">FDS descoberto</span>
+    </div>
+    <div class="gantt-container"><div class="legend" id="leg-g6c"></div><div class="sched-wrap"><table id="gantt-g6c"></table></div></div>
+  </div></div>
 </div>
 
-<!-- ── O. CENÁRIOS ILEGAIS COM GABRIEL SEG-SEX ───────────────── -->
-<div class="section">
+<!-- ═══════════════════════════════════════════════════════════
+     GABRIEL — REGIMES NOTURNOS
+     ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="sec-gab">
   <div class="sec-hd">
-    <div class="sec-num red">O</div>
-    <div><h2>Cenários Ilegais com Gabriel Seg–Sex</h2><p>Opções com Gabriel trabalhando 5 dias/semana · ⚠️ Excede limite CLT (60h/semana)</p></div>
+    <div class="sec-num green">🌙</div>
+    <div><h2>Gabriel — Regimes Noturnos</h2><p>Opções de regime para o turno noturno · Análise CLT e cobertura</p></div>
   </div>
 
   <div class="tabs">
-    <button class="tab active" id="t-s17" onclick="showTab('s17')">R · Gabriel 5×2 Seg–Sex ⚠</button>
-    <button class="tab" id="t-s18" onclick="showTab('s18')">S · Gabriel 6×1 Seg–Sex ⚠</button>
+    <button class="tab best active" id="t-gb1" onclick="showTab('gb1')">12×36 19h ✅</button>
+    <button class="tab" id="t-gb2" onclick="showTab('gb2')">5×2 19–03h</button>
+    <button class="tab" id="t-gb3" onclick="showTab('gb3')">6×1 19–02h</button>
+    <button class="tab" style="background:var(--crit-bg);border-color:var(--crit-bdr);color:var(--red)" id="t-gb4" onclick="showTab('gb4')">12h Seg–Sex 🚨</button>
   </div>
 
-  <!-- ─ PANEL S17 ─ -->
-  <div class="panel" id="panel-s17">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>Proposta R — Gabriel 5×2 Seg–Sex ⚠ ILEGAL</h3>
-          <p class="desc">Gabriel trabalha 5×2 noturno seg-sexta. Folguistas cobrem fins de semana. <strong class="c-bad">🚨 ILEGAL: Excede 60h/semana (CLT Art. 58).</strong></p>
-        </div>
-      </div>
-
+  <!-- gb1 -->
+  <div class="panel active" id="panel-gb1"><div class="panel-bd">
+    <div class="rating rating-top">★★★ Legal · Padrão hotelaria</div>
+    <div class="ib"><h3>Gabriel 12×36 (19h–07h) — Regime padrão</h3>
+      <p class="desc">Regime 12×36 por acordo individual (Art. 59-A). Trabalha ~15 noites/mês. Com novo funcionário, cobertura 100%.</p>
     </div>
-  </div>
-
-  <!-- ─ PANEL S18 ─ -->
-  <div class="panel" id="panel-s18">
-    <div class="two-col">
-      <div class="col-l">
-        <div class="ib"><h3>Proposta S — Gabriel 6×1 Seg–Sex ⚠ ILEGAL</h3>
-          <p class="desc">Gabriel trabalha 6×1 noturno seg-sexta. Folguistas cobrem fins de semana. <strong class="c-bad">🚨 ILEGAL: Excede 60h/semana (CLT Art. 58).</strong></p>
-        </div>
-      </div>
+    <div class="ovx"><table class="tbl mb12">
+      <thead><tr><th>Quem</th><th>Horário</th><th>Regime</th><th>H/sem</th><th>Cobertura</th><th>CLT</th></tr></thead>
+      <tbody>
+        <tr><td class="c-gab">Gabriel</td><td class="mono">19–07h</td><td>12×36</td><td class="mono">~42h</td><td>Sem.A: Dom/Ter/Qui/Sáb</td><td class="c-ok">✅ Art.59-A</td></tr>
+        <tr><td class="c-new">Novo func.</td><td class="mono">19–07h</td><td>12×36</td><td class="mono">~42h</td><td>Sem.B: Seg/Qua/Sex/Dom</td><td class="c-ok">✅ Art.59-A</td></tr>
+      </tbody>
+    </table></div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="tag tag-g">100% noites cobertas</span><span class="tag tag-g">Legal Art.59-A</span><span class="tag tag-g">Adicional noturno 20%</span>
+      <span class="tag tag-r">Precisa 2° noturno</span>
     </div>
-  </div>
+    <div class="gantt-container"><div class="legend" id="leg-gb1"></div><div class="sched-wrap"><table id="gantt-gb1"></table></div></div>
+  </div></div>
+
+  <!-- gb2 -->
+  <div class="panel" id="panel-gb2"><div class="panel-bd">
+    <div class="rating rating-good">★★☆ Legal · Precisa free FDS</div>
+    <div class="ib"><h3>Gabriel 5×2 (19h–03h) — 8h/noite, 40h/sem</h3>
+      <p class="desc">Gabriel trabalha seg–sex, 8h por noite (19h–03h). FDS e 2 noites de folga precisam de freelancer.</p>
+    </div>
+    <div class="ovx"><table class="tbl mb12">
+      <thead><tr><th>Quem</th><th>Horário</th><th>Regime</th><th>H/sem</th><th>Dias</th><th>CLT</th></tr></thead>
+      <tbody>
+        <tr><td class="c-gab">Gabriel</td><td class="mono">19–03h</td><td>5×2</td><td class="mono">40h</td><td>Seg–Sex</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-free">Freelancer</td><td class="mono">19–07h</td><td>PJ</td><td>—</td><td>Sáb+Dom</td><td class="c-warn">⚠ PJ</td></tr>
+      </tbody>
+    </table></div>
+    <div class="alert alert-warn"><span class="ai">⚠️</span><div><strong>Gap 03h–07h (seg–sex):</strong> Hotel descoberto entre 03h e 07h (4h). Baixíssimo movimento, mas sem cobertura formal.</div></div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="tag tag-g">40h/sem ✅</span><span class="tag tag-g">Sem 12×36</span>
+      <span class="tag tag-r">Gap 03–07h</span><span class="tag tag-o">Free FDS</span>
+    </div>
+    <div class="gantt-container"><div class="legend" id="leg-gb2"></div><div class="sched-wrap"><table id="gantt-gb2"></table></div></div>
+  </div></div>
+
+  <!-- gb3 -->
+  <div class="panel" id="panel-gb3"><div class="panel-bd">
+    <div class="rating rating-good">★★☆ Legal · Quase cobertura total</div>
+    <div class="ib"><h3>Gabriel 6×1 (19h–02h) — 7h/noite, 42h/sem</h3>
+      <p class="desc">Gabriel trabalha 6 noites, 7h cada (19h–02h). Apenas 1 noite de folga. Freelancer cobre a folga + gap 02–07h.</p>
+    </div>
+    <div class="ovx"><table class="tbl mb12">
+      <thead><tr><th>Quem</th><th>Horário</th><th>Regime</th><th>H/sem</th><th>Dias</th><th>CLT</th></tr></thead>
+      <tbody>
+        <tr><td class="c-gab">Gabriel</td><td class="mono">19–02h</td><td>6×1</td><td class="mono">42h</td><td>6 noites</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-free">Freelancer</td><td class="mono">19–07h</td><td>PJ</td><td>—</td><td>1 noite/sem</td><td class="c-warn">⚠ PJ</td></tr>
+      </tbody>
+    </table></div>
+    <div class="alert alert-warn"><span class="ai">⚠️</span><div><strong>Gap 02h–07h (6 noites):</strong> Mesma situação do 5×2 mas com menor gap de folga. Considerar se o movimento entre 02h–07h justifica cobertura.</div></div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="tag tag-g">42h/sem ✅</span><span class="tag tag-g">Só 1 noite de folga</span>
+      <span class="tag tag-r">Gap 02–07h</span><span class="tag tag-o">Free 1 noite</span>
+    </div>
+    <div class="gantt-container"><div class="legend" id="leg-gb3"></div><div class="sched-wrap"><table id="gantt-gb3"></table></div></div>
+  </div></div>
+
+  <!-- gb4 ILEGAL -->
+  <div class="panel" id="panel-gb4"><div class="panel-bd">
+    <div class="rating rating-bad">✗ ILEGAL — 60h/semana</div>
+    <div class="ib"><h3>Gabriel 12h Seg–Sex (19h–07h) — 🚨 ILEGAL</h3>
+      <p class="desc">Gabriel trabalhando 12h/noite de segunda a sexta. Gera múltiplas violações CLT.</p>
+    </div>
+    <div class="alert alert-crit"><span class="ai">🚨</span><div>
+      <strong>Violações CLT:</strong><br>
+      ① Art. 59: 12h/dia sem acordo 12×36 → máximo é 10h (8h + 2h extra)<br>
+      ② Art. 58+59: 60h/sem excede limite de 54h (44h + 10h extra máx)<br>
+      ③ Não é 12×36 porque não tem 36h de folga entre turnos<br>
+      ④ Risco de ação trabalhista com pagamento retroativo de HE (+50–100%)
+    </div></div>
+    <div class="ovx"><table class="tbl mb12">
+      <thead><tr><th>Quem</th><th>Horário</th><th>Regime</th><th>H/sem</th><th>CLT</th></tr></thead>
+      <tbody>
+        <tr><td class="c-bad">Gabriel</td><td class="mono">19–07h</td><td class="c-bad">12h × 5 dias</td><td class="mono c-bad">60h 🚨</td><td class="c-bad">🚨 ILEGAL</td></tr>
+      </tbody>
+    </table></div>
+    <div class="alert alert-ok"><span class="ai">✅</span><div><strong>Alternativa legal:</strong> Gabriel 5×2 com 8h/noite (19h–03h). 40h/sem. Adicional noturno integral. Sem violação.</div></div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="tag tag-r">ILEGAL 12h×5d</span><span class="tag tag-r">60h/sem</span><span class="tag tag-r">Risco alto</span>
+    </div>
+    <div class="gantt-container"><div class="legend" id="leg-gb4"></div><div class="sched-wrap"><table id="gantt-gb4"></table></div></div>
+  </div></div>
 </div>
 
-<!-- ── COMPARATIVO ────────────────────────────────────────── -->
-<div class="section">
+<div class="section" id="sec-comparativo">
   <div class="sec-hd">
     <div class="sec-num blue">📊</div>
     <div><h2>Comparativo de Todos os Cenários</h2></div>
   </div>
   <div class="card">
-    <div class="ovx" style="padding:16px">
+    <div class="ovx" style="padding:14px">
       <table class="cmp-tbl w100">
         <thead><tr>
-          <th>Cenário</th><th>Fixos</th><th>Extras/FDS</th><th>Dom?</th><th>H.Extra</th>
-          <th>CLT</th><th>Risco</th>
+          <th>Cenário</th><th>Nota</th><th>Giovanna</th><th>Anderson</th><th>Gabriel</th><th>Overlap</th><th>Dom</th>
+          <th>CLT</th><th>Pausas</th>
         </tr></thead>
         <tbody id="cmp-body"></tbody>
       </table>
@@ -715,81 +558,81 @@
   </div>
 </div>
 
-<!-- ── CONTRATOS INTERMEDIÁRIOS ───────────────────────────── -->
-<div class="section">
+<!-- ═══════════════════════════════════════════════════════════
+     CONTRATOS INTERMEDIÁRIOS
+     ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="sec-contratos">
   <div class="sec-hd">
     <div class="sec-num blue">📋</div>
-    <div><h2>Contratos Intermediários — Modalidades para FDS</h2><p>Verificação CLT · Base legal para turnos de 12h nos fins de semana</p></div>
+    <div><h2>Contratos Intermediários — Modalidades para FDS</h2><p>Base legal para turnos de 12h nos fins de semana</p></div>
   </div>
-  <div class="card">
-    <div class="card-bd">
-      <div class="alert alert-info mb12"><span class="ai">ℹ️</span><div>Para turnos de 12h, o regime <strong>12×36 (Art.59-A)</strong> é obrigatório — formalizado por acordo individual escrito. Combinado com <strong>Tempo Parcial (Art.58-A)</strong> para FDS-only, ambas as modalidades são plenamente legais.</div></div>
-      <div class="contract-grid">
-        <div class="contract-card valid">
-          <div class="cc-hd"><span>☀️</span><div><strong style="font-size:.88rem">FDS Diurno — Sábado 12h</strong><br><span style="font-size:.72rem;color:var(--tx3)">Art. 58-A + 59-A · Tempo Parcial + 12×36</span></div><span class="rec-badge">✅ LEGAL</span></div>
-          <div class="cc-bd">
-            <div class="cc-row"><span class="r-lbl">H/semana</span><span>12h ≤ 30h → Art. 58-A ok</span></div>
-            <div class="cc-row"><span class="r-lbl">Jornada diária</span><span>12h → requer acordo 12×36 individual</span></div>
-            <div class="cc-row"><span class="r-lbl">DSR</span><span>Compensado no 12×36 (Art. 59-A § único)</span></div>
-            
-            <div class="cc-row"><span class="r-lbl">Contrato</span><span>Escrito + acordo 12×36 assinado</span></div>
-          </div>
+  <div class="card"><div class="card-bd">
+    <div class="alert alert-info mb12"><span class="ai">ℹ️</span><div>Para turnos de 12h, o regime <strong>12×36 (Art.59-A)</strong> é obrigatório. Combinado com <strong>Tempo Parcial (Art.58-A)</strong> para FDS-only, é legal.</div></div>
+    <div class="contract-grid">
+      <div class="contract-card valid">
+        <div class="cc-hd"><span>☀️</span><div><strong style="font-size:.82rem">FDS Diurno — Sáb 12h</strong><br><span style="font-size:.68rem;color:var(--tx3)">Art. 58-A + 59-A</span></div><span class="rec-badge">✅ LEGAL</span></div>
+        <div class="cc-bd">
+          <div class="cc-row"><span class="r-lbl">H/semana</span><span>12h ≤ 30h → ok</span></div>
+          <div class="cc-row"><span class="r-lbl">Jornada</span><span>12h → acordo 12×36</span></div>
+          <div class="cc-row"><span class="r-lbl">Pausa</span><span>1h descanso (acordo)</span></div>
+          <div class="cc-row"><span class="r-lbl">Contrato</span><span>Escrito + acordo 12×36</span></div>
         </div>
-        <div class="contract-card valid">
-          <div class="cc-hd"><span>🌙</span><div><strong style="font-size:.88rem">FDS Noturno — Sáb+Dom 12h/noite</strong><br><span style="font-size:.72rem;color:var(--tx3)" id="ct-night-hours">Art. 58-A + 59-A · 24h/sem.</span></div><span class="rec-badge" id="ct-night-status">✅ LEGAL</span></div>
-          <div class="cc-bd">
-            <div class="cc-row"><span class="r-lbl">H/semana</span><span id="ct-night-hw">24h ≤ 30h → ok</span></div>
-            <div class="cc-row"><span class="r-lbl">Interjornada</span><span id="ct-interj">—</span></div>
-            <div class="cc-row"><span class="r-lbl">Adic. noturno</span><span id="ct-noct">—</span></div>
-            <div class="cc-row"><span class="r-lbl">DSR</span><span>>100h descanso entre Dom noite e Sáb → ✅</span></div>
-            
-          </div>
+      </div>
+      <div class="contract-card valid">
+        <div class="cc-hd"><span>🌙</span><div><strong style="font-size:.82rem">FDS Noturno — Sáb+Dom</strong><br><span style="font-size:.68rem;color:var(--tx3)" id="ct-night-hours">Art. 58-A + 59-A</span></div><span class="rec-badge" id="ct-night-status">✅ LEGAL</span></div>
+        <div class="cc-bd">
+          <div class="cc-row"><span class="r-lbl">H/semana</span><span id="ct-night-hw">24h ≤ 30h → ok</span></div>
+          <div class="cc-row"><span class="r-lbl">Interjornada</span><span id="ct-interj">—</span></div>
+          <div class="cc-row"><span class="r-lbl">Adic. noturno</span><span id="ct-noct">—</span></div>
+          <div class="cc-row"><span class="r-lbl">Pausa</span><span>1h descanso/turno (acordo)</span></div>
         </div>
-        <div class="contract-card">
-          <div class="cc-hd"><span>🔄</span><div><strong style="font-size:.88rem">Trabalho Intermitente</strong><br><span style="font-size:.72rem;color:var(--tx3)">Art. 452-A · por convocação</span></div><span class="risk-pill risk-med">MÉDIO</span></div>
-          <div class="cc-bd">
-            <div class="cc-row"><span class="r-lbl">Funcionamento</span><span>Convocação c/ 3 dias antecedência</span></div>
-            <div class="cc-row"><span class="r-lbl">Risco</span><span>Uso habitual todo FDS → vínculo (pool ≥3)</span></div>
-            
-          </div>
+      </div>
+      <div class="contract-card">
+        <div class="cc-hd"><span>🔄</span><div><strong style="font-size:.82rem">Trabalho Intermitente</strong><br><span style="font-size:.68rem;color:var(--tx3)">Art. 452-A</span></div><span class="risk-pill risk-med">MÉDIO</span></div>
+        <div class="cc-bd">
+          <div class="cc-row"><span class="r-lbl">Convocação</span><span>3 dias antecedência</span></div>
+          <div class="cc-row"><span class="r-lbl">Risco</span><span>Uso habitual → vínculo</span></div>
         </div>
-        <div class="contract-card">
-          <div class="cc-hd"><span>⏳</span><div><strong style="font-size:.88rem">Trabalho Temporário</strong><br><span style="font-size:.72rem;color:var(--tx3)">Lei 6.019/74 · via agência</span></div><span class="risk-pill risk-low">BAIXO (270d)</span></div>
-          <div class="cc-bd">
-            <div class="cc-row"><span class="r-lbl">Prazo máx.</span><span>180 + 90 dias prorrogação</span></div>
-            <div class="cc-row"><span class="r-lbl">Ideal para</span><span>Transição enquanto contrata fixo</span></div>
-            
-          </div>
+      </div>
+      <div class="contract-card">
+        <div class="cc-hd"><span>⏳</span><div><strong style="font-size:.82rem">Trabalho Temporário</strong><br><span style="font-size:.68rem;color:var(--tx3)">Lei 6.019/74</span></div><span class="risk-pill risk-low">BAIXO</span></div>
+        <div class="cc-bd">
+          <div class="cc-row"><span class="r-lbl">Prazo</span><span>180 + 90 dias</span></div>
+          <div class="cc-row"><span class="r-lbl">Ideal para</span><span>Transição</span></div>
         </div>
       </div>
     </div>
-  </div>
+  </div></div>
 </div>
 
-<!-- ── CLT REFERÊNCIA ─────────────────────────────────────── -->
-<div class="section">
+<!-- ═══════════════════════════════════════════════════════════
+     CLT REFERÊNCIA
+     ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="sec-clt">
   <div class="sec-hd">
-    <div class="sec-num blue">§</div>
+    <div class="sec-num blue">⚖️</div>
     <div><h2>Artigos CLT Relevantes — Hotelaria 24/7</h2></div>
   </div>
   <div class="clt-grid">
-    <div class="clt-card"><div class="clt-art">Art. 58 CLT</div><h4>Jornada Padrão</h4><p>Máx. 8h/dia e 44h/sem. 6×1 gera 4h extras/sem. (~17h/mês).</p></div>
-    <div class="clt-card"><div class="clt-art">Art. 58-A CLT</div><h4>Tempo Parcial ⭐</h4><p>Até 30h/sem. sem HE. Ideal para FDS-only. Salário proporcional.</p></div>
-    <div class="clt-card"><div class="clt-art">Art. 59 CLT</div><h4>Horas Extras</h4><p>Máx. 2h/dia. +50% dias úteis; +100% domingos/feriados.</p></div>
-    <div class="clt-card"><div class="clt-art">Art. 59-A CLT</div><h4>Regime 12×36 ⭐</h4><p>Acordo individual escrito. Feriados compensados. Ideal para 24/7.</p></div>
-    <div class="clt-card"><div class="clt-art">Art. 66 CLT</div><h4>Interjornada</h4><p>Mínimo 11h entre jornadas. Turno 19h–7h → próximo início às 18h.</p></div>
-    <div class="clt-card"><div class="clt-art">Art. 67 CLT</div><h4>Repouso Semanal</h4><p>24h consecutivas/semana, preferencialmente domingo.</p></div>
-    <div class="clt-card"><div class="clt-art">Art. 73 CLT</div><h4>Adicional Noturno</h4><p>+20% para horas 22h–5h. Hora noturna = 52min30s.</p></div>
-    <div class="clt-card"><div class="clt-art">Art. 452-A CLT</div><h4>Trabalho Intermitente</h4><p>Convocação 3 dias antes. Habitualidade fixa → vínculo!</p></div>
-    <div class="clt-card"><div class="clt-art">Lei 6.019/74</div><h4>Trabalho Temporário</h4><p>Via agência. Máx. 270 dias. Bom para período de transição.</p></div>
+    <div class="clt-card"><div class="clt-art">Art. 58</div><h4>Jornada Padrão</h4><p>Máx 8h/dia e 44h/sem. 6×1 gera 4h extras/sem.</p></div>
+    <div class="clt-card"><div class="clt-art">Art. 58-A</div><h4>Tempo Parcial ⭐</h4><p>Até 30h/sem sem HE. Ideal para FDS-only.</p></div>
+    <div class="clt-card"><div class="clt-art">Art. 59</div><h4>Horas Extras</h4><p>Máx 2h/dia. +50% úteis; +100% dom/feriados.</p></div>
+    <div class="clt-card"><div class="clt-art">Art. 59-A</div><h4>Regime 12×36 ⭐</h4><p>Acordo individual escrito. Feriados compensados.</p></div>
+    <div class="clt-card"><div class="clt-art">Art. 66</div><h4>Interjornada</h4><p>Mín 11h entre jornadas consecutivas.</p></div>
+    <div class="clt-card"><div class="clt-art">Art. 67</div><h4>Repouso Semanal</h4><p>24h consecutivas/sem, preferencialmente domingo.</p></div>
+    <div class="clt-card" style="border-color:#a5b4fc"><div class="clt-art" style="color:#4338ca">Art. 71</div><h4>Intervalo Intrajornada ⭐</h4><p>&gt;6h → 1-2h refeição. 4-6h → 15min. Não conceder = +50%.</p></div>
+    <div class="clt-card"><div class="clt-art">Art. 73</div><h4>Adicional Noturno</h4><p>+20% para 22h–5h. Hora noturna = 52min30s.</p></div>
+    <div class="clt-card"><div class="clt-art">Art. 452-A</div><h4>Intermitente</h4><p>Convocação 3 dias antes. Habitualidade → vínculo!</p></div>
   </div>
 </div>
 
-</div><!-- end page -->
-<div class="footer">
-  Relatório Estratégico de Escalas · Hotel 24/7 · <span id="footer-date"></span><br>
-  Análise de turnos e conformidade CLT 2026. Consulte seu advogado trabalhista para orientações precisas.
-</div>
+  </div><!-- end page -->
+  <div class="footer">
+    Relatório Estratégico de Escalas · Hotel 24/7 · <span id="footer-date"></span><br>
+    Análise de turnos e conformidade CLT 2026. Consulte seu advogado trabalhista.
+  </div>
+</div><!-- end main -->
+</div><!-- end app -->
 
 <script src="escala.js"></script>
 </body>

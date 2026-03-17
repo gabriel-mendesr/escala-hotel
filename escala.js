@@ -11,8 +11,9 @@ function ph(h)  { h = ((h % 24) + 24) % 24; return (h < 10 ? '0' : '') + h; }
 function se(id, v) { var e = gi(id); if (e) e.textContent = v; }
 
 // ── SHIFT CONFIG ──────────────────────────────────────────────
+// Grade padrão para cenários propostos
 function SC() {
-  var ms = 7, as = 15, ns = 19; // fixed shifts
+  var ms = 7, as = 15, ns = 19;
   return {
     ms: ms, as: as, ns: ns,
     lM: ph(ms) + 'h–' + ph(as) + 'h',
@@ -22,6 +23,9 @@ function SC() {
     nDur: (ms + 24) - ns
   };
 }
+
+// Modelo B: 06h / 13h / 22h
+var SHIFT_B = {ms:6, as:13, ns:22};
 
 function SC_shift(shift) {
   var ms = shift.ms, as = shift.as, ns = shift.ns;
@@ -76,9 +80,26 @@ var GAB_A = [true, false, true, false, true, false, true];
 function buildScenarios() {
   return {
     atual: {
-      morning:   [N,    GIO('6×1'), GIO('6×1'), GIO('6×1'), GIO('6×1'), GIO('6×1'), GIO('6×1')],
-      afternoon: [N,    AND('6×1'), AND('6×1'), AND('6×1'), AND('6×1'), AND('6×1'), AND('6×1')],
-      night:     GAB_A.map(function(g) { return g ? GAB('12×36') : XEMP(); })
+      // Horários variáveis por dia (real)
+      morning: [
+        N,                    // Dom: folga
+        GIO('07–16'),         // Seg
+        GIO('07–15'),         // Ter
+        GIO('07–15'),         // Qua
+        GIO('07–16'),         // Qui
+        GIO('07–16'),         // Sex
+        GIO('07–13')          // Sáb
+      ],
+      afternoon: [
+        N,                    // Dom: folga
+        AND('11–19'),         // Seg
+        AND('10–19'),         // Ter
+        AND('11–19'),         // Qua
+        AND('10–19'),         // Qui
+        AND('10–19'),         // Sex
+        AND('13–19')          // Sáb
+      ],
+      night: GAB_A.map(function(g) { return g ? GAB('12×36') : XEMP(); })
     },
     s1: {
       morning:   [FREE('Fim de semana'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), FREE('Fim de semana')],
@@ -215,6 +236,118 @@ function buildScenarios() {
       morning:   [FREE('Fim de semana'), GIO('6×1'), GIO('6×1'), GIO('6×1'), GIO('6×1'), GIO('6×1'), FREE('Fim de semana')],
       afternoon: [FREE('Fim de semana'), AND('6×1'), AND('6×1'), AND('6×1'), AND('6×1'), AND('6×1'), FREE('Fim de semana')],
       night:     GAB_A.map(function(g) { return g ? GAB('6×1 ⚠ ILEGAL') : FOLG('Folguista'); })
+    },
+    // ── EXEMPLOS MODELO A vs B (cenário F como base) ──
+    exA: {
+      // Modelo A: 07h / 14h / 19h (padrão — usa SC() default)
+      morning: [
+        N,
+        GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'),
+        mk('Func. FDS Diurno', C.fds, 'Sábado 12h', false, false, true)
+      ],
+      afternoon: [N, AND('5×2 · 14h'), AND('5×2 · 14h'), AND('5×2 · 14h'), AND('5×2 · 14h'), AND('5×2 · 14h'), N],
+      night: GAB_A.map(function(g, i) {
+        if (i === 6) return FDS_N('Sábado noite');
+        if (i === 0) return FDS_N('Domingo noite');
+        return g ? GAB('12×36') : FREE('Cobertura noturna');
+      })
+    },
+    exB: {
+      shift: {ms:6, as:13, ns:22},
+      morning: [
+        N,
+        GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'),
+        mk('Func. FDS Diurno', C.fds, 'Sábado 12h', false, false, true)
+      ],
+      afternoon: [N, AND('5×2 · 13h'), AND('5×2 · 13h'), AND('5×2 · 13h'), AND('5×2 · 13h'), AND('5×2 · 13h'), N],
+      night: GAB_A.map(function(g, i) {
+        if (i === 6) return FDS_N('Sábado noite');
+        if (i === 0) return FDS_N('Domingo noite');
+        return g ? GAB('12×36') : FREE('Cobertura noturna');
+      })
+    },
+
+    // ═══════════════════════════════════════════════════════
+    // GIOVANNA — ENTRADA 7h
+    // ═══════════════════════════════════════════════════════
+    // g7a: Gio 7h 5×2 (07-15) + And 14-19 (5h) + Gab 12×36
+    // Overlap: 14-15 (1h) | Gio 35h/sem And 25h/sem
+    g7a: {
+      // shift default: ms=7, as=15, ns=19
+      morning:   [FOLG('FDS'), GIO('5×2 07–15'), GIO('5×2 07–15'), GIO('5×2 07–15'), GIO('5×2 07–15'), GIO('5×2 07–15'), FOLG('FDS')],
+      afternoon: [FOLG('FDS'), AND('5×2 14–19'), AND('5×2 14–19'), AND('5×2 14–19'), AND('5×2 14–19'), AND('5×2 14–19'), FOLG('FDS')],
+      night:     GAB_A.map(function(g) { return g ? GAB('12×36') : FREE('Cobertura noturna'); })
+    },
+    // g7b: Gio 7h 6×1 (07-15) + And 14-19 (5h) 6×1 + Gab 12×36
+    // Overlap: 14-15 (1h) | Gio 42h/sem And 30h/sem
+    g7b: {
+      morning:   [N, GIO('6×1 07–15'), GIO('6×1 07–15'), GIO('6×1 07–15'), GIO('6×1 07–15'), GIO('6×1 07–15'), GIO('6×1 07–13')],
+      afternoon: [N, AND('6×1 14–19'), AND('6×1 14–19'), AND('6×1 14–19'), AND('6×1 14–19'), AND('6×1 14–19'), AND('6×1 13–19')],
+      night:     GAB_A.map(function(g) { return g ? GAB('12×36') : FREE('Cobertura noturna'); })
+    },
+    // g7c: Gio 7h 5×2 (07-16, 9h) + And 14-19 (5h) → overlap 14-16 (2h!)
+    // Gio 40h/sem And 25h/sem — Mais overlap
+    g7c: {
+      shift: {ms:7, as:16, ns:19},
+      morning:   [FOLG('FDS'), GIO('5×2 07–16'), GIO('5×2 07–16'), GIO('5×2 07–16'), GIO('5×2 07–16'), GIO('5×2 07–16'), FOLG('FDS')],
+      afternoon: [FOLG('FDS'), AND('5×2 15–19'), AND('5×2 15–19'), AND('5×2 15–19'), AND('5×2 15–19'), AND('5×2 15–19'), FOLG('FDS')],
+      night:     GAB_A.map(function(g) { return g ? GAB('12×36') : FREE('Cobertura noturna'); })
+    },
+
+    // ═══════════════════════════════════════════════════════
+    // GIOVANNA — ENTRADA 6h
+    // ═══════════════════════════════════════════════════════
+    // g6a: Gio 6h 5×2 (06-14) + And 13-22 (9h, 8h eff.) + Gab 22-06
+    // Overlap: 13-14 (1h) | Gio 35h And 40h | Noite 8h
+    g6a: {
+      shift: {ms:6, as:14, ns:22},
+      morning:   [FOLG('FDS'), GIO('5×2 06–14'), GIO('5×2 06–14'), GIO('5×2 06–14'), GIO('5×2 06–14'), GIO('5×2 06–14'), FOLG('FDS')],
+      afternoon: [FOLG('FDS'), AND('5×2 13–22'), AND('5×2 13–22'), AND('5×2 13–22'), AND('5×2 13–22'), AND('5×2 13–22'), FOLG('FDS')],
+      night:     GAB_A.map(function(g) { return g ? GAB('12×36') : FREE('Cobertura noturna'); })
+    },
+    // g6b: Gio 6h 6×1 (06-14) + And 13-22 6×1 + Gab 22-06
+    // Overlap: 13-14 (1h) | Gio 42h And 48h⚠
+    g6b: {
+      shift: {ms:6, as:14, ns:22},
+      morning:   [N, GIO('6×1 06–14'), GIO('6×1 06–14'), GIO('6×1 06–14'), GIO('6×1 06–14'), GIO('6×1 06–14'), GIO('6×1 06–12')],
+      afternoon: [N, AND('6×1 13–22'), AND('6×1 13–22'), AND('6×1 13–22'), AND('6×1 13–22'), AND('6×1 13–22'), AND('6×1 13–19')],
+      night:     GAB_A.map(function(g) { return g ? GAB('12×36') : FREE('Cobertura noturna'); })
+    },
+    // g6c: Gio 6h 5×2 (06-15, 9h) + And 14-22 (8h) → overlap 14-15 (1h)
+    // Gio 40h And 35h — Turnos mais equilibrados
+    g6c: {
+      shift: {ms:6, as:15, ns:22},
+      morning:   [FOLG('FDS'), GIO('5×2 06–15'), GIO('5×2 06–15'), GIO('5×2 06–15'), GIO('5×2 06–15'), GIO('5×2 06–15'), FOLG('FDS')],
+      afternoon: [FOLG('FDS'), AND('5×2 14–22'), AND('5×2 14–22'), AND('5×2 14–22'), AND('5×2 14–22'), AND('5×2 14–22'), FOLG('FDS')],
+      night:     GAB_A.map(function(g) { return g ? GAB('12×36') : FREE('Cobertura noturna'); })
+    },
+
+    // ═══════════════════════════════════════════════════════
+    // GABRIEL — REGIMES
+    // ═══════════════════════════════════════════════════════
+    // gb1: 12×36 19h-07h (legal, ~42h/sem) — padrão
+    gb1: {
+      morning:   [FOLG('FDS'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), FOLG('FDS')],
+      afternoon: [FOLG('FDS'), AND('5×2'), AND('5×2'), AND('5×2'), AND('5×2'), AND('5×2'), FOLG('FDS')],
+      night:     GAB_A.map(function(g) { return g ? GAB('12×36 19–07') : NOVO('12×36 Noturno'); })
+    },
+    // gb2: 5×2 noturno 19h-03h (8h, 40h/sem) → free 2 noites/sem + FDS
+    gb2: {
+      morning:   [FOLG('FDS'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), FOLG('FDS')],
+      afternoon: [FOLG('FDS'), AND('5×2'), AND('5×2'), AND('5×2'), AND('5×2'), AND('5×2'), FOLG('FDS')],
+      night:     [FREE('Dom noite'), GAB('5×2 19–03'), GAB('5×2 19–03'), GAB('5×2 19–03'), GAB('5×2 19–03'), GAB('5×2 19–03'), FREE('Sáb noite')]
+    },
+    // gb3: 6×1 noturno 19h-02h (7h, 42h/sem) → free 1 noite
+    gb3: {
+      morning:   [FOLG('FDS'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), FOLG('FDS')],
+      afternoon: [FOLG('FDS'), AND('5×2'), AND('5×2'), AND('5×2'), AND('5×2'), AND('5×2'), FOLG('FDS')],
+      night:     [N, GAB('6×1 19–02'), GAB('6×1 19–02'), GAB('6×1 19–02'), GAB('6×1 19–02'), GAB('6×1 19–02'), GAB('6×1 19–02')]
+    },
+    // gb4: 12h seg-sex 19h-07h → 60h/sem 🚨 ILEGAL
+    gb4: {
+      morning:   [FOLG('FDS'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), FOLG('FDS')],
+      afternoon: [FOLG('FDS'), AND('5×2'), AND('5×2'), AND('5×2'), AND('5×2'), AND('5×2'), FOLG('FDS')],
+      night:     [FREE('Dom'), GAB('⚠ 12h ILEGAL', true), GAB('⚠ 12h ILEGAL', true), GAB('⚠ 12h ILEGAL', true), GAB('⚠ 12h ILEGAL', true), GAB('⚠ 12h ILEGAL', true), FREE('Sáb')]
     }
   };
 }
@@ -222,7 +355,7 @@ function buildScenarios() {
 // ── LEGEND DATA ───────────────────────────────────────────────
 var LEGS = {
   base:  [{n:'Giovanna (5×2)',           c:C.gio}, {n:'Anderson (5×2)',           c:C.and}, {n:'Gabriel (12×36)',          c:C.gab}, {n:'Freelancer / PJ',           c:C.free}],
-  atual: [{n:'Giovanna (6×1 Seg–Sáb)',   c:C.gio}, {n:'Anderson (6×1 Seg–Sáb)',   c:C.and}, {n:'Gabriel (12×36 Noturno)',  c:C.gab}, {n:'Func. X — saindo',           c:C.x}],
+  atual: [{n:'Giovanna (variável)',       c:C.gio}, {n:'Anderson (variável)',       c:C.and}, {n:'Gabriel (12×36 Noturno)',  c:C.gab}, {n:'Func. X — saindo',           c:C.x}],
   s2:    [{n:'Giovanna (12×36 Diurno)',   c:C.gio}, {n:'Anderson (12×36 Diurno)',   c:C.and}, {n:'Gabriel (12×36 Noturno)',  c:C.gab}, {n:'Novo Funcionário (Noturno)', c:C.fds}],
   s3:    [{n:'Giovanna (6×1)',            c:C.gio}, {n:'Anderson (6×1)',            c:C.and}, {n:'Gabriel (12×36)',          c:C.gab}, {n:'Freelancer noturno',         c:C.free}],
   s4:    [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Anderson (5×2)',            c:C.and}, {n:'Gabriel ⚠ ILEGAL',         c:C.warn},{n:'Freelancer',                  c:C.free}],
@@ -239,7 +372,22 @@ var LEGS = {
   s15:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Anderson (5×2)',            c:C.and}, {n:'Gabriel (12×36)',            c:C.gab}, {n:'Freelancer manhã + FDS',      c:C.free}],
   s16:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Gabriel (6×1 Tarde)',       c:C.gab}, {n:'Anderson (6×1 Manhã)',       c:C.and}, {n:'Folguista (noturno)',        c:C.folg}],
   s17:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Anderson (5×2)',            c:C.and}, {n:'Gabriel ⚠ ILEGAL (5×2)',    c:C.warn},{n:'Folguista (FDS)',            c:C.folg}],
-  s18:   [{n:'Giovanna (6×1)',            c:C.gio}, {n:'Anderson (6×1)',            c:C.and}, {n:'Gabriel ⚠ ILEGAL (6×1)',    c:C.warn},{n:'Folguista (FDS)',            c:C.folg}]
+  s18:   [{n:'Giovanna (6×1)',            c:C.gio}, {n:'Anderson (6×1)',            c:C.and}, {n:'Gabriel ⚠ ILEGAL (6×1)',    c:C.warn},{n:'Folguista (FDS)',            c:C.folg}],
+  exA:   [{n:'Giovanna (5×2 · 07h)',     c:C.gio}, {n:'Anderson (5×2 · 14h)',     c:C.and}, {n:'Gabriel (12×36 · 19h)',     c:C.gab}, {n:'Func. FDS',                  c:C.fds}, {n:'Freelancer',  c:C.free}],
+  exB:   [{n:'Giovanna (5×2 · 06h)',     c:C.gio}, {n:'Anderson (5×2 · 13h)',     c:C.and}, {n:'Gabriel (12×36 · 22h)',     c:C.gab}, {n:'Func. FDS',                  c:C.fds}, {n:'Freelancer',  c:C.free}],
+  // Giovanna 7h
+  g7a:   [{n:'Giovanna (5×2 07–15)',     c:C.gio}, {n:'Anderson (5×2 14–19)',    c:C.and}, {n:'Gabriel (12×36)',            c:C.gab}, {n:'Folguista FDS',              c:C.folg}, {n:'Freelancer',  c:C.free}],
+  g7b:   [{n:'Giovanna (6×1 07–15)',     c:C.gio}, {n:'Anderson (6×1 14–19)',    c:C.and}, {n:'Gabriel (12×36)',            c:C.gab}, {n:'Freelancer',                 c:C.free}],
+  g7c:   [{n:'Giovanna (5×2 07–16)',     c:C.gio}, {n:'Anderson (5×2 15–19)',    c:C.and}, {n:'Gabriel (12×36)',            c:C.gab}, {n:'Folguista FDS',              c:C.folg}, {n:'Freelancer',  c:C.free}],
+  // Giovanna 6h
+  g6a:   [{n:'Giovanna (5×2 06–14)',     c:C.gio}, {n:'Anderson (5×2 13–22)',    c:C.and}, {n:'Gabriel (12×36 22h)',        c:C.gab}, {n:'Folguista FDS',              c:C.folg}, {n:'Freelancer',  c:C.free}],
+  g6b:   [{n:'Giovanna (6×1 06–14)',     c:C.gio}, {n:'Anderson (6×1 13–22)',    c:C.and}, {n:'Gabriel (12×36 22h)',        c:C.gab}, {n:'Freelancer',                 c:C.free}],
+  g6c:   [{n:'Giovanna (5×2 06–15)',     c:C.gio}, {n:'Anderson (5×2 14–22)',    c:C.and}, {n:'Gabriel (12×36 22h)',        c:C.gab}, {n:'Folguista FDS',              c:C.folg}, {n:'Freelancer',  c:C.free}],
+  // Gabriel
+  gb1:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Anderson (5×2)',           c:C.and}, {n:'Gabriel (12×36 19–07)',     c:C.gab}, {n:'Novo noturno (12×36)',       c:C.fds}, {n:'Folguista',   c:C.folg}],
+  gb2:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Anderson (5×2)',           c:C.and}, {n:'Gabriel (5×2 19–03)',       c:C.gab}, {n:'Freelancer noite',           c:C.free}],
+  gb3:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Anderson (5×2)',           c:C.and}, {n:'Gabriel (6×1 19–02)',       c:C.gab}, {n:'Freelancer noite',           c:C.free}],
+  gb4:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Anderson (5×2)',           c:C.and}, {n:'Gabriel ⚠ ILEGAL (12h)',   c:C.warn},{n:'Freelancer FDS',              c:C.free}]
 };
 
 // ── TABLE BUILDER (innerHTML puro — mais robusto) ─────────────
@@ -316,10 +464,16 @@ function buildTable(tableId, legendId, sched, legKey) {
   html += '<tbody>';
 
   var rowKeys  = ['morning', 'afternoon', 'night'];
+  var mDur = sc.as - sc.ms;
+  var aDur = sc.ns - sc.as;
+  var nDur = sc.nDur;
+  var mBreak = mDur > 6 ? '1h almoço' : (mDur > 4 ? '15min' : '');
+  var aBreak = aDur > 6 ? '1h refeição' : (aDur > 4 ? '15min' : '');
+  var nBreak = nDur > 6 ? '1h descanso' : (nDur > 4 ? '15min' : '');
   var rowInfos = [
-    { label: '☀️ Manhã', hours: sc.lM },
-    { label: '🌆 Tarde',  hours: sc.lA },
-    { label: '🌙 Noite',  hours: sc.lN }
+    { label: '☀️ Manhã', hours: sc.lM, brk: mBreak },
+    { label: '🌆 Tarde',  hours: sc.lA, brk: aBreak },
+    { label: '🌙 Noite',  hours: sc.lN, brk: nBreak }
   ];
 
   // Rastreia quais colunas foram consumidas por rowspan (fullDay)
@@ -327,7 +481,7 @@ function buildTable(tableId, legendId, sched, legKey) {
 
   for (var ri = 0; ri < 3; ri++) {
     html += '<tr>';
-    html += '<td class="shift-lbl"><span class="sl-name">' + rowInfos[ri].label + '</span><span class="sl-hours">' + rowInfos[ri].hours + '</span></td>';
+    html += '<td class="shift-lbl"><span class="sl-name">' + rowInfos[ri].label + '</span><span class="sl-hours">' + rowInfos[ri].hours + '</span>' + (rowInfos[ri].brk ? '<span class="sl-break">🍽️ ' + rowInfos[ri].brk + '</span>' : '') + '</td>';
 
     var rowData = sched[rowKeys[ri]] || [];
 
@@ -372,39 +526,287 @@ function buildTable(tableId, legendId, sched, legKey) {
 
   html += '</tbody></table>';
 
-  // Usamos outerHTML para substituir o placeholder/tabela antiga preservando a estrutura
-  tableTarget.outerHTML = html;
+  // Break bar — info de pausas
+  var breaks = [];
+  if (mBreak) breaks.push('☀️ Manhã: ' + mBreak + ' (coberta na sobreposição)');
+  if (aBreak) breaks.push('🌆 Tarde: ' + aBreak + ' (coberta na sobreposição)');
+  if (nBreak) breaks.push('🌙 Noite: ' + nBreak + ' (sozinho)');
+  if (breaks.length) {
+    html += '<div class="break-bar">';
+    for (var bi = 0; bi < breaks.length; bi++) {
+      html += '<span class="bb-item">' + breaks[bi] + '</span>';
+    }
+    html += '</div>';
+  }
+
+  // ── Overlap Timeline — mostra sobreposição visual ──
+  // Calcula: Anderson chega 1h antes do turno as → overlap de 1h
+  // Para 12×36 fullDay, não mostra (não tem manhã/tarde separados)
+  var hasFullDay = false;
+  var mRow = sched.morning || [];
+  for (var fi = 0; fi < mRow.length; fi++) { if (mRow[fi] && mRow[fi].fullDay) hasFullDay = true; }
+
+  if (!hasFullDay) {
+    var gioS = sc.ms;
+    var gioE = sc.as;           // Giovanna: ms → as
+    var andRealS = sc.as - 1;   // Anderson chega 1h antes
+    var andE = sc.ns;            // Anderson: até ns
+    var gabS = sc.ns;            // Gabriel: ns em diante
+    var gabE = sc.ms + 24;       // até ms (+1 dia)
+    var ovS = andRealS;
+    var ovE = sc.as;
+    var ovH = ovE - ovS;
+
+    // Se não tem overlap (turnos sequenciais sem ajuste), alertar
+    if (ovH <= 0) {
+      ovH = 0;
+      andRealS = sc.as; // sem ajuste
+    }
+
+    // Range visual: ms-2 até ns+1
+    var RS = Math.max(0, gioS - 1);
+    var RE = Math.min(24, andE + 1);
+    var RNG = RE - RS;
+
+    function tlPct(h) { return ((h - RS) / RNG * 100).toFixed(1); }
+    function tlW(s, e) { return ((e - s) / RNG * 100).toFixed(1); }
+
+    html += '<div class="ov-timeline">';
+    html += '<div class="ov-title">Sobreposição diária (seg–sex)</div>';
+
+    // Ruler
+    html += '<div class="ov-ruler">';
+    for (var rh = RS; rh <= RE; rh += 2) {
+      html += '<span style="left:' + tlPct(rh) + '%">' + ph(rh) + '</span>';
+    }
+    html += '</div>';
+
+    // Giovanna bar
+    html += '<div class="ov-row">';
+    html += '<div class="ov-lbl" style="color:#be123c">Giovanna</div>';
+    html += '<div class="ov-track">';
+    html += '<div class="ov-bar" style="left:'+tlPct(gioS)+'%;width:'+tlW(gioS,gioE)+'%;background:#be123c">';
+    html += '<span>'+ph(gioS)+'–'+ph(gioE)+'</span></div>';
+    // Pausa
+    if (gioE - gioS > 6) {
+      var gP = gioS + Math.floor((gioE - gioS)/2);
+      html += '<div class="ov-pause" style="left:'+tlPct(gP)+'%">🍽️</div>';
+    }
+    html += '</div></div>';
+
+    // Overlap bar
+    if (ovH > 0) {
+      html += '<div class="ov-row ov-row-overlap">';
+      html += '<div class="ov-lbl" style="color:#6366f1;font-size:.58rem">⟷ Overlap</div>';
+      html += '<div class="ov-track">';
+      html += '<div class="ov-bar ov-bar-purple" style="left:'+tlPct(ovS)+'%;width:'+tlW(ovS,ovE)+'%">';
+      html += '<span>'+ovH+'h</span></div>';
+      html += '</div></div>';
+    } else {
+      html += '<div class="ov-row ov-row-overlap">';
+      html += '<div class="ov-lbl" style="color:var(--red);font-size:.58rem">⚠ Sem overlap</div>';
+      html += '<div class="ov-track"><div class="ov-warn">Turnos sequenciais — sem cobertura de almoço mútua</div></div></div>';
+    }
+
+    // Anderson bar
+    html += '<div class="ov-row">';
+    html += '<div class="ov-lbl" style="color:#1d4ed8">Anderson</div>';
+    html += '<div class="ov-track">';
+    html += '<div class="ov-bar" style="left:'+tlPct(andRealS)+'%;width:'+tlW(andRealS,andE)+'%;background:#1d4ed8">';
+    html += '<span>'+ph(andRealS)+'–'+ph(andE)+'</span></div>';
+    if (andE - andRealS > 6) {
+      var aP = andRealS + Math.floor((andE - andRealS)/2) + 1;
+      html += '<div class="ov-pause" style="left:'+tlPct(aP)+'%">🍽️</div>';
+    }
+    html += '</div></div>';
+
+    // Gabriel bar
+    html += '<div class="ov-row">';
+    html += '<div class="ov-lbl" style="color:#047857">Gabriel</div>';
+    html += '<div class="ov-track">';
+    html += '<div class="ov-bar" style="left:'+tlPct(gabS)+'%;width:'+tlW(gabS,RE)+'%;background:#047857;border-radius:4px 0 0 4px">';
+    html += '<span>'+ph(gabS)+'→'+ph(sc.ms)+'</span></div>';
+    html += '</div></div>';
+
+    // Summary
+    html += '<div class="ov-summary">';
+    if (ovH > 0) {
+      html += '<span class="ov-ok">✅ Anderson chega às '+ph(andRealS)+'h (1h antes) → '+ovH+'h de sobreposição → cobertura mútua de almoço</span>';
+    }
+    html += '</div>';
+    html += '</div>';
+  } // end if (!hasFullDay)
+
+  // Usamos o container pai (sched-wrap) para limpar e re-renderizar tudo
+  var wrapEl = tableTarget.parentElement;
+  if (wrapEl) {
+    wrapEl.innerHTML = html;
+  } else {
+    tableTarget.outerHTML = html;
+  }
 }
+
+// ── OVERLAP GRID — Visualização com timeline e sobreposição ───
+// schedReal = { days: [ {gio:{s,e}, and:{s,e}, gab:{s,e,label}}, ... ] }
+// 7 entries: Dom(0)...Sáb(6)
+function buildOverlapGrid(targetId, schedReal) {
+  var el = gi(targetId);
+  if (!el) return;
+
+  var RANGE_START = 6, RANGE_END = 20; // 6h-20h visible range (14h)
+  var RANGE = RANGE_END - RANGE_START;
+
+  function pct(h) { return ((h - RANGE_START) / RANGE * 100).toFixed(1); }
+  function barW(s, e) { return ((e - s) / RANGE * 100).toFixed(1); }
+
+  var html = '<table class="og-table"><thead><tr><th class="og-corner"></th>';
+  for (var d = 0; d < 7; d++) {
+    html += '<th class="' + (d === 0 ? 'og-sun' : '') + '">' + DAY_NAMES[d] + '</th>';
+  }
+  html += '</tr></thead><tbody>';
+
+  // --- Hour ruler row ---
+  html += '<tr class="og-ruler-row"><td class="og-lbl"></td>';
+  for (var d = 0; d < 7; d++) {
+    html += '<td class="og-ruler"><div class="og-ruler-inner">';
+    for (var h = RANGE_START; h <= RANGE_END; h += 2) {
+      html += '<span style="left:' + pct(h) + '%">' + h + '</span>';
+    }
+    html += '</div></td>';
+  }
+  html += '</tr>';
+
+  // --- Giovanna row ---
+  html += '<tr><td class="og-lbl"><span class="og-dot" style="background:#be123c"></span>Giovanna</td>';
+  for (var d = 0; d < 7; d++) {
+    var day = schedReal[d];
+    html += '<td class="og-cell">';
+    if (day && day.gio) {
+      html += '<div class="og-bar-wrap">';
+      html += '<div class="og-bar" style="left:'+pct(day.gio.s)+'%;width:'+barW(day.gio.s,day.gio.e)+'%;background:#be123c">';
+      html += '<span class="og-bar-lbl">' + ph(day.gio.s) + '–' + ph(day.gio.e) + '</span>';
+      html += '</div>';
+      // Pause marker
+      if (day.gio.e - day.gio.s > 6) {
+        var pauseH = day.gio.s + Math.floor((day.gio.e - day.gio.s) / 2);
+        html += '<div class="og-pause" style="left:'+pct(pauseH)+'%">🍽️</div>';
+      }
+      html += '</div>';
+    } else {
+      html += '<div class="og-empty">Folga</div>';
+    }
+    html += '</td>';
+  }
+  html += '</tr>';
+
+  // --- Overlap row ---
+  html += '<tr class="og-overlap-row"><td class="og-lbl og-lbl-overlap">⟷ Overlap</td>';
+  for (var d = 0; d < 7; d++) {
+    var day = schedReal[d];
+    html += '<td class="og-cell">';
+    if (day && day.gio && day.and) {
+      var ovS = Math.max(day.gio.s, day.and.s);
+      var ovE = Math.min(day.gio.e, day.and.e);
+      if (ovE > ovS) {
+        var hrs = ovE - ovS;
+        html += '<div class="og-bar-wrap">';
+        html += '<div class="og-bar og-bar-overlap" style="left:'+pct(ovS)+'%;width:'+barW(ovS,ovE)+'%">';
+        html += '<span class="og-bar-lbl">' + hrs + 'h</span>';
+        html += '</div></div>';
+      } else {
+        html += '<div class="og-empty og-empty-warn">0h ⚠</div>';
+      }
+    } else {
+      html += '<div class="og-empty og-empty-crit">—</div>';
+    }
+    html += '</td>';
+  }
+  html += '</tr>';
+
+  // --- Anderson row ---
+  html += '<tr><td class="og-lbl"><span class="og-dot" style="background:#1d4ed8"></span>Anderson</td>';
+  for (var d = 0; d < 7; d++) {
+    var day = schedReal[d];
+    html += '<td class="og-cell">';
+    if (day && day.and) {
+      html += '<div class="og-bar-wrap">';
+      html += '<div class="og-bar" style="left:'+pct(day.and.s)+'%;width:'+barW(day.and.s,day.and.e)+'%;background:#1d4ed8">';
+      html += '<span class="og-bar-lbl">' + ph(day.and.s) + '–' + ph(day.and.e) + '</span>';
+      html += '</div>';
+      if (day.and.e - day.and.s > 6) {
+        var pauseH = day.and.s + Math.floor((day.and.e - day.and.s) / 2) + 1;
+        html += '<div class="og-pause" style="left:'+pct(pauseH)+'%">🍽️</div>';
+      }
+      html += '</div>';
+    } else {
+      html += '<div class="og-empty">Folga</div>';
+    }
+    html += '</td>';
+  }
+  html += '</tr>';
+
+  // --- Gabriel row ---
+  html += '<tr><td class="og-lbl"><span class="og-dot" style="background:#047857"></span>Gabriel</td>';
+  for (var d = 0; d < 7; d++) {
+    var day = schedReal[d];
+    html += '<td class="og-cell">';
+    if (day && day.gab) {
+      html += '<div class="og-bar-wrap">';
+      // Night shift: show as bar from ns to edge
+      html += '<div class="og-bar og-bar-night" style="left:'+pct(day.gab.s)+'%;width:'+barW(day.gab.s, RANGE_END)+'%;background:#047857">';
+      html += '<span class="og-bar-lbl">' + day.gab.label + '</span>';
+      html += '</div>';
+      html += '<div class="og-pause" style="left:96%">💤</div>';
+      html += '</div>';
+    } else {
+      html += '<div class="og-empty">' + (day && day.gabLabel ? day.gabLabel : 'Folga 12×36') + '</div>';
+    }
+    html += '</td>';
+  }
+  html += '</tr>';
+
+  html += '</tbody></table>';
+
+  el.innerHTML = html;
+}
+
+// ── ATUAL REAL SCHEDULE DATA ──────────────────────────────────
+var ATUAL_REAL = [
+  null, // Dom: todos folgam diurno
+  {gio:{s:7,e:16}, and:{s:11,e:19}, gab:{s:19,e:7, label:'19–07'}},  // Seg
+  {gio:{s:7,e:15}, and:{s:10,e:19}, gab:{s:19,e:7, label:'19–07'}},  // Ter
+  {gio:{s:7,e:15}, and:{s:11,e:19}, gab:{s:19,e:7, label:'19–07'}},  // Qua
+  {gio:{s:7,e:16}, and:{s:10,e:19}, gab:{s:19,e:7, label:'19–07'}},  // Qui
+  {gio:{s:7,e:16}, and:{s:10,e:19}, gab:{s:19,e:7, label:'19–07'}},  // Sex
+  {gio:{s:7,e:13}, and:{s:13,e:19}, gab:{s:19,e:7, label:'19–07'}}   // Sáb
+];
 
 // ── RENDER ALL TABLES ─────────────────────────────────────────
 function renderAll() {
   if (!SCENARIOS_DATA) SCENARIOS_DATA = buildScenarios();
+  // Atual: overlap grid (real hours)
+  buildOverlapGrid('og-atual', ATUAL_REAL);
+  // Atual: standard grid too
   buildTable('gantt-atual', 'leg-atual', SCENARIOS_DATA.atual, 'atual');
-  buildTable('gantt-s1',    'leg-s1',   SCENARIOS_DATA.s1,    'base');
-  buildTable('gantt-s2',    'leg-s2',   SCENARIOS_DATA.s2,    's2');
-  buildTable('gantt-s3',    'leg-s3',   SCENARIOS_DATA.s3,    's3');
-  buildTable('gantt-s4',    'leg-s4',   SCENARIOS_DATA.s4,    's4');
-  buildTable('gantt-s5',    'leg-s5',   SCENARIOS_DATA.s5,    'base');
-  buildTable('gantt-s6',    'leg-s6',   SCENARIOS_DATA.s6,    's6');
-  buildTable('gantt-sg',    'leg-sg',   SCENARIOS_DATA.sg,    'sg');
-  buildTable('gantt-s7',    'leg-s7',   SCENARIOS_DATA.s7,    's7');
-  buildTable('gantt-s8',    'leg-s8',   SCENARIOS_DATA.s8,    's8');
-  buildTable('gantt-s9',    'leg-s9',   SCENARIOS_DATA.s9,    's9');
-  buildTable('gantt-s10',   'leg-s10',  SCENARIOS_DATA.s10,   's10');
-  buildTable('gantt-s11',   'leg-s11',  SCENARIOS_DATA.s11,   's11');
-  buildTable('gantt-s12',   'leg-s12',  SCENARIOS_DATA.s12,   's12');
-  buildTable('gantt-s13',   'leg-s13',  SCENARIOS_DATA.s13,   's13');
-  buildTable('gantt-s14',   'leg-s14',  SCENARIOS_DATA.s14,   's14');
-  buildTable('gantt-s15',   'leg-s15',  SCENARIOS_DATA.s15,   's15');
-  buildTable('gantt-s16',   'leg-s16',  SCENARIOS_DATA.s16,   's16');
-  buildTable('gantt-s17',   'leg-s17',  SCENARIOS_DATA.s17,   's17');
-  buildTable('gantt-s18',   'leg-s18',  SCENARIOS_DATA.s18,   's18');
+  // Giovanna 7h
+  buildTable('gantt-g7a',   'leg-g7a',  SCENARIOS_DATA.g7a,   'g7a');
+  buildTable('gantt-g7b',   'leg-g7b',  SCENARIOS_DATA.g7b,   'g7b');
+  buildTable('gantt-g7c',   'leg-g7c',  SCENARIOS_DATA.g7c,   'g7c');
+  // Giovanna 6h
+  buildTable('gantt-g6a',   'leg-g6a',  SCENARIOS_DATA.g6a,   'g6a');
+  buildTable('gantt-g6b',   'leg-g6b',  SCENARIOS_DATA.g6b,   'g6b');
+  buildTable('gantt-g6c',   'leg-g6c',  SCENARIOS_DATA.g6c,   'g6c');
+  // Gabriel
+  buildTable('gantt-gb1',   'leg-gb1',  SCENARIOS_DATA.gb1,   'gb1');
+  buildTable('gantt-gb2',   'leg-gb2',  SCENARIOS_DATA.gb2,   'gb2');
+  buildTable('gantt-gb3',   'leg-gb3',  SCENARIOS_DATA.gb3,   'gb3');
+  buildTable('gantt-gb4',   'leg-gb4',  SCENARIOS_DATA.gb4,   'gb4');
 }
 
 // ── LABEL UPDATES ─────────────────────────────────────────────
 function updateLabels() {
   var s = SC();
-  se('lbl-gio-a', s.lM); se('lbl-and-a', s.lA); se('lbl-gab-a', s.lN);
+  // Labels dos cenários propostos
   var pairs = [
     ['la-gio-s1',s.lM],['la-and-s1',s.lA],['la-gab-s1',s.lN],
     ['la-gio-s2',s.lD],['la-and-s2',s.lD],['la-gab-s2',s.lN],['la-new-s2',s.lN],
@@ -437,22 +839,17 @@ function showTab(id) {
 // ── COMPARISON TABLE ──────────────────────────────────────────
 function buildCmpTable() {
   var rows = [
-    { n:'0 · Situação Atual',             fx:4, ex:'—',                dom:'❌', he:'Gio + And (hora extra)', clt:'⚠ HE',       risk:'Médio'},
-    { n:'F · Intermediários 12h FDS ⭐',   fx:5, ex:'2 intermediários', dom:'✅', he:'Nenhuma',               clt:'✅ Perfeito', risk:'Mínimo', rec:true},
-    { n:'K · 12×36 Revezamento ⭐',         fx:3, ex:'—',                dom:'✅', he:'Nenhuma',               clt:'✅ Perfeito', risk:'Mínimo', rec:true},
-    { n:'M · Interm. Noites ⭐',             fx:4, ex:'2 intermediários', dom:'✅', he:'Nenhuma',               clt:'✅ Perfeito', risk:'Mínimo', rec:true},
-    { n:'G · Folguista Coringa ⭐',        fx:4, ex:'~12 noites/mês',   dom:'✅', he:'Folguista (B.Horas)',   clt:'✅ (B.H)',    risk:'Mínimo', rec:true},
-    { n:'E · Misto Recomendado ⭐',        fx:3, ex:'~21 diárias/mês',  dom:'✅', he:'Anderson (B.Horas)',    clt:'✅ (B.H⚠)',  risk:'Baixo',  rec:true},
-    { n:'B · 12×36 Universal',            fx:4, ex:'—',                dom:'✅', he:'Nenhuma',               clt:'✅ Perfeito', risk:'Mínimo'},
-    { n:'C · Revezamento 6×1',            fx:3, ex:'~15 noites/mês',   dom:'✅', he:'Banco de horas',        clt:'⚠ B.Horas', risk:'Baixo'},
-    { n:'J · 6×1 Manhã + Free',           fx:3, ex:'~15 noites/mês',   dom:'✅', he:'Giovanna (B.Horas)',    clt:'⚠ B.Horas', risk:'Baixo'},
-    { n:'H · 5×2 + Folguista',            fx:4, ex:'—',                dom:'✅', he:'Folguista (B.Horas)',   clt:'✅ (B.H)',   risk:'Baixo'},
-    { n:'I · Misto Folguista',             fx:4, ex:'—',                dom:'✅', he:'Folguista (B.Horas)',   clt:'✅ (B.H)',   risk:'Baixo'},
-    { n:'A · 5×2 + Freelancer',           fx:3, ex:'~32 diárias/mês',  dom:'✅', he:'Nenhuma',               clt:'✅ (PJ⚠)',   risk:'Baixo'},
-    { n:'L · 5×2 + Free FDS',              fx:3, ex:'~32 diárias/mês',  dom:'✅', he:'Nenhuma',               clt:'✅ (PJ⚠)',   risk:'Baixo'},
-    { n:'D · Gabriel Seg–Sex Noite ⚠',   fx:3, ex:'~24 diárias/mês',  dom:'✅', he:'ILEGAL (60h/sem.)',     clt:'🚨 ILEGAL',  risk:'ALTO', bad:true},
-    { n:'R · Gabriel 5×2 Seg–Sex ⚠',     fx:4, ex:'2 folguistas FDS', dom:'✅', he:'ILEGAL (60h/sem.)',     clt:'🚨 ILEGAL',  risk:'ALTO', bad:true},
-    { n:'S · Gabriel 6×1 Seg–Sex ⚠',     fx:4, ex:'2 folguistas FDS', dom:'✅', he:'ILEGAL (60h/sem.)',     clt:'🚨 ILEGAL',  risk:'ALTO', bad:true}
+    { n:'0 · Situação Atual',              rt:'—',    gio:'variável',   and:'variável',  gab:'12×36',   ov:'4–6h',  dom:'❌',clt:'✅ ~44h',     pau:'1h mútua'},
+    { n:'G7A · Gio 5×2 07–15',             rt:'★★★', gio:'5×2 35h',    and:'5×2 25h',   gab:'12×36',   ov:'1h ✅',  dom:'❌',clt:'✅ OK',       pau:'1h+15min', rec:true},
+    { n:'G7B · Gio 6×1 07–15',             rt:'★★☆', gio:'6×1 42h',    and:'6×1 30h',   gab:'12×36',   ov:'1h ✅',  dom:'❌',clt:'✅ OK',       pau:'1h+15min'},
+    { n:'G7C · Gio 5×2 07–16 (2h ov)',     rt:'★★★', gio:'5×2 40h',    and:'5×2 20h',   gab:'12×36',   ov:'2h ✅✅',dom:'❌',clt:'✅ OK',       pau:'1h+0', rec:true},
+    { n:'G6A · Gio 5×2 06–14',             rt:'★★★', gio:'5×2 35h',    and:'5×2 40h',   gab:'12×36 22h',ov:'1h ✅', dom:'❌',clt:'✅ OK',       pau:'1h+1h', rec:true},
+    { n:'G6B · Gio 6×1 06–14',             rt:'★★☆', gio:'6×1 42h',    and:'6×1 48h⚠',  gab:'12×36 22h',ov:'1h ✅', dom:'❌',clt:'⚠ BH',       pau:'1h+1h'},
+    { n:'G6C · Gio 5×2 06–15 (equil.)',    rt:'★★★', gio:'5×2 40h',    and:'5×2 35h',   gab:'12×36 22h',ov:'1h ✅', dom:'❌',clt:'✅ OK',       pau:'1h+1h', rec:true},
+    { n:'GB1 · Gab 12×36 19h',             rt:'★★★', gio:'—',          and:'—',         gab:'12×36 42h',ov:'—',     dom:'—', clt:'✅ Art.59-A', pau:'1h desc', rec:true},
+    { n:'GB2 · Gab 5×2 19–03h',            rt:'★★☆', gio:'—',          and:'—',         gab:'5×2 40h',  ov:'—',     dom:'—', clt:'✅ OK',       pau:'1h gap03–07'},
+    { n:'GB3 · Gab 6×1 19–02h',            rt:'★★☆', gio:'—',          and:'—',         gab:'6×1 42h',  ov:'—',     dom:'—', clt:'✅ OK',       pau:'1h gap02–07'},
+    { n:'GB4 · Gab 12h seg–sex 🚨',        rt:'✗',    gio:'—',          and:'—',         gab:'60h/sem',  ov:'—',     dom:'—', clt:'🚨 ILEGAL',  pau:'N/A', bad:true}
   ];
 
   var tbody = gi('cmp-body');
@@ -464,12 +861,14 @@ function buildCmpTable() {
     var rowClass = r.rec ? 'rec' : r.bad ? 'bad' : '';
     html += '<tr class="' + rowClass + '">' +
       '<td><strong>' + r.n + '</strong></td>' +
-      '<td class="center">' + r.fx + '</td>' +
-      '<td style="font-size:.76rem">' + r.ex + '</td>' +
+      '<td class="center">' + r.rt + '</td>' +
+      '<td style="font-size:.66rem">' + r.gio + '</td>' +
+      '<td style="font-size:.66rem">' + r.and + '</td>' +
+      '<td style="font-size:.66rem">' + r.gab + '</td>' +
+      '<td class="center" style="font-size:.66rem">' + r.ov + '</td>' +
       '<td class="center">' + r.dom + '</td>' +
-      '<td style="font-size:.76rem">' + r.he + '</td>' +
-      '<td style="text-align:center;font-size:.76rem">' + r.clt + '</td>' +
-      '<td style="text-align:center;font-size:.76rem">' + r.risk + '</td>' +
+      '<td style="font-size:.66rem">' + r.clt + '</td>' +
+      '<td style="font-size:.64rem">' + r.pau + '</td>' +
       '</tr>';
   }
   tbody.innerHTML = html;
@@ -505,24 +904,71 @@ function calcAll() {
   updateLabels();
 }
 
+// ── SIDEBAR NAVIGATION ────────────────────────────────────────
+function navigateTo(sectionId) {
+  var el = gi(sectionId);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Update active nav
+    document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+    var navEl = document.querySelector('.nav-item[data-section="' + sectionId + '"]');
+    if (navEl) navEl.classList.add('active');
+    // Close mobile sidebar
+    closeSidebar();
+  }
+}
+
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.querySelector('.sidebar-overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.querySelector('.sidebar-overlay').classList.remove('show');
+}
+
+// Track scroll to highlight active nav item
+function initScrollSpy() {
+  var sections = document.querySelectorAll('.section[id]');
+  var navItems = document.querySelectorAll('.nav-item[data-section]');
+  if (!sections.length) return;
+  
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        navItems.forEach(function(n) { n.classList.remove('active'); });
+        var match = document.querySelector('.nav-item[data-section="' + entry.target.id + '"]');
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-80px 0px -70% 0px' });
+  
+  sections.forEach(function(s) { observer.observe(s); });
+}
+
 // ── INIT ──────────────────────────────────────────────────────
 function init() {
   try {
     var d = new Date().toLocaleDateString('pt-BR');
     se('gen-date', d);
     se('footer-date', d);
+    se('topbar-date', d);
     renderAll();
     calcAll();
+    initScrollSpy();
   } catch (err) {
     console.error('Erro na inicialização da escala:', err);
   }
 }
 
 // ── EXPÕE FUNÇÕES GLOBALMENTE ─────────────────────────────────
-// Necessário porque os onclick do HTML chamam diretamente
 window.showTab = showTab;
 window.init    = init;
 window.selectCard = selectCard;
 window.cellClick = cellClick;
+window.navigateTo = navigateTo;
+window.toggleSidebar = toggleSidebar;
+window.closeSidebar = closeSidebar;
+window.buildOverlapGrid = buildOverlapGrid;
 
 document.addEventListener('DOMContentLoaded', init);
