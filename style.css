@@ -823,6 +823,7 @@ a { color: var(--blue); text-decoration: none; }
 .cl-item { display: flex; align-items: center; gap: 4px; font-size: .6rem; color: var(--tx2); }
 .cl-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .cal-ref { font-size: .62rem; color: var(--tx3); margin-top: 6px; padding: 6px 8px; background: var(--bg3); border-radius: 6px; }
+.cal-panel-hdr { font-size: .7rem; color: var(--tx3); font-weight: 700; letter-spacing: .04em; margin-bottom: 4px; }
 /* ── PRINT ── */
 @media print {
   .sidebar, .topbar, .menu-toggle, .sidebar-overlay { display: none !important; }
