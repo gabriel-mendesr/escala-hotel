@@ -253,7 +253,7 @@ function buildScenarios() {
       })
     },
     exB: {
-      shift: {ms:6, as:13, ns:22},
+      shift: {ms:6, as:14, ns:22},
       morning: [
         N,
         GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'),
@@ -343,6 +343,53 @@ function buildScenarios() {
       afternoon: [FOLG('FDS'), AND('5×2'), AND('5×2'), AND('5×2'), AND('5×2'), AND('5×2'), FOLG('FDS')],
       night:     [N, GAB('6×1 19–02'), GAB('6×1 19–02'), GAB('6×1 19–02'), GAB('6×1 19–02'), GAB('6×1 19–02'), GAB('6×1 19–02')]
     },
+    // ═══════════════════════════════════════════════════════
+    // SOLUÇÕES — A / B / C
+    // ═══════════════════════════════════════════════════════
+    // solA: Mínimo viável — G6A + Folguista FDS + Freelancer noturno
+    // 3 CLT atuais + folguista FDS (Tempo Parcial) + freelancer noturno nas folgas do Gab
+    // Cobertura: ~144h/sem (~86%)
+    solA: {
+      shift: {ms:6, as:14, ns:22},
+      morning: [
+        mk('Folguista', C.folg, 'FDS Diurno', false, false, true),  // Dom fullDay
+        GIO('5×2 06–14'), GIO('5×2 06–14'), GIO('5×2 06–14'), GIO('5×2 06–14'), GIO('5×2 06–14'),
+        mk('Folguista', C.folg, 'FDS Diurno', false, false, true)   // Sáb fullDay
+      ],
+      afternoon: [N, AND('5×2 13–22'), AND('5×2 13–22'), AND('5×2 13–22'), AND('5×2 13–22'), AND('5×2 13–22'), N],
+      night: GAB_A.map(function(g, i) {
+        if (i === 0) return FOLG('Dom — FDS');
+        if (i === 6) return FOLG('Sáb — FDS');
+        return g ? GAB('12×36') : FREE('Cobertura noturna');
+      })
+    },
+    // solB: Completa — G6A + 2° Noturno CLT (12×36) + Folguista FDS
+    // 3 CLT + 1 novo CLT noturno 12×36 + folguista FDS
+    // Cobertura: ~160h/sem (~95%)
+    solB: {
+      shift: {ms:6, as:14, ns:22},
+      morning: [
+        mk('Folguista', C.folg, 'FDS Diurno', false, false, true),
+        GIO('5×2 06–14'), GIO('5×2 06–14'), GIO('5×2 06–14'), GIO('5×2 06–14'), GIO('5×2 06–14'),
+        mk('Folguista', C.folg, 'FDS Diurno', false, false, true)
+      ],
+      afternoon: [N, AND('5×2 13–22'), AND('5×2 13–22'), AND('5×2 13–22'), AND('5×2 13–22'), AND('5×2 13–22'), N],
+      night: GAB_A.map(function(g) { return g ? GAB('12×36') : NOVO('12×36 Noturno'); })
+    },
+    // solC: Ideal — G6C + 2° Noturno CLT (12×36) + Folguista FDS
+    // Turnos equilibrados (Gio 40h, And 35h) + noturno 100% coberto + FDS coberto
+    // Cobertura: 168h/sem = 100%
+    solC: {
+      shift: {ms:6, as:15, ns:22},
+      morning: [
+        mk('Folguista', C.folg, 'FDS Diurno', false, false, true),
+        GIO('5×2 06–15'), GIO('5×2 06–15'), GIO('5×2 06–15'), GIO('5×2 06–15'), GIO('5×2 06–15'),
+        mk('Folguista', C.folg, 'FDS Diurno', false, false, true)
+      ],
+      afternoon: [N, AND('5×2 14–22'), AND('5×2 14–22'), AND('5×2 14–22'), AND('5×2 14–22'), AND('5×2 14–22'), N],
+      night: GAB_A.map(function(g) { return g ? GAB('12×36') : NOVO('12×36 Noturno'); })
+    },
+
     // gb4: 12h seg-sex 19h-07h → 60h/sem 🚨 ILEGAL
     gb4: {
       morning:   [FOLG('FDS'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), GIO('5×2'), FOLG('FDS')],
@@ -383,6 +430,10 @@ var LEGS = {
   g6a:   [{n:'Giovanna (5×2 06–14)',     c:C.gio}, {n:'Anderson (5×2 13–22)',    c:C.and}, {n:'Gabriel (12×36 22h)',        c:C.gab}, {n:'Folguista FDS',              c:C.folg}, {n:'Freelancer',  c:C.free}],
   g6b:   [{n:'Giovanna (6×1 06–14)',     c:C.gio}, {n:'Anderson (6×1 13–22)',    c:C.and}, {n:'Gabriel (12×36 22h)',        c:C.gab}, {n:'Freelancer',                 c:C.free}],
   g6c:   [{n:'Giovanna (5×2 06–15)',     c:C.gio}, {n:'Anderson (5×2 14–22)',    c:C.and}, {n:'Gabriel (12×36 22h)',        c:C.gab}, {n:'Folguista FDS',              c:C.folg}, {n:'Freelancer',  c:C.free}],
+  // Soluções
+  solA:  [{n:'Giovanna (5×2 06–14)',      c:C.gio}, {n:'Anderson (5×2 13–22)',     c:C.and}, {n:'Gabriel (12×36 22h)',        c:C.gab}, {n:'Folguista FDS (T.Parcial)', c:C.folg}, {n:'Freelancer noturno', c:C.free}],
+  solB:  [{n:'Giovanna (5×2 06–14)',      c:C.gio}, {n:'Anderson (5×2 13–22)',     c:C.and}, {n:'Gabriel (12×36 22h)',        c:C.gab}, {n:'2° Noturno CLT (12×36)',    c:C.fds},  {n:'Folguista FDS', c:C.folg}],
+  solC:  [{n:'Giovanna (5×2 06–15)',      c:C.gio}, {n:'Anderson (5×2 14–22)',     c:C.and}, {n:'Gabriel (12×36 22h)',        c:C.gab}, {n:'2° Noturno CLT (12×36)',    c:C.fds},  {n:'Folguista FDS', c:C.folg}],
   // Gabriel
   gb1:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Anderson (5×2)',           c:C.and}, {n:'Gabriel (12×36 19–07)',     c:C.gab}, {n:'Novo noturno (12×36)',       c:C.fds}, {n:'Folguista',   c:C.folg}],
   gb2:   [{n:'Giovanna (5×2)',            c:C.gio}, {n:'Anderson (5×2)',           c:C.and}, {n:'Gabriel (5×2 19–03)',       c:C.gab}, {n:'Freelancer noite',           c:C.free}],
@@ -529,7 +580,7 @@ function buildTable(tableId, legendId, sched, legKey) {
   // Break bar — info de pausas
   var breaks = [];
   if (mBreak) breaks.push('☀️ Manhã: ' + mBreak + ' (coberta na sobreposição)');
-  if (aBreak) breaks.push('🌆 Tarde: ' + aBreak + ' (coberta na sobreposição)');
+  if (aBreak) breaks.push('🌆 Tarde: ' + aBreak + ' (sozinho)');
   if (nBreak) breaks.push('🌙 Noite: ' + nBreak + ' (sozinho)');
   if (breaks.length) {
     html += '<div class="break-bar">';
@@ -770,6 +821,113 @@ function buildOverlapGrid(targetId, schedReal) {
   el.innerHTML = html;
 }
 
+// ── CALENDÁRIO ABRIL 2026 ─────────────────────────────────────
+// Referência: 19/03/2026 (Qui) — dia 0 do ciclo 12×36 do Gabriel
+// Abril 1 = Quarta-feira (dayOfWeek 3, onde 0=Dom…6=Sáb)
+// cycleDay(d) = 12 + d  →  even = Gabriel trabalha, odd = folga
+var CAL_DOW = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+var CAL_SCENARIO_CURRENT = 'atual';
+
+function buildCalendar(targetId, statsId, scenario) {
+  var el = gi(targetId);
+  if (!el) return;
+
+  var APR_START = 3; // April 1, 2026 = Wednesday (0=Dom)
+  var APR_DAYS  = 30;
+
+  function dow(d)      { return (APR_START + d - 1) % 7; }
+  function gabWorks(d) { return (12 + d) % 2 === 0; }
+  function isWknd(d)   { var w = dow(d); return w === 0 || w === 6; }
+
+  var full = 0, partial = 0, empty = 0, covered = 0, total = 0;
+
+  // Grid header
+  var html = '<div class="cal-wrap"><div class="cal-grid">';
+  for (var i = 0; i < 7; i++) {
+    html += '<div class="cal-hdr' + (i===0?' cal-sun-hdr':i===6?' cal-sat-hdr':'') + '">' + CAL_DOW[i] + '</div>';
+  }
+
+  // Blanks before April 1
+  for (var i = 0; i < APR_START; i++) html += '<div class="cal-blank"></div>';
+
+  for (var d = 1; d <= APR_DAYS; d++) {
+    var w   = dow(d);
+    var gab = gabWorks(d);
+    var fds = isWknd(d);
+
+    // ── Diurno ──
+    var diurno;
+    if (!fds) {
+      diurno = { cls: 'cal-gio-and', icon: '☀️', lbl: 'Gio + And', ok: true };
+    } else {
+      if (scenario === 'atual') {
+        diurno = { cls: 'cal-gap', icon: '⚠️', lbl: 'Descoberto', ok: false };
+      } else {
+        diurno = { cls: 'cal-folg', icon: '☀️', lbl: 'Folguista FDS', ok: true };
+      }
+    }
+
+    // ── Noturno ──
+    var noturno;
+    if (gab) {
+      noturno = { cls: 'cal-gab', icon: '🌙', lbl: 'Gabriel 12×36', ok: true };
+    } else {
+      if (scenario === 'atual') {
+        noturno = { cls: 'cal-gap', icon: '⚠️', lbl: 'Descoberto', ok: false };
+      } else if (scenario === 'solA') {
+        noturno = { cls: 'cal-free', icon: '🌙', lbl: 'Freelancer', ok: true };
+      } else {
+        noturno = { cls: 'cal-novo', icon: '🌙', lbl: '2° Noturno CLT', ok: true };
+      }
+    }
+
+    // Stats
+    total += 2;
+    if (diurno.ok)  covered++;
+    if (noturno.ok) covered++;
+
+    var bothOk  = diurno.ok && noturno.ok;
+    var noneOk  = !diurno.ok && !noturno.ok;
+    if (bothOk)  full++;
+    else if (noneOk) empty++;
+    else partial++;
+
+    var dayClass = 'cal-day ' +
+      (bothOk ? 'cal-full' : noneOk ? 'cal-empty-day' : 'cal-partial') +
+      (w === 0 ? ' cal-sun-day' : w === 6 ? ' cal-sat-day' : '');
+
+    html += '<div class="' + dayClass + '">';
+    html += '<div class="cal-date"><strong>' + d + '</strong><span class="cal-dow">' + CAL_DOW[w] + '</span></div>';
+    html += '<div class="cal-shift ' + diurno.cls  + '">' + diurno.icon  + ' ' + diurno.lbl  + '</div>';
+    html += '<div class="cal-shift ' + noturno.cls + '">' + noturno.icon + ' ' + noturno.lbl + '</div>';
+    html += '</div>';
+  }
+
+  html += '</div></div>';
+  el.innerHTML = html;
+
+  // Stats block
+  var statsEl = gi(statsId);
+  if (!statsEl) return;
+  var pct = Math.round(covered / total * 100);
+  statsEl.innerHTML =
+    '<div class="cal-stats">' +
+    '<div class="cs-item cs-full"><strong>'  + full    + '</strong><span>dias plenos ✅</span></div>' +
+    '<div class="cs-item cs-part"><strong>'  + partial + '</strong><span>dias parciais ⚠️</span></div>' +
+    '<div class="cs-item cs-gap-s"><strong>' + empty   + '</strong><span>dias sem cobertura 🚨</span></div>' +
+    '<div class="cs-item cs-pct"><strong>'   + pct     + '%</strong><span>cobertura total</span></div>' +
+    '</div>' +
+    '<p class="cal-ref">📌 Gabriel 12×36 calculado a partir de 19/03/2026 (Qui) como dia 0 do ciclo. Rotação aproximada — confirmar com Gabriel a data exata do próximo turno.</p>';
+}
+
+function switchCalendar(scenario) {
+  CAL_SCENARIO_CURRENT = scenario;
+  buildCalendar('cal-grid', 'cal-stats', scenario);
+  document.querySelectorAll('.cal-tab').forEach(function(t) {
+    t.classList.toggle('active', t.getAttribute('data-sc') === scenario);
+  });
+}
+
 // ── ATUAL REAL SCHEDULE DATA ──────────────────────────────────
 var ATUAL_REAL = [
   null, // Dom: todos folgam diurno
@@ -804,6 +962,12 @@ function renderAll() {
   buildTable('gantt-gb2',   'leg-gb2',  SCENARIOS_DATA.gb2,   'gb2');
   buildTable('gantt-gb3',   'leg-gb3',  SCENARIOS_DATA.gb3,   'gb3');
   buildTable('gantt-gb4',   'leg-gb4',  SCENARIOS_DATA.gb4,   'gb4');
+  // Soluções
+  buildTable('gantt-solA',  'leg-solA', SCENARIOS_DATA.solA,  'solA');
+  buildTable('gantt-solB',  'leg-solB', SCENARIOS_DATA.solB,  'solB');
+  buildTable('gantt-solC',  'leg-solC', SCENARIOS_DATA.solC,  'solC');
+  // Calendário Abril 2026
+  buildCalendar('cal-grid', 'cal-stats', CAL_SCENARIO_CURRENT);
 }
 
 // ── LABEL UPDATES ─────────────────────────────────────────────
@@ -844,7 +1008,10 @@ function buildCmpTable() {
     { n:'GB1 · Gab 12×36 19h',             rt:'★★★', gio:'—',          and:'—',         gab:'12×36 42h',ov:'—',     dom:'—', clt:'✅ Art.59-A', pau:'1h desc', rec:true},
     { n:'GB2 · Gab 5×2 19–03h',            rt:'★★☆', gio:'—',          and:'—',         gab:'5×2 40h',  ov:'—',     dom:'—', clt:'✅ OK',       pau:'1h gap03–07'},
     { n:'GB3 · Gab 6×1 19–02h',            rt:'★★☆', gio:'—',          and:'—',         gab:'6×1 42h',  ov:'—',     dom:'—', clt:'✅ OK',       pau:'1h gap02–07'},
-    { n:'GB4 · Gab 12h seg–sex 🚨',        rt:'✗',    gio:'—',          and:'—',         gab:'60h/sem',  ov:'—',     dom:'—', clt:'🚨 ILEGAL',  pau:'N/A', bad:true}
+    { n:'GB4 · Gab 12h seg–sex 🚨',        rt:'✗',    gio:'—',          and:'—',         gab:'60h/sem',  ov:'—',     dom:'—', clt:'🚨 ILEGAL',  pau:'N/A', bad:true},
+    { n:'Sol.A · G6A + Folguista + Free',  rt:'★★☆', gio:'5×2 35h',    and:'5×2 40h',   gab:'12×36 22h',ov:'1h ✅', dom:'✅ Folg.',clt:'✅ OK',    pau:'1h+1h',rec:true},
+    { n:'Sol.B · G6A + 2°Noturno + Folg', rt:'★★★', gio:'5×2 35h',    and:'5×2 40h',   gab:'12×36 22h',ov:'1h ✅', dom:'✅ Folg.',clt:'✅ OK',    pau:'1h+1h',rec:true},
+    { n:'Sol.C · G6C + 2°Noturno + Folg', rt:'★★★', gio:'5×2 40h',    and:'5×2 35h',   gab:'12×36 22h',ov:'1h ✅', dom:'✅ 100%', clt:'✅ OK',   pau:'1h+1h',rec:true}
   ];
 
   var tbody = gi('cmp-body');

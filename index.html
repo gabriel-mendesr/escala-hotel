@@ -58,6 +58,21 @@
     </div>
 
     <div class="nav-group">
+      <div class="nav-group-title">Soluções</div>
+      <a class="nav-item" data-section="sec-calendario" onclick="navigateTo('sec-calendario')">
+        <span class="nav-icon">📅</span> Calendário Abril 2026
+        <span class="nav-pip red"></span>
+      </a>
+      <a class="nav-item" data-section="sec-solucoes" onclick="navigateTo('sec-solucoes')">
+        <span class="nav-icon">🎯</span> Soluções A / B / C
+        <span class="nav-pip green"></span>
+      </a>
+      <a class="nav-item" data-section="sec-roteiro" onclick="navigateTo('sec-roteiro')">
+        <span class="nav-icon">🗺️</span> Roteiro de Contratação
+      </a>
+    </div>
+
+    <div class="nav-group">
       <div class="nav-group-title">Análise</div>
       <a class="nav-item" data-section="sec-comparativo" onclick="navigateTo('sec-comparativo')">
         <span class="nav-icon">📊</span> Comparativo Geral
@@ -214,14 +229,14 @@
 
   <!-- ── MODELO B ── -->
   <div class="card mt12"><div class="card-bd">
-    <div class="ib"><h3>Modelo B — Turnos 06h / 13h / 22h</h3>
-      <p class="desc">Anderson chega às 13h (1h antes do turno das 14h). Giovanna almoça das 12h–13h. Anderson trabalha 9h total (8h efetivas + 1h jantar).</p>
+    <div class="ib"><h3>Modelo B — Turnos 06h / 14h / 22h</h3>
+      <p class="desc">Anderson chega às 13h (1h antes do turno oficial das 14h). Giovanna almoça das 13h–14h com a recepção coberta. Anderson trabalha 9h total (8h efetivas + 1h jantar).</p>
     </div>
     <div class="pause-grid">
       <div class="pause-card">
         <div class="pc-turno">☀️ Giovanna — Manhã</div>
-        <div class="pc-horario">06h – 13h (7h efetivas)</div>
-        <div class="pc-pausa">🍽️ 1h almoço (12h–13h)</div>
+        <div class="pc-horario">06h – 14h (7h efetivas)</div>
+        <div class="pc-pausa">🍽️ 1h almoço (13h–14h)</div>
         <div class="pc-lei">Anderson chega às 13h e cobre</div>
       </div>
       <div class="pause-card">
@@ -538,6 +553,294 @@
       <span class="tag tag-r">ILEGAL 12h×5d</span><span class="tag tag-r">60h/sem</span><span class="tag tag-r">Risco alto</span>
     </div>
     <div class="gantt-container"><div class="legend" id="leg-gb4"></div><div class="sched-wrap"><table id="gantt-gb4"></table></div></div>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CALENDÁRIO — ABRIL 2026
+     ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="sec-calendario">
+  <div class="sec-hd">
+    <div class="sec-num blue">📅</div>
+    <div><h2>Calendário — Abril 2026</h2><p>Visualização diária de cobertura · A partir de 19/03/2026 · Compare cenários para decidir</p></div>
+  </div>
+
+  <div class="alert alert-crit"><span class="ai">🚨</span><div><strong>Contexto:</strong> Func. X sai em 19/03/2026. A partir dessa data, as noites de folga do Gabriel ficam descobertas. Este calendário mostra o impacto real em Abril e como cada solução resolve o problema.</div></div>
+
+  <!-- Tabs de cenário -->
+  <div class="tabs" style="margin-bottom:0">
+    <button class="tab cal-tab active" data-sc="atual"  onclick="switchCalendar('atual')">⚠️ Urgente (sem cobertura)</button>
+    <button class="tab cal-tab"        data-sc="solA"   onclick="switchCalendar('solA')">Sol. A — Freelancer + Folguista</button>
+    <button class="tab cal-tab best"   data-sc="solBC"  onclick="switchCalendar('solBC')">Sol. B/C — 2° Noturno CLT</button>
+  </div>
+
+  <!-- Legenda de cores -->
+  <div class="cal-legend" style="padding: 8px 2px">
+    <div class="cl-item"><div class="cl-dot" style="background:#047857"></div> Gabriel 12×36</div>
+    <div class="cl-item"><div class="cl-dot" style="background:#b84040"></div> Giovanna + Anderson</div>
+    <div class="cl-item"><div class="cl-dot" style="background:#7c3aed"></div> Folguista FDS</div>
+    <div class="cl-item"><div class="cl-dot" style="background:#b45309"></div> Freelancer</div>
+    <div class="cl-item"><div class="cl-dot" style="background:#0e7490"></div> 2° Noturno CLT</div>
+    <div class="cl-item"><div class="cl-dot" style="background:#dc2626"></div> Descoberto ⚠️</div>
+    <div class="cl-item"><span style="font-size:.6rem;padding:1px 5px;border-radius:3px;background:rgba(16,185,129,.15);color:#059669">Verde = dia pleno</span></div>
+    <div class="cl-item"><span style="font-size:.6rem;padding:1px 5px;border-radius:3px;background:rgba(245,158,11,.15);color:#d97706">Âmbar = parcial</span></div>
+    <div class="cl-item"><span style="font-size:.6rem;padding:1px 5px;border-radius:3px;background:rgba(220,38,38,.1);color:#dc2626">Vermelho = gap total</span></div>
+  </div>
+
+  <!-- Calendário -->
+  <div class="card"><div class="card-bd" style="padding:10px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:.82rem;font-weight:700;color:var(--tx)">Abril 2026</span>
+      <span style="font-size:.62rem;color:var(--tx3)">Dom 5 · 12 · 19 · 26 marcados em vermelho · Sáb 4 · 11 · 18 · 25 em roxo</span>
+    </div>
+    <div id="cal-grid"></div>
+    <div id="cal-stats"></div>
+  </div></div>
+
+  <!-- Notas contextuais -->
+  <div class="card mt12"><div class="card-bd">
+    <div class="ib"><h3>Como ler o calendário</h3></div>
+    <div class="ovx">
+    <table class="tbl" style="font-size:.68rem">
+      <thead><tr><th>Indicador</th><th>Diurno (☀️ 06–22h)</th><th>Noturno (🌙 22–06h)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Seg – Sex</strong></td><td class="c-ok">Giovanna 06–14h + Anderson 13–22h (overlap 1h)</td><td>Gabriel ou substituto</td></tr>
+        <tr><td><strong>Sáb – Dom (Sol. A/B/C)</strong></td><td class="c-ok">Folguista FDS 06–22h</td><td>Gabriel ou Freelancer/2° Noturno</td></tr>
+        <tr><td><strong>Sáb – Dom (Urgente)</strong></td><td class="c-bad">⚠️ Descoberto — ninguém escalado</td><td>Gabriel (se for o dia dele) ou ⚠️ Descoberto</td></tr>
+        <tr><td><strong>Gabriel 12×36</strong></td><td colspan="2">Trabalha noites alternadas a partir de 19/03 (ciclo: 19/03 trabalha, 20/03 folga, 21/03 trabalha…)</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SOLUÇÕES — A / B / C
+     ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="sec-solucoes">
+  <div class="sec-hd">
+    <div class="sec-num green">🎯</div>
+    <div><h2>Soluções Propostas</h2><p>Três caminhos viáveis para cobrir as 168h/semana · Do mínimo necessário ao ideal</p></div>
+  </div>
+
+  <div class="alert alert-crit"><span class="ai">🚨</span><div><strong>Problema central:</strong> 3 CLT em tempo pleno cobrem ~122h/semana efetivas. O hotel precisa de 168h. <strong>Gap estrutural: ~46h/semana</strong> que não fecham sem contratação adicional ou freelancer.</div></div>
+
+  <!-- Cobertura semanal -->
+  <div class="card"><div class="card-bd">
+    <div class="ib"><h3>📊 Cobertura Semanal por Solução</h3></div>
+    <div class="ovx">
+    <table class="tbl">
+      <thead><tr><th>Solução</th><th>Funcionários</th><th>H/sem cobertas</th><th>Gap restante</th><th>FDS diurno</th><th>Noturno</th><th>CLT</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Situação atual</strong></td><td>3 CLT + Func.X saindo</td><td class="mono c-warn">~112h ⚠</td><td class="mono c-bad">~56h 🚨</td><td class="c-bad">Dom descoberto</td><td class="c-bad">~15 noites/mês livres</td><td class="c-warn">⚠</td></tr>
+        <tr style="background:rgba(16,185,129,.05)"><td><strong>Solução A</strong></td><td>3 CLT + Folguista + Freelancer</td><td class="mono c-ok">~144h ✅</td><td class="mono c-warn">~24h</td><td class="c-ok">Coberto (folguista)</td><td class="c-warn">Freelancer (noites folga)</td><td class="c-ok">✅</td></tr>
+        <tr style="background:rgba(99,102,241,.05)"><td><strong>Solução B</strong></td><td>3 CLT + 2° Noturno + Folguista</td><td class="mono c-ok">~160h ✅</td><td class="mono c-ok">~8h</td><td class="c-ok">Coberto (folguista)</td><td class="c-ok">100% (2° CLT)</td><td class="c-ok">✅</td></tr>
+        <tr style="background:rgba(20,83,45,.05)"><td><strong>Solução C</strong></td><td>3 CLT + 2° Noturno + Folguista</td><td class="mono c-ok">168h ✅✅</td><td class="mono c-ok">0h</td><td class="c-ok">100%</td><td class="c-ok">100%</td><td class="c-ok">✅</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="desc" style="font-size:.64rem;margin-top:6px">Gap residual da Sol.B (~8h) = períodos de passagem FDS diurno/noturno sem cobertura formal. Na prática, de baixíssimo movimento.</p>
+  </div></div>
+
+  <div class="tabs">
+    <button class="tab active" id="t-solA" onclick="showTab('solA')">Sol. A — Mínimo viável <span class="pip ok"></span></button>
+    <button class="tab" id="t-solB" onclick="showTab('solB')">Sol. B — 2° Noturno CLT <span class="pip ok"></span></button>
+    <button class="tab best" id="t-solC" onclick="showTab('solC')">Sol. C — Cobertura 100%</button>
+  </div>
+
+  <!-- Solução A -->
+  <div class="panel active" id="panel-solA"><div class="panel-bd">
+    <div class="rating rating-good">★★☆ Curto prazo · Sem nova CLT · ~86% cobertura</div>
+    <div class="ib"><h3>Solução A — Mínimo Viável (3 CLT + Folguista FDS + Freelancer)</h3>
+      <p class="desc">Mantém os 3 CLT atuais (G6A: Gio 06–14, And 13–22, Gab 22–06). Contrata folguista FDS em Tempo Parcial (Art. 58-A) para cobrir sáb+dom diurno. Usa freelancer para cobrir noites de folga do Gabriel (~3–4 noites/semana no 12×36).</p>
+    </div>
+    <div class="ovx"><table class="tbl mb12">
+      <thead><tr><th>Quem</th><th>Tipo</th><th>Horário</th><th>Regime</th><th>H/sem</th><th>Dias</th><th>CLT</th></tr></thead>
+      <tbody>
+        <tr><td class="c-gio">Giovanna</td><td>CLT</td><td class="mono">06–14h</td><td>5×2</td><td class="mono">35h</td><td>Seg–Sex</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-and">Anderson</td><td>CLT</td><td class="mono">13–22h</td><td>5×2</td><td class="mono">40h</td><td>Seg–Sex</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-gab">Gabriel</td><td>CLT</td><td class="mono">22–06h</td><td>12×36</td><td class="mono">~42h</td><td>Alt. ~4d/sem</td><td class="c-ok">✅ Art.59-A</td></tr>
+        <tr><td style="color:#6b35a0">Folguista FDS</td><td>CLT T.Parcial</td><td class="mono">06–22h</td><td>12×36 FDS</td><td class="mono">24h</td><td>Sáb + Dom</td><td class="c-ok">✅ Art.58-A</td></tr>
+        <tr><td class="c-free">Freelancer</td><td>PJ / Interm.</td><td class="mono">22–06h</td><td>Por chamada</td><td>—</td><td>Folgas Gab (~3/sem)</td><td class="c-warn">⚠ Art.452-A</td></tr>
+      </tbody>
+    </table></div>
+    <div class="alert alert-ok"><span class="ai">✅</span><div><strong>Vantagem imediata:</strong> Resolve o domingo descoberto e cobre as noites sem nova CLT. Custo controlado — freelancer só quando necessário.</div></div>
+    <div class="alert alert-warn"><span class="ai">⚠️</span><div><strong>Atenção:</strong> Freelancer usado habitualmente pode gerar vínculo empregatício (Art. 452-A). Documentar todas as convocações com 3 dias de antecedência.</div></div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="tag tag-g">Sem nova CLT</span><span class="tag tag-g">FDS coberto</span><span class="tag tag-g">Overlap seg–sex mantido</span>
+      <span class="tag tag-o">~24h/sem descobertas</span><span class="tag tag-o">Freelancer = risco jurídico</span>
+    </div>
+    <div class="gantt-container"><div class="legend" id="leg-solA"></div><div class="sched-wrap"><table id="gantt-solA"></table></div></div>
+  </div></div>
+
+  <!-- Solução B -->
+  <div class="panel" id="panel-solB"><div class="panel-bd">
+    <div class="rating rating-top">★★★ Médio prazo · 1 nova CLT · ~95% cobertura</div>
+    <div class="ib"><h3>Solução B — 2° Noturno CLT + Folguista FDS</h3>
+      <p class="desc">Contrata um 2° noturno CLT em regime 12×36 para alternar com Gabriel. Noturno 100% coberto, sem freelancer. Folguista FDS (Tempo Parcial) cobre sáb+dom diurno.</p>
+    </div>
+    <div class="ovx"><table class="tbl mb12">
+      <thead><tr><th>Quem</th><th>Tipo</th><th>Horário</th><th>Regime</th><th>H/sem</th><th>Dias</th><th>CLT</th></tr></thead>
+      <tbody>
+        <tr><td class="c-gio">Giovanna</td><td>CLT</td><td class="mono">06–14h</td><td>5×2</td><td class="mono">35h</td><td>Seg–Sex</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-and">Anderson</td><td>CLT</td><td class="mono">13–22h</td><td>5×2</td><td class="mono">40h</td><td>Seg–Sex</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-gab">Gabriel</td><td>CLT</td><td class="mono">22–06h</td><td>12×36 Sem.A</td><td class="mono">~42h</td><td>Dom/Ter/Qui/Sáb</td><td class="c-ok">✅ Art.59-A</td></tr>
+        <tr><td style="color:#0e7490"><strong>2° Noturno</strong></td><td><strong>CLT — contratar</strong></td><td class="mono">22–06h</td><td>12×36 Sem.B</td><td class="mono">~42h</td><td>Seg/Qua/Sex/Dom</td><td class="c-ok">✅ Art.59-A</td></tr>
+        <tr><td style="color:#6b35a0">Folguista FDS</td><td>CLT T.Parcial</td><td class="mono">06–22h</td><td>12×36 FDS</td><td class="mono">24h</td><td>Sáb + Dom</td><td class="c-ok">✅ Art.58-A</td></tr>
+      </tbody>
+    </table></div>
+    <div class="alert alert-ok"><span class="ai">✅</span><div><strong>Noturno 100% coberto:</strong> Gabriel (Sem.A) + 2° Noturno (Sem.B) formam um par 12×36 perfeito — nenhuma noite descoberta. Zero freelancer para noturno.</div></div>
+    <div class="alert alert-info"><span class="ai">💡</span><div><strong>Perfil ideal para 2° noturno:</strong> Jovem com disponibilidade noturna, adicional noturno de 20% (Art. 73) já embutido. Custo-benefício alto para o hotel em termos de segurança operacional.</div></div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="tag tag-g">Noturno 100%</span><span class="tag tag-g">Zero freelancer</span><span class="tag tag-g">FDS coberto</span>
+      <span class="tag tag-o">1 contratação CLT</span><span class="tag tag-o">~8h FDS gap residual</span>
+    </div>
+    <div class="gantt-container"><div class="legend" id="leg-solB"></div><div class="sched-wrap"><table id="gantt-solB"></table></div></div>
+  </div></div>
+
+  <!-- Solução C -->
+  <div class="panel" id="panel-solC"><div class="panel-bd">
+    <div class="rating rating-top">★★★ Ideal · 168h/sem = 100% cobertura</div>
+    <div class="ib"><h3>Solução C — Cobertura Total (G6C + 2° Noturno + Folguista FDS)</h3>
+      <p class="desc">Combina G6C (turnos mais equilibrados: Gio 06–15, And 14–22) com 2° noturno 12×36 e folguista FDS cobrindo sáb+dom. Resultado: 168h/semana cobertas integralmente, com overlap mantido e todos os turnos dentro dos limites CLT.</p>
+    </div>
+    <div class="ovx"><table class="tbl mb12">
+      <thead><tr><th>Quem</th><th>Tipo</th><th>Horário</th><th>Regime</th><th>H/sem</th><th>Dias</th><th>CLT</th></tr></thead>
+      <tbody>
+        <tr><td class="c-gio">Giovanna</td><td>CLT</td><td class="mono">06–15h</td><td>5×2</td><td class="mono">40h</td><td>Seg–Sex</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-and">Anderson</td><td>CLT</td><td class="mono">14–22h</td><td>5×2</td><td class="mono">35h</td><td>Seg–Sex</td><td class="c-ok">✅</td></tr>
+        <tr><td class="c-gab">Gabriel</td><td>CLT</td><td class="mono">22–06h</td><td>12×36 Sem.A</td><td class="mono">~42h</td><td>Dom/Ter/Qui/Sáb</td><td class="c-ok">✅ Art.59-A</td></tr>
+        <tr><td style="color:#0e7490"><strong>2° Noturno</strong></td><td><strong>CLT — contratar</strong></td><td class="mono">22–06h</td><td>12×36 Sem.B</td><td class="mono">~42h</td><td>Seg/Qua/Sex/Dom</td><td class="c-ok">✅ Art.59-A</td></tr>
+        <tr><td style="color:#6b35a0">Folguista FDS</td><td>CLT T.Parcial</td><td class="mono">06–22h</td><td>12×36 FDS</td><td class="mono">24h</td><td>Sáb + Dom</td><td class="c-ok">✅ Art.58-A</td></tr>
+      </tbody>
+    </table></div>
+    <div class="ovx" style="margin-top:10px">
+    <table class="tbl">
+      <thead><tr><th>Período</th><th>Seg–Sex</th><th>Sáb</th><th>Dom</th></tr></thead>
+      <tbody>
+        <tr><td>06h–15h</td><td class="c-ok">Giovanna</td><td class="c-ok">Folguista FDS</td><td class="c-ok">Folguista FDS</td></tr>
+        <tr><td>14h–22h (overlap 14–15)</td><td class="c-ok">Anderson (+Gio até 15h)</td><td class="c-ok">Folguista FDS</td><td class="c-ok">Folguista FDS</td></tr>
+        <tr><td>22h–06h</td><td class="c-ok">Gabriel ou 2° Noturno (12×36 alternado)</td><td class="c-ok">Gabriel ou 2° Noturno</td><td class="c-ok">Gabriel ou 2° Noturno</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="alert alert-ok"><span class="ai">✅</span><div><strong>168h/semana totalmente cobertas.</strong> Todas as obrigações CLT cumpridas. Overlap 14h–15h mantido (Gio cobre almoço/refeição no pico de saída). Zero buracos, zero risco trabalhista de cobertura.</div></div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="tag tag-g">168h = 100% ✅✅</span><span class="tag tag-g">Overlap seg–sex</span><span class="tag tag-g">Gio 40h / And 35h equilibrado</span>
+      <span class="tag tag-g">Noturno 100%</span><span class="tag tag-g">FDS 100%</span>
+      <span class="tag tag-o">2 contratações (1 CLT + 1 T.Parcial)</span>
+    </div>
+    <div class="gantt-container"><div class="legend" id="leg-solC"></div><div class="sched-wrap"><table id="gantt-solC"></table></div></div>
+  </div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     ROTEIRO DE CONTRATAÇÃO
+     ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="sec-roteiro">
+  <div class="sec-hd">
+    <div class="sec-num gold">🗺️</div>
+    <div><h2>Roteiro de Contratação</h2><p>Caminho prático da situação atual até cobertura 100% · Fases priorizadas por urgência</p></div>
+  </div>
+
+  <div class="alert alert-crit"><span class="ai">🚨</span><div><strong>Urgência imediata:</strong> Saída do Func. X deixa ~15 noites/mês sem cobertura formal. Cada noite descoberta é um risco operacional e de responsabilidade civil para o hotel.</div></div>
+
+  <!-- Timeline de fases -->
+  <div class="card"><div class="card-bd">
+    <div class="ib"><h3>Fases de Implementação</h3></div>
+
+    <!-- Fase 0 -->
+    <div style="display:flex;gap:12px;margin-bottom:16px;padding:12px;border-radius:8px;background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.25)">
+      <div style="min-width:36px;height:36px;border-radius:50%;background:#dc2626;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem">0</div>
+      <div>
+        <strong style="color:#dc2626">Fase 0 — Urgente (esta semana)</strong>
+        <p style="font-size:.74rem;margin:4px 0 0;color:var(--tx2)">Contatar freelancer/intermitente de confiança para cobrir as noites de folga do Gabriel a partir da saída do Func. X. Formalizar convocação por escrito (WhatsApp com confirmação serve como evidência). Registrar datas e horários.</p>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">
+          <span class="tag tag-r">Risco: sem cobertura à vista</span>
+          <span class="tag tag-o">Ação: contratar freelancer por chamada</span>
+          <span class="tag tag-o">Custo: diárias pontuais</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fase 1 -->
+    <div style="display:flex;gap:12px;margin-bottom:16px;padding:12px;border-radius:8px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25)">
+      <div style="min-width:36px;height:36px;border-radius:50%;background:#d97706;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem">1</div>
+      <div>
+        <strong style="color:#d97706">Fase 1 — Curto prazo (1–4 semanas) · Solução A</strong>
+        <p style="font-size:.74rem;margin:4px 0 0;color:var(--tx2)">Fixar os horários de Giovanna e Anderson no modelo G6A (Gio 06–14h, And 13–22h). Formalizar folguista FDS em Tempo Parcial (Art. 58-A): 2 turnos de 12h sáb+dom, 24h/semana, acordo 12×36 por escrito. Continuar freelancer para noturno.</p>
+        <div class="ovx" style="margin-top:8px">
+        <table class="tbl" style="font-size:.66rem">
+          <thead><tr><th>Ação</th><th>Base Legal</th><th>Efeito</th></tr></thead>
+          <tbody>
+            <tr><td>Aditivo contratual Gio + And (fixar G6A)</td><td>Art. 58 CLT</td><td>Horários estáveis, overlap garantido</td></tr>
+            <tr><td>Contratar Folguista FDS (Sáb+Dom)</td><td>Art. 58-A + 59-A</td><td>Fim do domingo descoberto</td></tr>
+            <tr><td>Freelancer noturno registrado</td><td>Art. 452-A</td><td>Cobre folgas do Gabriel</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">
+          <span class="tag tag-g">Dom coberto ✅</span>
+          <span class="tag tag-o">Noturno ainda com freelancer</span>
+          <span class="tag tag-o">~24h/sem descobertas (baixo movimento)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fase 2 -->
+    <div style="display:flex;gap:12px;margin-bottom:16px;padding:12px;border-radius:8px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.25)">
+      <div style="min-width:36px;height:36px;border-radius:50%;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem">2</div>
+      <div>
+        <strong style="color:#4f46e5">Fase 2 — Médio prazo (1–3 meses) · Solução B</strong>
+        <p style="font-size:.74rem;margin:4px 0 0;color:var(--tx2)">Contratar 2° noturno CLT em 12×36 alternando com Gabriel. Elimina totalmente o freelancer noturno. Perfil: jovem disponível para turno noturno, adicional noturno 20% já compensado na remuneração.</p>
+        <div class="ovx" style="margin-top:8px">
+        <table class="tbl" style="font-size:.66rem">
+          <thead><tr><th>Ação</th><th>Base Legal</th><th>Efeito</th></tr></thead>
+          <tbody>
+            <tr><td>Contratar 2° noturno CLT (22–06h, 12×36)</td><td>Art. 59-A</td><td>100% noites cobertas</td></tr>
+            <tr><td>Encerrar freelancer noturno</td><td>—</td><td>Zero risco de vínculo</td></tr>
+            <tr><td>Manter Folguista FDS</td><td>Art. 58-A + 59-A</td><td>FDS diurno coberto</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">
+          <span class="tag tag-g">Noturno 100% CLT ✅</span>
+          <span class="tag tag-g">Zero freelancer</span>
+          <span class="tag tag-o">1 contratação CLT obrigatória</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fase 3 -->
+    <div style="display:flex;gap:12px;padding:12px;border-radius:8px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25)">
+      <div style="min-width:36px;height:36px;border-radius:50%;background:#059669;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem">3</div>
+      <div>
+        <strong style="color:#059669">Fase 3 — Longo prazo (3–6 meses) · Solução C</strong>
+        <p style="font-size:.74rem;margin:4px 0 0;color:var(--tx2)">Ajustar Giovanna para 06–15h e Anderson para 14–22h (G6C), criando turnos mais equilibrados (Gio 40h, And 35h). Com 2° noturno e folguista FDS já contratados: 168h/semana = cobertura total.</p>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">
+          <span class="tag tag-g">168h = 100% ✅✅</span>
+          <span class="tag tag-g">Todos CLT dentro dos limites</span>
+          <span class="tag tag-g">Zero buracos operacionais</span>
+          <span class="tag tag-g">Overlap mantido (14–15h)</span>
+        </div>
+      </div>
+    </div>
+  </div></div>
+
+  <!-- Resumo de contratações -->
+  <div class="card mt12"><div class="card-bd">
+    <div class="ib"><h3>Resumo das Contratações Necessárias</h3></div>
+    <div class="ovx">
+    <table class="tbl">
+      <thead><tr><th>Fase</th><th>Contratação</th><th>Tipo</th><th>Regime</th><th>H/sem</th><th>Artigo CLT</th></tr></thead>
+      <tbody>
+        <tr><td><strong style="color:#d97706">Fase 1</strong></td><td>Folguista FDS (Sáb+Dom diurno)</td><td>CLT Tempo Parcial</td><td>12×36 FDS</td><td class="mono">24h</td><td>Art. 58-A + 59-A</td></tr>
+        <tr><td><strong style="color:#4f46e5">Fase 2</strong></td><td>2° Noturno (22–06h)</td><td>CLT Integral</td><td>12×36 noturno</td><td class="mono">~42h</td><td>Art. 59-A + 73</td></tr>
+        <tr><td><strong style="color:#059669">Fase 3</strong></td><td>Ajuste contratual Gio+And (G6C)</td><td>Aditivo</td><td>5×2 atualizado</td><td>—</td><td>Art. 58</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="alert alert-info mt8"><span class="ai">⚖️</span><div><strong>Consulte seu advogado trabalhista</strong> para redigir os acordos 12×36 (Art. 59-A) e o contrato de Tempo Parcial (Art. 58-A). Esses documentos são obrigatórios para validade do regime e devem ser assinados antes do início do trabalho.</div></div>
   </div></div>
 </div>
 
