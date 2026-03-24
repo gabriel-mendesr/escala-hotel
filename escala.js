@@ -1017,8 +1017,10 @@ function renderAll() {
   buildTable('gantt-solA',  'leg-solA', SCENARIOS_DATA.solA,  'solA');
   buildTable('gantt-solB',  'leg-solB', SCENARIOS_DATA.solB,  'solB');
   buildTable('gantt-solC',  'leg-solC', SCENARIOS_DATA.solC,  'solC');
-  // Calendário Abril 2026
+  // Calendário Abril 2026 — seção principal
   buildCalendar('cal-grid', 'cal-stats', CAL_SCENARIO_CURRENT);
+  // Calendários nos painéis de cada cenário
+  buildAllScenCalendars();
 }
 
 // ── LABEL UPDATES ─────────────────────────────────────────────
