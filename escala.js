@@ -822,32 +822,57 @@ function buildOverlapGrid(targetId, schedReal) {
 }
 
 // ── CALENDÁRIO ABRIL 2026 ─────────────────────────────────────
-// Referência: 19/03/2026 (Qui) — dia 0 do ciclo 12×36 do Gabriel
-// Abril 1 = Quarta-feira (dayOfWeek 3, onde 0=Dom…6=Sáb)
-// cycleDay(d) = 12 + d  →  even = Gabriel trabalha, odd = folga
+// Referência: 29/03/2026 (Dom) — Gabriel trabalha (dia 0 do ciclo 12×36)
+// Abril 1 = Quarta-feira (dow=3 onde 0=Dom…6=Sáb)
+// cycleDay(d_abril) = d + 2  →  (d+2) par = Gabriel trabalha
+// Como (d+2)%2 === d%2: gabWorks12x36(d) = (d % 2 === 0)
+// → Gabriel trabalha nos dias PARES de Abril: 2,4,6,8,10,12,14,16,18,20,22,24,26,28,30
 var CAL_DOW = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 var CAL_SCENARIO_CURRENT = 'atual';
 
-function buildCalendar(targetId, statsId, scenario) {
+// Config por cenário: fds = cobertura diurno FDS | offNight = quem cobre folgas do Gabriel
+var CAL_CONFIGS = {
+  atual: { fds:'gap',       off:'gap',  gbMode:'12x36', suf:'19–07h' },
+  g7a:   { fds:'folguista', off:'free', gbMode:'12x36', suf:'19–07h' },
+  g7b:   { fds:'folguista', off:'free', gbMode:'12x36', suf:'19–07h' },
+  g7c:   { fds:'folguista', off:'free', gbMode:'12x36', suf:'19–07h' },
+  g6a:   { fds:'folguista', off:'free', gbMode:'12x36', suf:'22–06h' },
+  g6b:   { fds:'folguista', off:'free', gbMode:'12x36', suf:'22–06h' },
+  g6c:   { fds:'folguista', off:'free', gbMode:'12x36', suf:'22–06h' },
+  gb1:   { fds:'folguista', off:'novo', gbMode:'12x36', suf:'19–07h' },
+  gb2:   { fds:'folguista', off:'free', gbMode:'5x2',   suf:'19–03h ⚠gap03–07' },
+  gb3:   { fds:'folguista', off:'free', gbMode:'6x1',   suf:'19–02h ⚠gap02–07' },
+  solA:  { fds:'folguista', off:'free', gbMode:'12x36', suf:'22–06h' },
+  solB:  { fds:'folguista', off:'novo', gbMode:'12x36', suf:'22–06h' },
+  solBC: { fds:'folguista', off:'novo', gbMode:'12x36', suf:'22–06h' },
+  solC:  { fds:'folguista', off:'novo', gbMode:'12x36', suf:'22–06h' }
+};
+
+function buildCalendar(targetId, statsId, scenKey) {
   var el = gi(targetId);
   if (!el) return;
 
-  var APR_START = 3; // April 1, 2026 = Wednesday (0=Dom)
+  var cfg = CAL_CONFIGS[scenKey] || CAL_CONFIGS['solA'];
+  var APR_START = 3; // April 1, 2026 = Wednesday
   var APR_DAYS  = 30;
 
-  function dow(d)      { return (APR_START + d - 1) % 7; }
-  function gabWorks(d) { return (12 + d) % 2 === 0; }
-  function isWknd(d)   { var w = dow(d); return w === 0 || w === 6; }
+  function dow(d)   { return (APR_START + d - 1) % 7; }
+  function isWknd(d){ var w = dow(d); return w === 0 || w === 6; }
+
+  // Gabriel working night on day d?
+  function gabWorks(d) {
+    if (cfg.gbMode === '12x36') return d % 2 === 0;          // even days: 2,4,6...
+    if (cfg.gbMode === '5x2')   return !isWknd(d);           // seg–sex only
+    if (cfg.gbMode === '6x1')   return dow(d) !== 0;         // off on sundays
+    return d % 2 === 0;
+  }
 
   var full = 0, partial = 0, empty = 0, covered = 0, total = 0;
 
-  // Grid header
   var html = '<div class="cal-wrap"><div class="cal-grid">';
   for (var i = 0; i < 7; i++) {
     html += '<div class="cal-hdr' + (i===0?' cal-sun-hdr':i===6?' cal-sat-hdr':'') + '">' + CAL_DOW[i] + '</div>';
   }
-
-  // Blanks before April 1
   for (var i = 0; i < APR_START; i++) html += '<div class="cal-blank"></div>';
 
   for (var d = 1; d <= APR_DAYS; d++) {
@@ -858,39 +883,34 @@ function buildCalendar(targetId, statsId, scenario) {
     // ── Diurno ──
     var diurno;
     if (!fds) {
-      diurno = { cls: 'cal-gio-and', icon: '☀️', lbl: 'Gio + And', ok: true };
+      diurno = { cls:'cal-gio-and', icon:'☀️', lbl:'Gio + And', ok:true };
+    } else if (cfg.fds === 'folguista') {
+      diurno = { cls:'cal-folg', icon:'☀️', lbl:'Folguista FDS', ok:true };
     } else {
-      if (scenario === 'atual') {
-        diurno = { cls: 'cal-gap', icon: '⚠️', lbl: 'Descoberto', ok: false };
-      } else {
-        diurno = { cls: 'cal-folg', icon: '☀️', lbl: 'Folguista FDS', ok: true };
-      }
+      diurno = { cls:'cal-gap', icon:'⚠️', lbl:'Descoberto', ok:false };
     }
 
     // ── Noturno ──
     var noturno;
     if (gab) {
-      noturno = { cls: 'cal-gab', icon: '🌙', lbl: 'Gabriel 12×36', ok: true };
+      noturno = { cls:'cal-gab', icon:'🌙', lbl:'Gabriel', ok:true };
+    } else if (cfg.off === 'novo') {
+      noturno = { cls:'cal-novo', icon:'🌙', lbl:'2° Noturno', ok:true };
+    } else if (cfg.off === 'free') {
+      noturno = { cls:'cal-free', icon:'🌙', lbl:'Freelancer', ok:true };
     } else {
-      if (scenario === 'atual') {
-        noturno = { cls: 'cal-gap', icon: '⚠️', lbl: 'Descoberto', ok: false };
-      } else if (scenario === 'solA') {
-        noturno = { cls: 'cal-free', icon: '🌙', lbl: 'Freelancer', ok: true };
-      } else {
-        noturno = { cls: 'cal-novo', icon: '🌙', lbl: '2° Noturno CLT', ok: true };
-      }
+      noturno = { cls:'cal-gap', icon:'⚠️', lbl:'Descoberto', ok:false };
     }
 
-    // Stats
     total += 2;
     if (diurno.ok)  covered++;
     if (noturno.ok) covered++;
 
-    var bothOk  = diurno.ok && noturno.ok;
-    var noneOk  = !diurno.ok && !noturno.ok;
-    if (bothOk)  full++;
-    else if (noneOk) empty++;
-    else partial++;
+    var bothOk = diurno.ok && noturno.ok;
+    var noneOk = !diurno.ok && !noturno.ok;
+    if (bothOk)       full++;
+    else if (noneOk)  empty++;
+    else              partial++;
 
     var dayClass = 'cal-day ' +
       (bothOk ? 'cal-full' : noneOk ? 'cal-empty-day' : 'cal-partial') +
@@ -902,30 +922,61 @@ function buildCalendar(targetId, statsId, scenario) {
     html += '<div class="cal-shift ' + noturno.cls + '">' + noturno.icon + ' ' + noturno.lbl + '</div>';
     html += '</div>';
   }
-
   html += '</div></div>';
   el.innerHTML = html;
 
-  // Stats block
   var statsEl = gi(statsId);
   if (!statsEl) return;
   var pct = Math.round(covered / total * 100);
   statsEl.innerHTML =
     '<div class="cal-stats">' +
-    '<div class="cs-item cs-full"><strong>'  + full    + '</strong><span>dias plenos ✅</span></div>' +
-    '<div class="cs-item cs-part"><strong>'  + partial + '</strong><span>dias parciais ⚠️</span></div>' +
-    '<div class="cs-item cs-gap-s"><strong>' + empty   + '</strong><span>dias sem cobertura 🚨</span></div>' +
-    '<div class="cs-item cs-pct"><strong>'   + pct     + '%</strong><span>cobertura total</span></div>' +
+    '<div class="cs-item cs-full"><strong>'  + full    + '</strong><span>plenos ✅</span></div>' +
+    '<div class="cs-item cs-part"><strong>'  + partial + '</strong><span>parciais ⚠️</span></div>' +
+    '<div class="cs-item cs-gap-s"><strong>' + empty   + '</strong><span>gap total 🚨</span></div>' +
+    '<div class="cs-item cs-pct"><strong>'   + pct     + '%</strong><span>cobertura</span></div>' +
     '</div>' +
-    '<p class="cal-ref">📌 Gabriel 12×36 calculado a partir de 19/03/2026 (Qui) como dia 0 do ciclo. Rotação aproximada — confirmar com Gabriel a data exata do próximo turno.</p>';
+    '<p class="cal-ref">📌 Ref. Gabriel 12×36: 29/03/2026 (Dom) = dia de trabalho. ' +
+    'Noturno: ' + cfg.suf + '. Cálculo aproximado — confirmar datas com Gabriel.</p>';
+}
+
+// ── Calendários nos painéis de cenário ─────────────────────────
+// Injeta um calendário de Abril abaixo do gantt-container de cada painel
+var CAL_PANEL_KEYS = ['g7a','g7b','g7c','g6a','g6b','g6c','gb1','gb2','gb3','solA','solB','solC'];
+
+function buildAllScenCalendars() {
+  for (var ki = 0; ki < CAL_PANEL_KEYS.length; ki++) {
+    var k = CAL_PANEL_KEYS[ki];
+    var panel = gi('panel-' + k);
+    if (!panel) continue;
+    var panelBd = panel.querySelector('.panel-bd');
+    if (!panelBd) continue;
+
+    var calId   = 'cal-sc-' + k;
+    var statsId = 'cals-sc-' + k;
+
+    if (!gi(calId)) {
+      var hdr = document.createElement('div');
+      hdr.className = 'ib mt8';
+      hdr.innerHTML = '<h4 style="font-size:.7rem;color:var(--tx3);font-weight:700;letter-spacing:.04em;margin-bottom:4px">📅 COBERTURA ABRIL 2026</h4>';
+      var calDiv   = document.createElement('div');
+      calDiv.id    = calId;
+      var statsDiv = document.createElement('div');
+      statsDiv.id  = statsId;
+      panelBd.appendChild(hdr);
+      panelBd.appendChild(calDiv);
+      panelBd.appendChild(statsDiv);
+    }
+    buildCalendar(calId, statsId, k);
+  }
 }
 
 function switchCalendar(scenario) {
   CAL_SCENARIO_CURRENT = scenario;
   buildCalendar('cal-grid', 'cal-stats', scenario);
-  document.querySelectorAll('.cal-tab').forEach(function(t) {
-    t.classList.toggle('active', t.getAttribute('data-sc') === scenario);
-  });
+  var tabs = document.querySelectorAll('.cal-tab');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.toggle('active', tabs[i].getAttribute('data-sc') === scenario);
+  }
 }
 
 // ── ATUAL REAL SCHEDULE DATA ──────────────────────────────────
@@ -1124,13 +1175,14 @@ function init() {
 }
 
 // ── EXPÕE FUNÇÕES GLOBALMENTE ─────────────────────────────────
-window.showTab = showTab;
-window.init    = init;
-window.selectCard = selectCard;
-window.cellClick = cellClick;
-window.navigateTo = navigateTo;
-window.toggleSidebar = toggleSidebar;
-window.closeSidebar = closeSidebar;
+window.showTab        = showTab;
+window.init           = init;
+window.selectCard     = selectCard;
+window.cellClick      = cellClick;
+window.navigateTo     = navigateTo;
+window.toggleSidebar  = toggleSidebar;
+window.closeSidebar   = closeSidebar;
 window.buildOverlapGrid = buildOverlapGrid;
+window.switchCalendar = switchCalendar;
 
 document.addEventListener('DOMContentLoaded', init);
