@@ -844,16 +844,34 @@ function buildOverlapGrid(targetId, schedReal) {
   el.innerHTML = html;
 }
 
-// ── CALENDÁRIO ABRIL 2026 ─────────────────────────────────────
+// ── CALENDÁRIO MENSAL ─────────────────────────────────────────
 // Referência: 29/03/2026 (Dom) — Gabriel trabalha (dia 0 do ciclo 12×36)
-// Abril 1 = Quarta-feira (dow=3 onde 0=Dom…6=Sáb)
-// Cálculo correto: dias desde 29/03 usando Date absoluto — evita erro em meses com 30/31 dias.
-var _CAL_REF_MS = new Date(2026, 2, 29).getTime(); // 29 mar 2026
-function _gabDaysSinceRef(aprilDay) {
-  return Math.round((new Date(2026, 3, aprilDay).getTime() - _CAL_REF_MS) / 86400000);
-}
-var CAL_DOW = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+var _CAL_REF_MS   = new Date(2026, 2, 29).getTime();
+var CAL_DOW       = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+var CAL_MON_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                     'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 var CAL_SCENARIO_CURRENT = 'atual';
+var CAL_MONTH = { year: 2026, month: 3 }; // 0-indexed: 3 = Abril
+
+function _gabDaysSinceRefAny(yr, mo, day) {
+  return Math.round((new Date(yr, mo, day).getTime() - _CAL_REF_MS) / 86400000);
+}
+
+function navCalendar(delta) {
+  CAL_MONTH.month += delta;
+  if (CAL_MONTH.month > 11) { CAL_MONTH.month = 0; CAL_MONTH.year++; }
+  if (CAL_MONTH.month <  0) { CAL_MONTH.month = 11; CAL_MONTH.year--; }
+  // Rebuild main calendar + all panel calendars
+  buildCalendar('cal-grid', 'cal-stats', CAL_SCENARIO_CURRENT);
+  var keys = CAL_PANEL_KEYS;
+  for (var ki = 0; ki < keys.length; ki++) {
+    buildCalendar('cal-sc-' + keys[ki], 'cals-sc-' + keys[ki], keys[ki]);
+  }
+  // Update month label in header
+  var lbl = gi('cal-month-label');
+  if (lbl) lbl.textContent = CAL_MON_NAMES[CAL_MONTH.month] + ' ' + CAL_MONTH.year;
+}
+window.navCalendar = navCalendar;
 
 // Config por cenário: fds = cobertura diurno FDS | offNight = quem cobre folgas do Gabriel
 var CAL_CONFIGS = {
@@ -879,16 +897,17 @@ function buildCalendar(targetId, statsId, scenKey) {
   if (!el) return;
 
   var cfg = CAL_CONFIGS[scenKey] || CAL_CONFIGS['solA'];
-  var APR_START = 3; // April 1, 2026 = Wednesday
-  var APR_DAYS  = 30;
+  var yr  = CAL_MONTH.year;
+  var mo  = CAL_MONTH.month; // 0-indexed
+  var MON_START = new Date(yr, mo, 1).getDay();          // dow of 1st
+  var MON_DAYS  = new Date(yr, mo + 1, 0).getDate();     // total days
 
-  function dow(d)   { return (APR_START + d - 1) % 7; }
+  function dow(d)   { return (MON_START + d - 1) % 7; }
   function isWknd(d){ var w = dow(d); return w === 0 || w === 6; }
 
-  // Gabriel working on day d? (12×36 uses absolute Date from reference 29/03/2026)
   function gabWorks(d) {
     if (cfg.gbMode === '12x36' || cfg.gbMode === '12x36-tarde')
-      return _gabDaysSinceRef(d) % 2 === 0;
+      return _gabDaysSinceRefAny(yr, mo, d) % 2 === 0;
     if (cfg.gbMode === '5x2')   return !isWknd(d);
     if (cfg.gbMode === '6x1')   return dow(d) !== 0;
     return false;
@@ -900,9 +919,9 @@ function buildCalendar(targetId, statsId, scenKey) {
   for (var i = 0; i < 7; i++) {
     html += '<div class="cal-hdr' + (i===0?' cal-sun-hdr':i===6?' cal-sat-hdr':'') + '">' + CAL_DOW[i] + '</div>';
   }
-  for (var i = 0; i < APR_START; i++) html += '<div class="cal-blank"></div>';
+  for (var i = 0; i < MON_START; i++) html += '<div class="cal-blank"></div>';
 
-  for (var d = 1; d <= APR_DAYS; d++) {
+  for (var d = 1; d <= MON_DAYS; d++) {
     var w   = dow(d);
     var gab = gabWorks(d);
     var fds = isWknd(d);
@@ -976,8 +995,17 @@ function buildCalendar(targetId, statsId, scenKey) {
     '<div class="cs-item cs-gap-s"><strong>' + empty   + '</strong><span>gap total 🚨</span></div>' +
     '<div class="cs-item cs-pct"><strong>'   + pct     + '%</strong><span>cobertura</span></div>' +
     '</div>' +
-    '<p class="cal-ref">📌 Ref. Gabriel 12×36: 29/03/2026 (Dom) = dia de trabalho. ' +
-    'Noturno: ' + cfg.suf + '. Cálculo aproximado — confirmar datas com Gabriel.</p>';
+    '<p class="cal-ref">📌 ' + CAL_MON_NAMES[mo] + ' ' + yr +
+    ' · Ref. Gabriel 12×36: 29/03/2026 (Dom) = trabalha · ' + cfg.suf +
+    ' · Cálculo baseado em dias corridos — confirmar datas com Gabriel.</p>' +
+    '<div class="cal-legend cal-legend-mini">' +
+      '<div class="cl-item"><div class="cl-dot" style="background:#047857"></div> Gabriel</div>' +
+      '<div class="cl-item"><div class="cl-dot" style="background:#b84040"></div> Gio + And</div>' +
+      '<div class="cl-item"><div class="cl-dot" style="background:#7c3aed"></div> Folguista FDS</div>' +
+      '<div class="cl-item"><div class="cl-dot" style="background:#b45309"></div> Freelancer</div>' +
+      '<div class="cl-item"><div class="cl-dot" style="background:#0e7490"></div> 2° Noturno</div>' +
+      '<div class="cl-item"><div class="cl-dot" style="background:#dc2626"></div> Descoberto</div>' +
+    '</div>';
 }
 
 // ── Calendários nos painéis de cenário ─────────────────────────
@@ -1020,6 +1048,11 @@ function switchCalendar(scenario) {
   }
 }
 
+// ── SCHEDULE DATA FOR OVERLAP GRIDS ──────────────────────────
+// G6A / Sol.A / Sol.B / Sol.C: Gio 06–14 · And chega 13h (overlap 13–14) · Gab 22–06
+var _G6A_DAY = {gio:{s:6,e:14}, and:{s:13,e:22}, gab:{s:22,e:6, label:'22–06'}};
+var G6A_REAL  = [null, _G6A_DAY, _G6A_DAY, _G6A_DAY, _G6A_DAY, _G6A_DAY, null];
+
 // ── ATUAL REAL SCHEDULE DATA ──────────────────────────────────
 var ATUAL_REAL = [
   null, // Dom: todos folgam diurno
@@ -1047,6 +1080,7 @@ function renderAll() {
   buildTable('gantt-g7c',   'leg-g7c',  SCENARIOS_DATA.g7c,   'g7c');
   // Giovanna 6h
   buildTable('gantt-g6a',   'leg-g6a',  SCENARIOS_DATA.g6a,   'g6a');
+  buildOverlapGrid('og-g6a', G6A_REAL);
   buildTable('gantt-g6b',   'leg-g6b',  SCENARIOS_DATA.g6b,   'g6b');
   buildTable('gantt-g6c',   'leg-g6c',  SCENARIOS_DATA.g6c,   'g6c');
   // Gabriel
@@ -1058,6 +1092,7 @@ function renderAll() {
   buildTable('gantt-solA',  'leg-solA', SCENARIOS_DATA.solA,  'solA');
   buildTable('gantt-solB',  'leg-solB', SCENARIOS_DATA.solB,  'solB');
   buildTable('gantt-solC',  'leg-solC', SCENARIOS_DATA.solC,  'solC');
+  buildOverlapGrid('og-solA', G6A_REAL); // Sol.A usa mesma estrutura G6A
   // Gabriel diurno
   buildTable('gantt-gd1',   'leg-gd1',  SCENARIOS_DATA.gd1,   'gd1');
   // Calendário Abril 2026 — seção principal
@@ -1119,7 +1154,8 @@ function buildCmpTable() {
     { n:'GB4 · Gab 12h seg–sex 🚨',        rt:'✗',    gio:'—',          and:'—',         gab:'60h/sem',  ov:'—',     dom:'—', clt:'🚨 ILEGAL',  pau:'N/A', bad:true},
     { n:'Sol.A · G6A + Folguista + Free',  rt:'★★☆', gio:'5×2 35h',    and:'5×2 40h',   gab:'12×36 22h',ov:'1h ✅', dom:'✅ Folg.',clt:'✅ OK',    pau:'1h+1h',rec:true},
     { n:'Sol.B · G6A + 2°Noturno + Folg', rt:'★★★', gio:'5×2 35h',    and:'5×2 40h',   gab:'12×36 22h',ov:'1h ✅', dom:'✅ Folg.',clt:'✅ OK',    pau:'1h+1h',rec:true},
-    { n:'Sol.C · G6C + 2°Noturno + Folg', rt:'★★★', gio:'5×2 40h',    and:'5×2 35h',   gab:'12×36 22h',ov:'1h ✅', dom:'✅ 100%', clt:'✅ OK',   pau:'1h+1h',rec:true}
+    { n:'Sol.C · G6C + 2°Noturno + Folg', rt:'★★★', gio:'5×2 40h',    and:'5×2 35h',   gab:'12×36 22h',ov:'1h ✅', dom:'✅ 100%', clt:'✅ OK',   pau:'1h+1h',rec:true},
+    { n:'GD1 · Gab Tarde + 2°Noturno',    rt:'★★☆', gio:'5×2 35h',    and:'12×36 40h', gab:'12×36 Tarde',ov:'—',   dom:'✅ Folg.',clt:'✅ OK ⚠And', pau:'1h Gio',rec:false, note:'And muda p/ 12×36'}
   ];
 
   var tbody = gi('cmp-body');
@@ -1130,7 +1166,7 @@ function buildCmpTable() {
     var r = rows[i];
     var rowClass = r.rec ? 'rec' : r.bad ? 'bad' : '';
     html += '<tr class="' + rowClass + '">' +
-      '<td><strong>' + r.n + '</strong></td>' +
+      '<td><strong>' + r.n + '</strong>' + (r.note ? '<br><span style="font-size:.6rem;color:var(--tx3)">' + r.note + '</span>' : '') + '</td>' +
       '<td class="center">' + r.rt + '</td>' +
       '<td style="font-size:.66rem">' + r.gio + '</td>' +
       '<td style="font-size:.66rem">' + r.and + '</td>' +
@@ -1241,5 +1277,20 @@ window.toggleSidebar  = toggleSidebar;
 window.closeSidebar   = closeSidebar;
 window.buildOverlapGrid = buildOverlapGrid;
 window.switchCalendar = switchCalendar;
+
+// ── PRINT HEADER ──────────────────────────────────────────────
+window.onbeforeprint = function() {
+  var sections = document.querySelectorAll('.section');
+  for (var i = 0; i < sections.length; i++) {
+    var hd = sections[i].querySelector('.sec-hd h2');
+    var hdrDiv = sections[i].querySelector('.print-section-hdr');
+    if (!hdrDiv) {
+      hdrDiv = document.createElement('div');
+      hdrDiv.className = 'print-section-hdr';
+      sections[i].insertBefore(hdrDiv, sections[i].firstChild);
+    }
+    hdrDiv.textContent = hd ? hd.textContent : sections[i].id;
+  }
+};
 
 document.addEventListener('DOMContentLoaded', init);
